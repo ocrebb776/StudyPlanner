@@ -9,13 +9,13 @@ class MySQLRequest{
     public $oneResult;
     // $Cconn would need to be a private attribute as it shouldnt be Changed
     private $conn;
-    function __construct(){
+    function __construct($oneResult = false){// if  no value is given then 
         // defining the variables
         $this->servername = "localhost";
         $this->username = "username";
         $this->password = "password";
         $this->dbname = "studyplanner";
-        $this->oneResult = false;
+        $this->oneResult = $oneResult;
     
         // Create Connection to mysql server
         $this->conn = new mysqli($this->servername, $this->username, $this->password,$this->dbname);
@@ -33,6 +33,9 @@ class MySQLRequest{
             if(count($output) == 1 && $this->oneResult){
                 // if their is only one result and the program is only expecting one result it will returnt the one result on its own rather than in a class
                 return $output[0];
+            }else if($this->oneResult){
+                // if the program is expecting one result and many is given it will return false
+                return false;
             }
             // if their is a result return the result
             return $output;

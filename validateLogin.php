@@ -6,8 +6,8 @@ if ($_POST) {
     $SQLconnection->oneResult = true;
     $output = $SQLconnection->sql("SELECT * FROM users WHERE name='{$_POST["username"]}' && pass='{$_POST["password"]}'");
     if($output){
-        echo "true";
+        echo $output["ID"];
     }else{
-        echo "false";
+        echo "---false---";
     }
 }
