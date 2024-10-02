@@ -1,4 +1,37 @@
+.html{
+    font-family: Arial, Helvetica, sans-serif;
+}
+
 .grayBox{
     background-color: rgb(208, 208, 208);
     box-shadow: 0px 0px 10px 1px rgb(174, 172, 172);
+}
+.calendar{
+    margin: auto;
+}
+.day{
+    width: 95%;
+    height: 12.5%;
+    background-color: rgb(165, 165, 165);
+    border-radius: 20px;
+    display: grid;
+    grid-template-columns: 40px 1fr;
+
+}
+.daysList{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2.25%;
+    flex-direction: column;
+    padding: 1%;
+   
+}
+.date{
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: inherit;
+    background-color: rgb(250, 255, 255);
 }
