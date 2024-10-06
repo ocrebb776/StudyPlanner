@@ -1,189 +1,183 @@
-
 // concrete class HomeScreen inherits from abstract class Screen
 class HomeScreen extends Screen {
-    show() {
+  show() {
+    let calendar = document.createElement("div");
+    this.calendar = new HomeScreenCalendar();
+    this.calendar.element = calendar;
+    this.calendar.show();
+    this.element.append(calendar);
+  }
+}
 
-        this.calendarColours = {
-            "Study":"#ed80f2"
-        }
-        this.br = 10// Border radius scalar
+class HomeScreenCalendar extends Screen {
+  show() {
+    this.calendarColours = {
+      Study: "#ed80f2",
+    };
+    this.ListOfSDays = document.createElement("div");
 
-        let calendar = document.createElement("div");
-        calendar.setAttribute("class","calendar")
-        let grid = document.createElement("div") // used to arrage the main grid and the buttons on the side and underneath
-        grid.style.margin = "auto" // center the grid within calendar (HORIZONTALY)
-        grid.style.display = "grid"
-        grid.style.gridTemplateColumns = "1fr 20px"// allow a 20px gap on the right for buttons allowing the rest to fill the space
-        grid.style.gridTemplateRows = "1fr 20px" // allow a 20px gap underneath for buttons allowing the rest to fill the space above
-        grid.style.width = "90vw"
-        grid.style.minHeight = "300px"
-        let buttonListVertical = document.createElement("div")
-        let buttonListHorizontal = document.createElement("div")
-       
-        buttonListHorizontal.setAttribute("class","grayBox")
+    this.data = this.GetCalendarData()
+    let DayList = this.daysList()
+    
+  }
+  GetCalendarData(){
+    let request = new AjaxTemplate(false)
+    request.href = "php/homepage/getCalendarInfo.php"
+    request.data = {
+        ID: StoredID,
+        password: StoredPassword,
+    };
+   
+
+   let result = request.send()
+   console.log(result.responseText)
+   if(result.status == 200){
+    return JSON.parse(result.responseText)
+   }else{
+    return "there as been a silly little error"
+   }
+  }
+  daysList(){
+    let currentDay = new Date()
+    
+    let days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
+    for(let x =0;x<7;x++){
+        let dayContainer =document.createElement("div")
+        dayContainer.classList.add("card","mx-5","my-3")
+
+        let date = document.createElement("div")
+        date.classList.add("card-header")
+
+        let footer = document.createElement("div")
+        footer.classList.add("card-footer")
+
+        let CreateEventOnThisDay = document.createElement('button');
+        CreateEventOnThisDay.setAttribute('id', 'CreateEventOnThisDay');
         
-        buttonListHorizontal.style.borderRadius = `0px 0px ${this.br}px ${this.br}px`
-        buttonListVertical.style.borderRadius = `0px ${this.br}px ${this.br}px 0px`
-        buttonListVertical.style.height = "90%"
-        buttonListHorizontal.style.width = "90%"
-buttonListVertical.style.zIndex = "0"
-        buttonListVertical.setAttribute("class","grayBox")
+        CreateEventOnThisDay.setAttribute('type', 'button');
+        CreateEventOnThisDay.setAttribute('class', 'btn btn-primary');
+        CreateEventOnThisDay.textContent = 'Create Event on this day';
+        footer.append(CreateEventOnThisDay)
 
-       this.calendarView() // creates the calendar view
-            
+        let dayOf = x+currentDay.getDay() -1+days.length
+        console.log(dayOf)
+        if(dayOf >=days.length){
+            dayOf = dayOf % days.length
+        }
+
+        date.textContent = days[dayOf]
 
 
-        grid.append(this.daysList,buttonListVertical,buttonListHorizontal) // adding the elements into the grid
-        calendar.appendChild(grid)// adding the grid into the calendar div
-        this.element.appendChild(calendar)// Finally adding the calendar into the Body
+        let ViewElement = document.createElement("div")
+        ViewElement.classList.add("progress")
+   let body = document.createElement("div")
+   body.classList.add("card-body")
+    
+      
+console.log(this.data)
+        let today = this.data[x]
 
+        if(today){
+        
+        let sortDates = new SortByKey(today,"startTime")
+        console.log(today)
+            today = sortDates.returnSortedList()
+        let startEndTimes = getStartAndEndTimesCalendar(today)
+        let elementOrder = createElementOrder(startEndTimes)
+        let frs = getRatios(startEndTimes)
+        ViewElement.style.display = "grid"
+        ViewElement.style.gridTemplateColumns = frs
+        //ViewElement.style.gap = "2px"
+        console.log(elementOrder)
+        elementOrder.forEach(el=>{
+
+            let event = document.createElement("div")
+            if(el !=0){
+                event.addEventListener("click", function(){alert("LOL")});
+                if(el.Type == "study"){
+                    event.classList.add("bg-warning")
+
+                }
+                event.classList.add("progress-bar")
+                event.style.borderRadius = "20px"
+            }
+            event.style.width = "100%"
+            ViewElement.append(event)
+        })
+        console.log("🚀 ~ daysList ~ elementOrder:", elementOrder)
+        console.log(date.textContent)
+        
+        }
+        body.append(ViewElement)
+        dayContainer.append(date,body)
+        this.element.append(dayContainer)
+       
+    }
+    console.log(this.element)
 
     }
-    calendarView(){
-        this.daysList = document.createElement("div") // the list of the days
-        this.daysList.setAttribute("class","grayBox daysList") // adding thr classes
-        this.daysList.style.zIndex = "1"// so its boxshadow appears onto the buttons and not the other way rounf
-        
-        this.daysList.style.borderRadius = `${this.br}px 0px ${this.br}px 0px`
-        
-        let day // the horizontal box
-        let date  //the label to the left of the day
-        let filler = document.createElement("div") // a empty div uses to fill the space between events
-        let ViewElement // the day view element
-        let currentDay = new Date() // TODAY!
-        let data = {
-           "0":[
-            {"id":"0000",
-                "start":"12:00",
-                "end":"15:00",
-                "type":"study"
-            },{"id":"0001",
-                "start":"14:00",
-                "end":"15:00",
-                "type":"study"
-            }],
-            "2":[
-            {"id":"0001",
-                "start":"14:00",
-                "end":"15:00",
-                "type":"study"
-            }
-            ]
-        }
-        let dayOf // day of the week
-        let days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
-        for(let x =0;x<7;x++){
-            console.log(x)
-            day = document.createElement("div") // create day DIV
-            day.setAttribute("class","day") // assiging the calss
-            date = document.createElement("div")// creating the element to shoe the day
-            date.setAttribute("class","date") // adding the class
-            dayOf = x+currentDay.getDay()-1 // getting the day of the week in relation to moday
-            if(dayOf >= days.length){
-                dayOf-=days.length // if the day of the week raps aroud to become larger than the list, it wraps it back round to the start of the list
-            }
-            date.textContent = days[dayOf] // getting the day of the week trxt
-            ViewElement = document.createElement("div") // creating the view element
-            ViewElement.style.width = "100%"
-            let today = data[String(x)]
-            filler = []
-            if(today){
-                let sortDates = new SortByKey(today,"start")
-                today = sortDates.returnSortedList()
-            let startEndTimes = getStartAndEndTimesCalendar(today)
-            let elementOrder = createElementOrder(startEndTimes)
-            console.log("🚀 ~ HomeScreen ~ calendarView ~ elementOrder:", elementOrder)
-            let frs = getRatios(startEndTimes)
-            ViewElement.style.display = "grid"
-            ViewElement.style.gridTemplateColumns = frs
-            //ViewElement.style.gap = "2px"
-            elementOrder.forEach(el=>{
-                let event = document.createElement("div")
-                if(typeof(el) == "string"){
-                    event.addEventListener("click", function(){alert("LOL")});
-                    event.style.backgroundColor = this.calendarColours["Study"]
-                    event.style.borderRadius = this.br + "px"
-                }
-                ViewElement.append(event)
-            })
-        }
 
-         
-
-
-
-
-            day.append(date,ViewElement)
-            
-            this.daysList.append(day)
-
-        }
-    
-}}
+   
+  }
 
 
 // CALENDAR FUCTIONS
-const getStartAndEndTimesCalendar = function(data){
-    let startAndEnd = []
-    data.forEach(el => {
+const getStartAndEndTimesCalendar = function (data) {
+  let startAndEnd = [];
 
-
-        let time = el.start.split(":")
-        let hours = Number(time[0])
-        let minuites = Number(time[1])
-        time = hours*60+minuites
-        if(startAndEnd[startAndEnd.length -1] >=time){
-            startAndEnd[startAndEnd.length -1] = time-1
-        }
-        startAndEnd.push(time,el.id)
-        time = el.end.split(":")
-        hours = Number(time[0])
-        minuites = Number(time[1])
-        startAndEnd.push(hours*60+minuites)
-    });
-    return startAndEnd
-}
-const createElementOrder = function(data){
-    let last = "number"
-    let order = []
-    data.forEach(el=>{
-        if(typeof(el) == "number"){
-            if(last=="number"){
-                order.push(0)
-            }
-            last = "number"
-        }else{
-            order.push(el)
-            last = "string"
-
-        }
-        
-    })
-    return order
-}
-
-const getRatios = function(data){
-    let last = 0
-    let total = 24*60
-    let times = []
-    let fr = ""
-    data.forEach(el=>{
-        if(typeof(el)=="number"){
-            times.push(el)
-        }
-    })
-    times.push(total)
-   for(let x =0;x<times.length;x++){
-    if(x != 0){
-        last = times[x-1]
+  data.forEach((el) => {
+    let time = el.startTime.split(":");
+    let hours = Number(time[0]);
+    let minuites = Number(time[1]);
+    time = hours * 60 + minuites;
+    if (startAndEnd[startAndEnd.length - 1] >= time) {
+      startAndEnd[startAndEnd.length - 1] = time - 1;
     }
-    let length = times[x]-last
-    let ratio = Math.round(100*length/total)
-    fr+= ` ${ratio}fr`
-  
-   
-}
-return fr
+    startAndEnd.push(time, el);
+    time = el.endTime.split(":");
+    hours = Number(time[0]);
+    minuites = Number(time[1]);
+    startAndEnd.push(hours * 60 + minuites);
+  });
+  return startAndEnd;
+};
 
-    
-}
+const createElementOrder = function (data) {
+  
+  let last = "number";
+  let order = [];
+  data.forEach((el) => {
+    if (typeof el == "number") {
+      if (last == "number") {
+        order.push(0);
+      }
+      last = "number";
+    } else {
+      order.push(el);
+      last = "string";
+    }
+  });
+  return order;
+};
+
+const getRatios = function (data) {
+  let last = 0;
+  let total = 24 * 60;
+  let times = [];
+  let fr = "";
+  data.forEach((el) => {
+    if (typeof el == "number") {
+      times.push(el);
+    }
+  });
+  times.push(total);
+  for (let x = 0; x < times.length; x++) {
+    if (x != 0) {
+      last = times[x - 1];
+    }
+    let length = times[x] - last;
+    let ratio = Math.round((100 * length) / total);
+    fr += ` ${ratio}fr`;
+  }
+  return fr;
+};

@@ -1,68 +1,74 @@
-<script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code to Image Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            font-family: monospace;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        canvas {
+            display: none;
+        }
+    </style>
+</head>
+<body>
 
+    <h1>Code to Image Converter</h1>
+    <textarea id="codeInput" placeholder="Paste your code here..."></textarea>
+    <button onclick="generateImage()">Generate Image</button>
+    <canvas id="canvas"></canvas>
 
+    <script>
+        function generateImage() {
+            const code = document.getElementById('codeInput').value;
+            const canvas = document.getElementById('canvas');
+            const context = canvas.getContext('2d');
 
-// SECOND TRY /\/\/\/\ TRIED OOP AND IT WORKED
+            // Set canvas size
+            const lines = code.split('\n');
+            const width = 800;
+            const lineHeight = 24;
+            const padding = 10;
+            const height = lines.length * lineHeight + padding * 2;
+            canvas.width = width;
+            canvas.height = height;
 
-list1 = new SortByKey([{ key: 4 }, { key: 1 }, { key: 8 }, { key: 6 }], "key")
-console.log(list1.returnIT())
-    
-//     count = 0;
-//     // quiksort algorithm
-//     let sorted = false;
-//     var list = [list];
+            // Set background and text style
+            context.fillStyle = '#ffffff'; // White background
+            context.fillRect(0, 0, width, height);
+            context.font = '16px monospace';
+            context.fillStyle = '#000000'; // Black text
 
-//     while (!sorted) {
-//       let templist = [];
+            // Render the code line by line
+            lines.forEach((line, index) => {
+                context.fillText(line, padding, padding + (index + 1) * lineHeight);
+            });
 
+            // Create the image
+            const imageURL = canvas.toDataURL('image/png');
 
+            // Create a download link
+            const downloadLink = document.createElement('a');
+            downloadLink.href = imageURL;
+            downloadLink.download = 'code_image.png';
+            downloadLink.click();
+        }
+    </script>
 
-//       console.log("PASSSS", count);
-//       console.log(JSON.stringify(list));
-//       for (let x = 0; x < list.length; x++) {
-//         count += 1;
-//         if (count > 100) {
-//             console.log("MAX MET");
-//             return false;
-//           }
-//         if (list[x].length > 1) {
-//           sorted = false
-//           let pivotIndex = Math.round(Math.random()*(list[x].length-1));
-//           let pivotNum = list[x][pivotIndex][key];
-//           console.log(pivotNum)
-//           let Higher = [];
-//           let Lower = [];
-
-//           for (let index = 0; index < list[x].length; index++) {
-//             if (count > 100) {
-//             console.log("MAX MET");
-//             return false;
-
-//           }
-//           count+=1
-          
-//             if (list[x][index][key] >= pivotNum) {
-//               Higher.push(list[x][index]);
-//             } else {
-//               Lower.push(list[x][index]);
-//             }
-//           }
-// console.log(Lower,Higher)
-//           if (Lower.length != 0) {
-//             templist = templist.concat([Lower]);
-//           }
-
-//           if (Higher.length != 0) {
-//             templist = templist.concat([Higher]);
-//           }
-//         }
-//       }
-//       list = templist;
-//     }
-//  }
-
-  //sortByKey([{ key: 4 }, { key: 1 }, { key: 8 }, { key: 6 }], "key");
-
-
-
-</script>
+</body>
+</html>

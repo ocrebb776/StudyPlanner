@@ -1,6 +1,6 @@
 <?php
 // to allow for the sql requests neccesary for this 
-require "SQL.php";
+require "../SQL.php";
 if ($_POST) {
     $SQLconnection = new MySQLRequest();
     $SQLconnection->oneResult = true;

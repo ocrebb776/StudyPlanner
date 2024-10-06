@@ -21,7 +21,7 @@ class AjaxTemplate {
         // this is where the methid will be used to send the data 
     send() {
         console.log("attempting to send the ajax request")
-        $.ajax({
+        return $.ajax({
             async: this.ajax,
             error: this.ajaxError,
             url: this.href,

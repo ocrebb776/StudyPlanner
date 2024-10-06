@@ -10,7 +10,7 @@ class Screen {
             throw new Error("Abstract class screen shouldnt be instantiated");
         } else {
             this.status = false;
-            this.element = document.querySelector("body");
+            this.element = document.querySelector("#wrapper");
             console.log(this)
         }
     }
@@ -41,6 +41,9 @@ class Popup extends Screen{
 }
 let lockScreen
 let homeScreen
+let darkmode = false
+let StoredID = false
+let StoredPassword = false
 // wait until the page has loaded to add items such as event listeners
 window.onload = function() {
     lockScreen = new LockScreen()
@@ -49,12 +52,18 @@ window.onload = function() {
     // create a new instance of the  lockscreen
     
         // set the current screen for body to be the lockscreen
-    document.querySelector("body").currentScreen = lockScreen
+    lockScreen.element.currentScreen = lockScreen
         // show the lockscreen
     lockScreen.show()
     document.getElementById("username").value = "testusr1";
     document.getElementById("password").value = "123";
-    lockScreen.loginValidation()
+
+    loginValidation()
+
+    if(darkmode){
+        document.querySelector("html").setAttribute("data-bs-theme","dark")
+    }
+
 };
 
 function setManyAttrbutes(Item){
