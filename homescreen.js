@@ -47,6 +47,9 @@ class HomeScreenCalendar extends Screen {
 
         let date = document.createElement("div")
         date.classList.add("card-header")
+        if(x == 0){
+          date.classList.add("bg-primary","text-light")
+        }
 
         let footer = document.createElement("div")
         footer.classList.add("card-footer")
