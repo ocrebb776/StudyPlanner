@@ -41,7 +41,7 @@ class Popup extends Screen{
 }
 let lockScreen
 let homeScreen
-let darkmode = true
+let darkmode = false
 let StoredID = false
 let StoredPassword = false
 // wait until the page has loaded to add items such as event listeners
@@ -55,10 +55,10 @@ window.onload = function() {
     lockScreen.element.currentScreen = lockScreen
         // show the lockscreen
     lockScreen.show()
-    // document.getElementById("username").value = "testusr1";
-    // document.getElementById("password").value = "123";
 
-    // loginValidation()
+    document.getElementById("username").value = "testusr1";
+    document.getElementById("password").value = "123";
+    loginValidation()
 
     if(darkmode){
         document.querySelector("html").setAttribute("data-bs-theme","dark")

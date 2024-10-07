@@ -1,11 +1,70 @@
 // concrete class HomeScreen inherits from abstract class Screen
 class HomeScreen extends Screen {
   show() {
-    let calendar = document.createElement("div");
+
+// CALENDAR
+    let calendarWrapper = document.createElement("div");
+    let calendarFooter = document.createElement("div");
+    let calendarBody = document.createElement("div");
+    calendarWrapper.classList.add("card","m-2")
+    calendarBody.classList.add("card-body")
+    calendarFooter.classList.add("card-footer")
+
+    let calendarFooterWrapper = document.createElement("div")
+    calendarFooterWrapper.classList.add("row")
+    calendarFooterWrapper.style.width= "100%"
+//Calendar Buttons
+let buttonLeftWrapper = document.createElement("div")
+buttonLeftWrapper.classList.add("col")
+
+let buttonLeft = document.createElement('button');
+buttonLeft.setAttribute('id', 'buttonLeft');
+
+buttonLeft.setAttribute('type', 'button');
+buttonLeft.setAttribute('class', 'btn btn-primary  w-100');
+buttonLeft.textContent = 'Manage';
+
+buttonLeftWrapper.append(buttonLeft)
+
+let buttonMiddleWrapper = document.createElement("div")
+buttonMiddleWrapper.classList.add("col")
+
+
+let buttonMiddle = document.createElement('button');
+buttonMiddle.setAttribute('id', 'buttonMiddle');
+
+
+buttonMiddle.setAttribute('type', 'button');
+buttonMiddle.setAttribute('class', 'btn btn-primary w-100');
+buttonMiddle.textContent = 'Create';
+
+buttonMiddleWrapper.append(buttonMiddle)
+
+let buttonRightWrapper = document.createElement("div")
+buttonRightWrapper.classList.add("col")
+
+let buttonRight = document.createElement('button');
+buttonRight.setAttribute('id', 'buttonRight');
+
+buttonRight.setAttribute('type', 'button');
+buttonRight.setAttribute('class', 'btn btn-primary w-100');
+buttonRight.textContent = 'dayView';
+
+
+buttonRightWrapper.append(buttonRight)
+
+
+calendarFooterWrapper.append(buttonLeftWrapper,buttonMiddleWrapper,buttonRightWrapper)
+calendarFooter.appendChild(calendarFooterWrapper)
+  //Calendar Default View
     this.calendar = new HomeScreenCalendar();
-    this.calendar.element = calendar;
+    this.calendar.element = calendarBody;
     this.calendar.show();
-    this.element.append(calendar);
+    calendarWrapper.append(calendarBody,calendarFooter)
+    this.element.append(calendarWrapper);
+
+
+
   }
 }
 
@@ -43,24 +102,25 @@ class HomeScreenCalendar extends Screen {
     let days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
     for(let x =0;x<7;x++){
         let dayContainer =document.createElement("div")
-        dayContainer.classList.add("card","mx-5","my-3")
+        let card = document.createElement("div")
+        card.classList.add("card")
+        dayContainer.classList.add("row","card-body")
 
         let date = document.createElement("div")
-        date.classList.add("card-header")
+        date.classList.add("col")
         if(x == 0){
-          date.classList.add("bg-primary","text-light")
+          date.classList.add("bg-primary")
+          
+        }else{
+          date.classList.add("bg-dark")
+          
         }
+date.style.borderRadius = "30px"
+date.style.height=110%
+date.classList.add("text-center","rounded","text-white")
 
-        let footer = document.createElement("div")
-        footer.classList.add("card-footer")
 
-        let CreateEventOnThisDay = document.createElement('button');
-        CreateEventOnThisDay.setAttribute('id', 'CreateEventOnThisDay');
-        
-        CreateEventOnThisDay.setAttribute('type', 'button');
-        CreateEventOnThisDay.setAttribute('class', 'btn btn-primary');
-        CreateEventOnThisDay.textContent = 'Create Event on this day';
-        footer.append(CreateEventOnThisDay)
+       
 
         let dayOf = x+currentDay.getDay() -1+days.length
         console.log(dayOf)
@@ -72,9 +132,10 @@ class HomeScreenCalendar extends Screen {
 
 
         let ViewElement = document.createElement("div")
-        ViewElement.classList.add("progress")
+        ViewElement.classList.add("progress","col")
+        ViewElement.style.height = "100%"
    let body = document.createElement("div")
-   body.classList.add("card-body")
+   body.classList.add("col-9")
     
       
 console.log(this.data)
@@ -113,7 +174,8 @@ console.log(this.data)
         }
         body.append(ViewElement)
         dayContainer.append(date,body)
-        this.element.append(dayContainer)
+        card.append(dayContainer)
+        this.element.append(card)
        
     }
     console.log(this.element)
