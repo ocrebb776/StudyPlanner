@@ -6,7 +6,7 @@
 
 class LockScreen extends Screen {
     show() {
-
+document.title = "StudyPlanner Login"
         this.status = true
         this.element.currentScreen = this
         let row = document.createElement("div")

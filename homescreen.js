@@ -1,6 +1,8 @@
 // concrete class HomeScreen inherits from abstract class Screen
 class HomeScreen extends Screen {
   show() {
+    document.title = "StudyPlanner Homepage"
+
 
 // CALENDAR
     let calendarWrapper = document.createElement("div");
@@ -12,7 +14,7 @@ class HomeScreen extends Screen {
 
     let calendarFooterWrapper = document.createElement("div")
     calendarFooterWrapper.classList.add("row")
-    calendarFooterWrapper.style.width= "100%"
+    calendarFooterWrapper.style.margin= "auto"
 //Calendar Buttons
 let buttonLeftWrapper = document.createElement("div")
 buttonLeftWrapper.classList.add("col")
@@ -21,7 +23,7 @@ let buttonLeft = document.createElement('button');
 buttonLeft.setAttribute('id', 'buttonLeft');
 
 buttonLeft.setAttribute('type', 'button');
-buttonLeft.setAttribute('class', 'btn btn-primary  w-100');
+buttonLeft.setAttribute('class', 'btn btn-secondary  w-100');
 buttonLeft.textContent = 'Manage';
 
 buttonLeftWrapper.append(buttonLeft)
@@ -47,7 +49,7 @@ let buttonRight = document.createElement('button');
 buttonRight.setAttribute('id', 'buttonRight');
 
 buttonRight.setAttribute('type', 'button');
-buttonRight.setAttribute('class', 'btn btn-primary w-100');
+buttonRight.setAttribute('class', 'btn btn-secondary w-100');
 buttonRight.textContent = 'dayView';
 
 
@@ -64,7 +66,6 @@ calendarFooter.appendChild(calendarFooterWrapper)
     this.element.append(calendarWrapper);
 
 
-
   }
 }
 
@@ -77,6 +78,7 @@ class HomeScreenCalendar extends Screen {
 
     this.data = this.GetCalendarData()
     let DayList = this.daysList()
+    createNewEventForm()
     
   }
   GetCalendarData(){
@@ -109,15 +111,14 @@ class HomeScreenCalendar extends Screen {
         let date = document.createElement("div")
         date.classList.add("col")
         if(x == 0){
-          date.classList.add("bg-primary")
+          date.classList.add("bg-primary","text-white")
           
         }else{
-          date.classList.add("bg-dark")
           
         }
 date.style.borderRadius = "30px"
 date.style.height=110%
-date.classList.add("text-center","rounded","text-white")
+date.classList.add("text-center","rounded")
 
 
        
@@ -137,7 +138,7 @@ date.classList.add("text-center","rounded","text-white")
    let body = document.createElement("div")
    body.classList.add("col-9")
     
-      
+  
 console.log(this.data)
         let today = this.data[x]
 
@@ -157,7 +158,10 @@ console.log(this.data)
 
             let event = document.createElement("div")
             if(el !=0){
-                event.addEventListener("click", function(){alert("LOL")});
+                event.addEventListener("click", function(){
+                  
+                  (el.ID)
+                });
                 if(el.Type == "study"){
                     event.classList.add("bg-warning")
 
@@ -246,3 +250,47 @@ const getRatios = function (data) {
   }
   return fr;
 };
+
+function createNewEventForm(){
+  let form = new FormPopUp("Event",[
+    {
+      "name":"test1",
+      "dispName":"test2",
+      "type":"range",
+      "other":[["min","0"],["max","10"],["value",5]]
+    },   {
+      "name":"test1",
+      "dispName":"test2",
+      "type":"color",
+      "placeholder":"test3",
+      "value":""
+    },  {
+      "name":"test1",
+      "dispName":"test2",
+      "type":"checkbox",
+      "checked":true,
+    },    {
+      "name":"test1",
+      "dispName":"test2",
+      "type":"select",
+      "placeholder":"test3",
+      "value":"",
+      "opt":["opt1","opt2"]
+    },
+    {
+      "name":"test1",
+      "dispName":"test2",
+      "type":"textarea",
+      "placeholder":"test3",
+      "value":"",
+      "height":"200px"
+    }
+  ],
+  function(data){
+    console.log(data)
+  },
+  "Create Event"
+)
+
+  form.show()
+}
