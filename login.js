@@ -48,7 +48,7 @@ login(){
     UsernameLabel.textContent = "Username:"
         //INPUT 
     let usernameinput = document.createElement("input")
-    setManyAttrbutes(usernameinput, 
+    setManyAttributes(usernameinput, 
        
         ["name", "username"],
         ["id","username"],
@@ -60,7 +60,7 @@ login(){
         ["class","form-control"]
     )
     let passwordinput = document.createElement("input")
-    setManyAttrbutes(passwordinput, 
+    setManyAttributes(passwordinput, 
        
         ["name", "password"],
         ["id","password"],
@@ -88,7 +88,7 @@ FormCheckMark.setAttribute("class","form-check mb-3")
 let FormCheckLabel = document.createElement("label")
 FormCheckLabel.setAttribute("class","form-check-label")
 let RememberMe = document.createElement("input")
-setManyAttrbutes(RememberMe,
+setManyAttributes(RememberMe,
     ["class","form-check-input"],
     ["type","checkbox"],
     ["name","RememberME"],
@@ -138,7 +138,7 @@ signUp(){
     UsernameLabel.textContent = "Username:"
         //INPUT 
     let usernameinput = document.createElement("input")
-    setManyAttrbutes(usernameinput, 
+    setManyAttributes(usernameinput, 
        
         ["name", "username-SignUp"],
         ["id","username-SignUp"],
@@ -150,7 +150,7 @@ signUp(){
         ["class","form-control"]
     )
     let passwordinput = document.createElement("input")
-    setManyAttrbutes(passwordinput, 
+    setManyAttributes(passwordinput, 
        
         ["name", "password-SignUp1"],
         ["id","password-SignUp1"],
@@ -168,7 +168,7 @@ signUp(){
     PasswordLabel.textContent = "Password:"   
     
     let passwordinput2 = document.createElement("input")
-    setManyAttrbutes(passwordinput2,
+    setManyAttributes(passwordinput2,
         ["name", "password-SignUp2"],
         ["id","password-SignUp2"],
         ["required",""],

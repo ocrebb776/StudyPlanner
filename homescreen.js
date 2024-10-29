@@ -1,71 +1,68 @@
 // concrete class HomeScreen inherits from abstract class Screen
 class HomeScreen extends Screen {
   show() {
-    document.title = "StudyPlanner Homepage"
+    document.title = "StudyPlanner Homepage";
 
-
-// CALENDAR
+    // CALENDAR
     let calendarWrapper = document.createElement("div");
     let calendarFooter = document.createElement("div");
     let calendarBody = document.createElement("div");
-    calendarWrapper.classList.add("card","m-2")
-    calendarBody.classList.add("card-body")
-    calendarFooter.classList.add("card-footer")
+    calendarWrapper.classList.add("card", "m-2");
+    calendarBody.classList.add("card-body");
+    calendarFooter.classList.add("card-footer");
 
-    let calendarFooterWrapper = document.createElement("div")
-    calendarFooterWrapper.classList.add("row")
-    calendarFooterWrapper.style.margin= "auto"
-//Calendar Buttons
-let buttonLeftWrapper = document.createElement("div")
-buttonLeftWrapper.classList.add("col")
+    let calendarFooterWrapper = document.createElement("div");
+    calendarFooterWrapper.classList.add("row");
+    calendarFooterWrapper.style.margin = "auto";
+    //Calendar Buttons
+    let buttonLeftWrapper = document.createElement("div");
+    buttonLeftWrapper.classList.add("col");
 
-let buttonLeft = document.createElement('button');
-buttonLeft.setAttribute('id', 'buttonLeft');
+    let buttonLeft = document.createElement("button");
+    buttonLeft.setAttribute("id", "buttonLeft");
 
-buttonLeft.setAttribute('type', 'button');
-buttonLeft.setAttribute('class', 'btn btn-secondary  w-100');
-buttonLeft.textContent = 'Manage';
+    buttonLeft.setAttribute("type", "button");
+    buttonLeft.setAttribute("class", "btn btn-secondary  w-100");
+    buttonLeft.textContent = "Manage";
 
-buttonLeftWrapper.append(buttonLeft)
+    buttonLeftWrapper.append(buttonLeft);
 
-let buttonMiddleWrapper = document.createElement("div")
-buttonMiddleWrapper.classList.add("col")
+    let buttonMiddleWrapper = document.createElement("div");
+    buttonMiddleWrapper.classList.add("col");
 
+    let buttonMiddle = document.createElement("button");
+    buttonMiddle.setAttribute("id", "buttonMiddle");
 
-let buttonMiddle = document.createElement('button');
-buttonMiddle.setAttribute('id', 'buttonMiddle');
+    buttonMiddle.setAttribute("type", "button");
+    buttonMiddle.setAttribute("class", "btn btn-primary w-100");
+    buttonMiddle.textContent = "Create";
 
+    buttonMiddleWrapper.append(buttonMiddle);
 
-buttonMiddle.setAttribute('type', 'button');
-buttonMiddle.setAttribute('class', 'btn btn-primary w-100');
-buttonMiddle.textContent = 'Create';
+    let buttonRightWrapper = document.createElement("div");
+    buttonRightWrapper.classList.add("col");
 
-buttonMiddleWrapper.append(buttonMiddle)
+    let buttonRight = document.createElement("button");
+    buttonRight.setAttribute("id", "buttonRight");
 
-let buttonRightWrapper = document.createElement("div")
-buttonRightWrapper.classList.add("col")
+    buttonRight.setAttribute("type", "button");
+    buttonRight.setAttribute("class", "btn btn-secondary w-100");
+    buttonRight.textContent = "dayView";
 
-let buttonRight = document.createElement('button');
-buttonRight.setAttribute('id', 'buttonRight');
+    buttonRightWrapper.append(buttonRight);
 
-buttonRight.setAttribute('type', 'button');
-buttonRight.setAttribute('class', 'btn btn-secondary w-100');
-buttonRight.textContent = 'dayView';
-
-
-buttonRightWrapper.append(buttonRight)
-
-
-calendarFooterWrapper.append(buttonLeftWrapper,buttonMiddleWrapper,buttonRightWrapper)
-calendarFooter.appendChild(calendarFooterWrapper)
-  //Calendar Default View
+    calendarFooterWrapper.append(
+      buttonLeftWrapper,
+      buttonMiddleWrapper,
+      buttonRightWrapper
+    );
+    calendarFooter.appendChild(calendarFooterWrapper);
+    //Calendar Default View
     this.calendar = new HomeScreenCalendar();
     this.calendar.element = calendarBody;
     this.calendar.show();
-    calendarWrapper.append(calendarBody,calendarFooter)
+    calendarWrapper.append(calendarBody, calendarFooter);
     this.element.append(calendarWrapper);
-
-
   }
 }
 
@@ -76,143 +73,122 @@ class HomeScreenCalendar extends Screen {
     };
     this.ListOfSDays = document.createElement("div");
 
-    this.data = this.GetCalendarData()
-    let DayList = this.daysList()
-    createNewEventForm()
-    
+    this.data = this.GetCalendarData();
+    let DayList = this.daysList();
+    createNewEventForm();
   }
-  GetCalendarData(){
-    let request = new AjaxTemplate(false)
-    request.href = "php/homepage/getCalendarInfo.php"
+  GetCalendarData() {
+    let request = new AjaxTemplate(false);
+    request.href = "php/homepage/getCalendarInfo.php";
     request.data = {
-        ID: StoredID,
-        password: StoredPassword,
+      ID: StoredID,
+      password: StoredPassword,
     };
-   
 
-   let result = request.send()
-   console.log(result.responseText)
-   if(result.status == 200){
-    return JSON.parse(result.responseText)
-   }else{
-    return "there as been a silly little error"
-   }
+    let result = request.send();
+    console.log(result.responseText);
+    if (result.status == 200) {
+      return JSON.parse(result.responseText);
+    } else {
+      return "there as been a silly little error";
+    }
   }
-  daysList(){
-    let currentDay = new Date()
-    
-    let days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
-    for(let x =0;x<7;x++){
-        let dayContainer =document.createElement("div")
-        let card = document.createElement("div")
-        card.classList.add("card")
-        dayContainer.classList.add("row","card-body")
+  daysList() {
+    let currentDay = new Date();
 
-        let date = document.createElement("div")
-        date.classList.add("col")
-        if(x == 0){
-          date.classList.add("bg-primary","text-white")
-          
-        }else{
-          
-        }
-date.style.borderRadius = "30px"
-date.style.height=110%
-date.classList.add("text-center","rounded")
+    let days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    for (let x = 0; x < 7; x++) {
+      let dayContainer = document.createElement("div");
+      let card = document.createElement("div");
+      card.classList.add("card");
+      dayContainer.classList.add("row", "card-body");
 
+      let date = document.createElement("div");
+      date.classList.add("col");
+      if (x == 0) {
+        date.classList.add("bg-primary", "text-white");
+      } else {
+      }
+      date.style.borderRadius = "30px";
+      date.style.height = 110 % date.classList.add("text-center", "rounded");
 
-       
+      let dayOf = x + currentDay.getDay() - 1 + days.length;
+      console.log(dayOf);
+      if (dayOf >= days.length) {
+        dayOf = dayOf % days.length;
+      }
 
-        let dayOf = x+currentDay.getDay() -1+days.length
-        console.log(dayOf)
-        if(dayOf >=days.length){
-            dayOf = dayOf % days.length
-        }
+      date.textContent = days[dayOf];
 
-        date.textContent = days[dayOf]
+      let ViewElement = document.createElement("div");
+      ViewElement.classList.add("progress", "col");
+      ViewElement.style.height = "100%";
+      let body = document.createElement("div");
+      body.classList.add("col-9");
 
+      console.log(this.data);
+      let today = this.data[x];
 
-        let ViewElement = document.createElement("div")
-        ViewElement.classList.add("progress","col")
-        ViewElement.style.height = "100%"
-   let body = document.createElement("div")
-   body.classList.add("col-9")
-    
-  
-console.log(this.data)
-        let today = this.data[x]
-
-        if(today){
-        
-        let sortDates = new SortByKey(today,"startTime")
-        console.log(today)
-            today = sortDates.returnSortedList()
-        let startEndTimes = getStartAndEndTimesCalendar(today)
-        let elementOrder = createElementOrder(startEndTimes)
-        let frs = getRatios(startEndTimes)
-        ViewElement.style.display = "grid"
-        ViewElement.style.gridTemplateColumns = frs
+      if (today) {
+        let sortDates = new SortByKey(today, "startTime");
+        console.log(today);
+        today = sortDates.returnSortedList();
+        let startEndTimes = getStartAndEndTimesCalendar(today);
+        let elementOrder = createElementOrder(startEndTimes);
+        let frs = getRatios(startEndTimes);
+        ViewElement.style.display = "grid";
+        ViewElement.style.gridTemplateColumns = frs;
         //ViewElement.style.gap = "2px"
-        console.log(elementOrder)
-        elementOrder.forEach(el=>{
-
-            let event = document.createElement("div")
-            if(el !=0){
-                event.addEventListener("click", function(){
-                  
-                  (el.ID)
-                });
-                if(el.Type == "study"){
-                    event.classList.add("bg-warning")
-
-                }
-                event.classList.add("progress-bar")
-                event.style.borderRadius = "20px"
+        console.log(elementOrder);
+        elementOrder.forEach((el) => {
+          let event = document.createElement("div");
+          if (el != 0) {
+            event.addEventListener("click", function () {
+              el.ID;
+            });
+            if (el.Type == "study") {
+              event.classList.add("bg-warning");
             }
-            event.style.width = "100%"
-            ViewElement.append(event)
-        })
-        console.log("🚀 ~ daysList ~ elementOrder:", elementOrder)
-        console.log(date.textContent)
-        
-        }
-        body.append(ViewElement)
-        dayContainer.append(date,body)
-        card.append(dayContainer)
-        this.element.append(card)
-       
+            event.classList.add("progress-bar");
+            event.style.borderRadius = "20px";
+          }
+          event.style.width = "100%";
+          ViewElement.append(event);
+        });
+        console.log("🚀 ~ daysList ~ elementOrder:", elementOrder);
+        console.log(date.textContent);
+      }
+      body.append(ViewElement);
+      dayContainer.append(date, body);
+      card.append(dayContainer);
+      this.element.append(card);
     }
-    console.log(this.element)
-
-    }
-
-   
+    console.log(this.element);
   }
+}
 
-
-// CALENDAR FUCTIONS
+// CALENDAR FUNCTIONS
 const getStartAndEndTimesCalendar = function (data) {
   let startAndEnd = [];
 
   data.forEach((el) => {
     let time = el.startTime.split(":");
     let hours = Number(time[0]);
-    let minuites = Number(time[1]);
-    time = hours * 60 + minuites;
+    let minutes = Number(time[1]);
+    time = hours * 60 + minutes;
     if (startAndEnd[startAndEnd.length - 1] >= time) {
       startAndEnd[startAndEnd.length - 1] = time - 1;
     }
     startAndEnd.push(time, el);
     time = el.endTime.split(":");
     hours = Number(time[0]);
-    minuites = Number(time[1]);
-    startAndEnd.push(hours * 60 + minuites);
+    minutes = Number(time[1]);
+    startAndEnd.push(hours * 60 + minutes);
   });
   return startAndEnd;
 };
 
 const createElementOrder = function (data) {
-  
   let last = "number";
   let order = [];
   data.forEach((el) => {
@@ -251,46 +227,116 @@ const getRatios = function (data) {
   return fr;
 };
 
-function createNewEventForm(){
-  let form = new FormPopUp("Event",[
-    {
-      "name":"test1",
-      "dispName":"test2",
-      "type":"range",
-      "other":[["min","0"],["max","10"],["value",5]]
-    },   {
-      "name":"test1",
-      "dispName":"test2",
-      "type":"color",
-      "placeholder":"test3",
-      "value":""
-    },  {
-      "name":"test1",
-      "dispName":"test2",
-      "type":"checkbox",
-      "checked":true,
-    },    {
-      "name":"test1",
-      "dispName":"test2",
-      "type":"select",
-      "placeholder":"test3",
-      "value":"",
-      "opt":["opt1","opt2"]
-    },
-    {
-      "name":"test1",
-      "dispName":"test2",
-      "type":"textarea",
-      "placeholder":"test3",
-      "value":"",
-      "height":"200px"
-    }
-  ],
-  function(data){
-    console.log(data)
-  },
-  "Create Event"
-)
+function createNewEventForm() {
+  let form = new FormPopUp(
+    "New Event",
+    [
+      {
+        name: "Title",
+        displayName: "Event Title",
+        type: "text",
+        placeholder: "--",
+        value: "",
+      },
+      {
+        name: "Date",
+        displayName: "Date",
+        type: "date",
+        placeholder: "--",
+        value: "",
+        other: [["min", TodayISO]],
+      },
+      {
+        name: "StartTime",
+        displayName: "Start Time",
+        type: "time",
+        placeholder: "--",
+        value: "",
+      },
+      {
+        name: "EndTime",
+        displayName: "End Time",
+        type: "time",
+        placeholder: "--",
+        value: "",
+      },
+      {
+        name: "EventType",
+        displayName: "Event Type",
+        type: "select",
+        placeholder: "--",
+        value: "study",
+        opt: ["study", "engagement", "other"],
+      },
+      {
+        name: "Repeat",
+        displayName: "Repeat",
+        type: "select",
+        placeholder: "--",
+        value: "never",
+        opt: ["never", "daily", "weekly", "monthly"],
+      },
+      {
+        name: "desc",
+        displayName: "Description",
+        type: "textarea",
+        placeholder: "--",
+        value: "",
+        height: "200px",
+      },
+    ],
+    function () {
+      //input validation
+      let data = this.formData;
+      let missing = [];
 
-  form.show()
+      //checking that all fields except desc is filled
+      for (const name in data) {
+        if (data.hasOwnProperty(name) && data[name] == "") {
+          switch (name) {
+            case "desc":
+              break;
+            default:
+              missing.push(name);
+          }
+        }
+      }
+      //alerting to the user when there is missing fields
+      if (missing.length > 0) {
+        let txt = "You are Missing these required fields";
+        missing.forEach((el) => {
+          //creating a new line for each field
+          txt += "\n-" + el;
+        });
+        alert(txt);
+      }
+      let request = new AjaxTemplate(false);
+      request.href = "php/homepage/getAllEvents.php";
+      request.data = {
+        ID: StoredID,
+        password: StoredPassword,
+      };
+      request.send();
+
+
+      let eventData = request.send().responseText
+      eventData = JSON.parse(eventData)
+      if(eventData.hasOwnProperty(data.Date)){
+        let list = eventData(data.Date)
+        list.forEach(el=>{
+
+        })
+
+        
+      }
+      
+
+      console.log(this.formData);
+    },
+    "Create Event"
+  );
+
+  form.show();
 }
+
+

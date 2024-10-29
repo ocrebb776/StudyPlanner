@@ -32,7 +32,8 @@ class Screen {
   }
   show() {}
 }
-
+let TodayISO_Obj = new Date()
+let TodayISO = TodayISO_Obj.toISOString().split('T')[0]
 let lockScreen;
 let homeScreen;
 let darkmode = false;
@@ -71,7 +72,7 @@ function toggleDarkmode(preset = "") {
   }
 }
 
-function setManyAttrbutes(Item) {
+function setManyAttributes(Item) {
   console.log(Item);
   for (let x = 1; x < arguments.length; x++) {
     Item.setAttribute(arguments[x][0], arguments[x][1]);
@@ -187,177 +188,188 @@ class Popup {
 }
 
 class FormPopUp extends Popup {
-  constructor(title, formdata, after, partingMessage) {
+  constructor(title, formdata , after, partingMessage) {
     super("popup");
+    this.after = after; // function to run when the form is submitted 
+this.inputData = formdata 
 
+    // creating the title element 
     this.titleElement = document.createElement("h4");
     this.titleElement.setAttribute("class", "modal-title");
     this.titleElement.textContent = title;
-
+    //adding the title element to the title part of the modal
     this.title(this.titleElement);
-    let form = document.createElement("form");
-    form.setAttribute("id", "ModalForm");
+    //creating a form
+    this.form = document.createElement("form");
+    this.form.setAttribute("id", "ModalForm");
+    this.form.setAttribute("name", "ModalForm");
+
+    //for each input
     formdata.forEach((el) => {
-      // el.name
-      // el.dispName
-      // el.type
-      // el.placeholder
-      // el.value
-      console.log(el.type);
+    //creating a container to store the input 
       let container = document.createElement("div");
+      //pre-decaring the variables
       let label;
       let input;
       switch (el.type) {
         case "textarea":
-          container.setAttribute("class", "form-floating mt-3 mb-3");
-          label = document.createElement("label");
-          label.setAttribute("for", el.name + "--" + title);
-          label.textContent = el.dispName;
-          input = document.createElement("textarea");
-          setManyAttrbutes(
-            input,
-            ["type", el.type],
-            ["class", "form-control"],
-            ["id", el.name + "--" + title],
-            ["placeholder", el.placeholder],
-            ["name", el.name],
-            ["value", el.value],
-            ["type", el.type]
-          );
-          input.style.height = el.height;
-          input.innerHTML = el.value
-          container.append(input, label);
+          container.setAttribute("class", "form-floating mt-3 mb-3"); //boostrap classes
+          label = createLabel(el, title); //creating a label for textarea
+          input = createInputElement(el, title); //creating the textarea element
+          input.innerHTML = el.value; //asiging the preexising data
+          container.append(input, label); // adding elements to container
           break;
         case "select":
-          input = document.createElement(el.type);
-          container.setAttribute("class", "input-group mb-3");
-          label = document.createElement("span");
-          label.setAttribute("class", "input-group-text");
-          label.textContent = el.dispName;
-
-          setManyAttrbutes(
-            input,
-            ["class", "form-control"],
-            ["id", el.name + "--" + title],
-            ["name", el.name],
-            ["value", el.value]
-          );
-          el.opt.forEach((opt) => {
+          container.setAttribute("class", "input-group mb-3");  //boostrap classes
+          label = document.createElement("span"); // creating the  label
+          label.classList.add("input-group-text"); //boostrap classes
+          label.textContent = el.displayName; //adding the information
+          input = createInputElement(el, title); //creating the element 
+          el.opt.forEach((opt) => { 
+            //creating an <option> tag for each option
             let option = document.createElement("option");
             option.setAttribute("value", opt);
             option.textContent = opt;
-            input.append(option);
+            input.append(option); //ading to the <select> tag
+      
           });
-          container.append(label, input);
-
+          input.value = el.value //assging the value
+          container.append(label, input); //ading the variables
           break;
         case "checkbox":
-            container.setAttribute("class","form-check mb-3")
-            label = document.createElement("label")
-            label.setAttribute("class","form-check-label")
-            input = document.createElement("input")
-            setManyAttrbutes(
-                input,
-                ["type", el.type],
-                ["class", "form-check-input"],
-                ["id", el.name + "--" + title],
-                ["name", el.name],
-                ["type", el.type]
-              );
-              if(el.checked){
-                input.setAttribute("checked","")
-              }
-              label.append(input,el.dispName)
-            container.append(label)
-        break;
-        case "color":
-            container.setAttribute("class","input-group mb-3")
-            label = document.createElement("soan")
-            label.setAttribute("class","input-group-text")
-            input = document.createElement("input")
-            setManyAttrbutes(
-                input,
-                ["type", el.type],
-                ["class", "form-control form-control-color"],
-                ["id", el.name + "--" + title],
-                ["name", el.name],
-                ["type", el.type]
-              );
-              label.append(el.dispName)
-            container.append(label,input)
-            break;
-        case "hidden":
-            input = document.createElement("input");
-            setManyAttrbutes(
-              input,
-              ["type", el.type],
-              ["class", "form-control"],
-              ["id", el.name + "--" + title],
-              ["placeholder", el.placeholder],
-              ["name", el.name],
-              ["value", el.value],
-              ["type", el.type]
-            );
-            container.append(input)
-            break;
-       
-        case "range":
-            container.setAttribute("class", "");
-          label = document.createElement("label");
-          label.setAttribute("for", el.name + "--" + title);
-          label.setAttribute("class","form-label")
-          label.textContent = el.dispName;
-          input = document.createElement("input");
-          setManyAttrbutes(
-            input,
-            ["type", el.type],
-            ["class", "form-range"],
-            ["id", el.name + "--" + title],
-            ["name", el.name],
-            ["type", el.type]
-          );
-          container.append(label,input);
+          container.setAttribute("class", "form-check mb-3");  //boostrap classes
+          label = createLabel(el, title, "form-check-label");
+          input = createInputElement(el, title);
+          label.prepend(input);
+          container.append(label);
           break;
-
+        case "color":
+          container.setAttribute("class", "input-group mb-3");  //boostrap classes
+          label = document.createElement("span"); 
+          label.classList.add("input-group-text");
+          label.textContent = el.displayName; //asigning the display name to the label
+          input = createInputElement(el, title); 
+          container.append(label, input);
+          break;
+        case "range":
+          container.setAttribute("class", "mb-3");  //boostrap classes
+          label = createLabel(el, title, "form-label");
+          input = createInputElement(el, title);
+          container.append(label, input);
+          break;
+        case "hidden":
+          input = createInputElement(el, title);
+          container.append(input);
+          break;
         default:
-          container.setAttribute("class", "form-floating mt-3 mb-3");
-          label = document.createElement("label");
-          label.setAttribute("for", el.name + "--" + title);
-          label.textContent = el.dispName;
-          input = document.createElement("input");
-          setManyAttrbutes(
-            input,
-            ["type", el.type],
-            ["class", "form-control"],
-            ["id", el.name + "--" + title],
-            ["placeholder", el.placeholder],
-            ["name", el.name],
-            ["value", el.value],
-            ["type", el.type]
-          );
+          container.setAttribute("class", "form-floating mt-3 mb-3");  //boostrap classes
+          label = createLabel(el, title);
+          input = createInputElement(el, title);
           container.append(input, label);
       }
-      form.append(container);
-      if(el.hasOwnProperty("other")){
-       setManyAttrbutes(...[input].concat(el.other))
+      this.form.append(container);
+      if (el.hasOwnProperty("other")) {
+        //if their is any other attributes to add to the element 
+        // combining the input element with the other elements to pass as a prameter
+        setManyAttributes(...[input].concat(el.other)); 
       }
     });
-    this.body(form);
+    //adding the form to the body
+    this.body(this.form);
 
+
+    //Cancel button
     let close = document.createElement("button");
     close.setAttribute("class", "btn btn-danger");
     close.textContent = "Cancel";
-    let save = document.createElement("button");
-    save.setAttribute("class", "btn btn-primary");
-    save.textContent = partingMessage;
+    close.addEventListener("click",this.hide)//allowing it to close
 
-    save.addEventListener("click", function () {
-      let formData = {};
-      document.querySelectorAll(`#popup form`);
+    //save button/submit button
+    this.saveButton = document.createElement("button");
+    this.saveButton.setAttribute("class", "btn btn-primary");
+    this.saveButton.textContent = partingMessage; //the message 
+    
+    //so the obects attributes and methids can be accsed in the even listener
+    this.handleResponse = this.handleResponse.bind(this);
+    this.saveButton.addEventListener("click", this.handleResponse);
 
-      after(formData);
-    });
-
-    this.footer(close, save);
+    this.footer(close, this.saveButton);
+    this.formData = {};
+    $("#" + this.id).modal("handleUpdate")
   }
+  getFormData() {
+    this.inputData.forEach(el=>{
+        //for each input store the value against the name
+        this.formData[el.name] =document.forms["ModalForm"][el.name].value
+        if(el.type == "checkbox"){
+            // if it is a checkbox store the .checked value as .value would be null 
+            this.formData[el.name] =document.forms["ModalForm"][el.name].checked
+        }
+    })
+
+
+  }
+  handleResponse() {
+    this.getFormData();
+    this.after();
+  }
+}
+
+function createInputElement(el, title) {
+  let inputType;
+  let inputClass;
+  switch (el.type) {
+    case "checkbox":
+      inputClass = "form-check-input";
+      inputType = "input";
+      break;
+    case "textarea":
+      inputClass = "form-control";
+      inputType = "textarea";
+      break;
+    case "color":
+      inputClass = "form-control form-control-color";
+      inputType = "input";
+      break;
+    case "range":
+      inputClass = "form-range";
+      inputType = "input";
+      break;
+    case "select":
+        inputType = "select";
+        inputClass = "form-control form-select"
+        break
+    default:
+      inputClass = "form-control";
+      inputType = "input";
+  }
+  const input = document.createElement(inputType);
+
+  setManyAttributes(
+    input,
+    ["type", el.type],
+    ["class", inputClass],
+    ["id", el.name + "--" + title],
+    ["name", el.name],
+    ["value", el.value || ""]
+  );
+  if (el.placeholder) {
+    input.setAttribute("placeholder", el.placeholder);
+  }
+  if (el.type == "textarea") {
+    input.style.height = el.height;
+  }
+  if (el.type == "checkbox" && el.checked) {
+    input.setAttribute("checked", "");
+  }
+
+  return input;
+}
+
+function createLabel(el, title, labelTextClass = "") {
+  const label = document.createElement("label");
+  label.setAttribute("for", el.name + "--" + title);
+  label.textContent = el.displayName;
+  if (labelTextClass) label.setAttribute("class", labelTextClass);
+  return label;
 }
