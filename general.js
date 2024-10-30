@@ -16,12 +16,12 @@ class Screen {
   clear() {
     this.element.innerHTML = "";
   }
-  Swapstatus() {
+  swapStatus() {
     if (this.status) {
       this.status = false;
       this.hide();
     } else {
-      this.element.currentScreen.Swapstatus();
+      this.element.currentScreen.swapStatus();
       this.element.currentScreen = this;
       this.stats = true;
       this.show();
@@ -36,7 +36,7 @@ let TodayISO_Obj = new Date()
 let TodayISO = TodayISO_Obj.toISOString().split('T')[0]
 let lockScreen;
 let homeScreen;
-let darkmode = false;
+let darkMode = false;
 let StoredID = false;
 let StoredPassword = false;
 // wait until the page has loaded to add items such as event listeners
@@ -50,24 +50,35 @@ window.onload = function () {
   lockScreen.element.currentScreen = lockScreen;
   // show the lockscreen
   lockScreen.show();
+  
+  //checking if there is any cookies 
+  let pageCookies = Cookies.get()
+  console.log(pageCookies)
+  //if the cookies password and username exists
+  if(pageCookies.hasOwnProperty("password") && pageCookies.hasOwnProperty("username")){
+    //autofill the username and password fields 
+    document.getElementById("username").value = pageCookies["username"];
+    document.getElementById("password").value = pageCookies["password"];
+    // login
+    loginValidation();
+  }
 
-  document.getElementById("username").value = "testusr1";
-  document.getElementById("password").value = "123";
-  loginValidation();
 
-  if (darkmode) {
+  
+
+  if (darkMode) {
     document.querySelector("html").setAttribute("data-bs-theme", "dark");
   }
 };
 function toggleDarkmode(preset = "") {
   if (preset != "") {
-    darkmode = !preset;
+    darkMode = !preset;
   }
-  if (!darkmode) {
-    darkmode = true;
+  if (!darkMode) {
+    darkMode = true;
     document.querySelector("html").setAttribute("data-bs-theme", "dark");
   } else {
-    darkmode = false;
+    darkMode = false;
     document.querySelector("html").setAttribute("data-bs-theme", "light");
   }
 }
@@ -118,15 +129,17 @@ class Popup {
   constructor(id = "popup") {
     this.id = id;
     this.element = document.getElementById(id);
+
     console.log(this.id);
     this.element.innerHTML = ""; //Clearing the modal of previous elements
 
     this.element.setAttribute("class", "modal fade"); //making sure the correct class is there
     this.element.setAttribute("role", "dialog");
+    this.element.setAttribute("data-bs-backdrop","static") //so the backdrop wont dissapear on press 
 
     //createing all the neccesary elements in a modal
     this.modalDialog = document.createElement("div");
-    this.modalDialog.classList.add("modal-dialog");
+    this.modalDialog.classList.add("modal-dialog","modal-dialog-scrollable");
 
     this.modalContent = document.createElement("div");
     this.modalContent.classList.add("modal-content");
@@ -141,22 +154,50 @@ class Popup {
     this.Modalfooter.classList.add("modal-footer");
 
     //createing the structure of the modal
+
+
+    /*
+    Modal structure 
+
+as definbed from 
+https://getbootstrap.com/docs/5.0/components/modal/
+
+    --element
+      --modaldialog
+        --modal content
+             header
+             body
+             footer 
+        --
+      --
+    --
+
+
+
+
+    
+    */ 
     this.modalContent.append(
       this.modalHeader,
       this.modalBody,
       this.Modalfooter
     );
+
+
     this.modalDialog.append(this.modalContent);
     this.element.append(this.modalDialog);
     this.other();
+    this.modalInstance = bootstrap.Modal.getInstance(this.element)
+
+    
   }
   show() {
     //allowing for it to be opend
-    $("#" + this.id).modal("show");
+    bootstrap.Modal.getInstance(this.element).show()
   }
   hide() {
     //alowing it to be closed
-    $("#" + this.id).modal("hide");
+    bootstrap.Modal.getInstance(this.element).hide()
   }
   // for each part it takes n DOM elements as a list and
   //  appends them to an empty list
@@ -282,6 +323,9 @@ this.inputData = formdata
     let close = document.createElement("button");
     close.setAttribute("class", "btn btn-danger");
     close.textContent = "Cancel";
+    
+    //so the objects attributes and methids can be accsed in the even listener
+    this.hide = this.hide.bind(this)
     close.addEventListener("click",this.hide)//allowing it to close
 
     //save button/submit button
@@ -289,8 +333,9 @@ this.inputData = formdata
     this.saveButton.setAttribute("class", "btn btn-primary");
     this.saveButton.textContent = partingMessage; //the message 
     
-    //so the obects attributes and methids can be accsed in the even listener
+    //so the objects attributes and methids can be accsed in the even listener
     this.handleResponse = this.handleResponse.bind(this);
+
     this.saveButton.addEventListener("click", this.handleResponse);
 
     this.footer(close, this.saveButton);
@@ -372,4 +417,13 @@ function createLabel(el, title, labelTextClass = "") {
   label.textContent = el.displayName;
   if (labelTextClass) label.setAttribute("class", labelTextClass);
   return label;
+}
+
+
+function logOut(){
+  //remove the login related cookies
+  Cookies.remove("username")
+  Cookies.remove("password")
+  //refreshing the page to return to the homepage 
+  location.reload()
 }

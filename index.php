@@ -6,7 +6,7 @@
  
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
     <title>StudyPlanner Login</title>
-
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
        <!-- JQUERY CDN -->
        <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 <!-- MyFiles -->
@@ -17,13 +17,14 @@
 
     <script src="homescreen.js"></script>
     <link rel="stylesheet" href="css.css">
+    <link rel="manifest" href="manifest.json">
 <!-- end -->
 
 </head>
 <body>
 
 <!-- MODAL/POPUP TEMPLATE-->
-<div class="modal fade bd-example-modal-lg" id="popup" role="dialog">
+<div class="modal fade" id="popup" role="dialog">
     <div class="modal-dialog">
     
       <!-- Modal content-->
@@ -42,7 +43,3 @@
 </body>
 <div id="wrapper"></div>
 </html>
-<div class="form-floating mb-3 mt-3">
-  <input type="text" class="form-control" id="email" placeholder="Enter email" name="email">
-  <label for="email">Email</label>
-</div>

@@ -234,7 +234,14 @@ function loginValidation() {
             } else {
                 StoredID = result
                 StoredPassword = password
-                homeScreen.Swapstatus()
+                
+                if(document.getElementById("RememberMe").checked){
+                    //if the user selected remember me ,store the login information as a cookie 
+                
+                Cookies.set("username",username)
+                Cookies.set("password",password)
+                }
+                homeScreen.swapStatus()
             }
         };
         request.send();

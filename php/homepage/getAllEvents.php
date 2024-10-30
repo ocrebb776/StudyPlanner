@@ -18,7 +18,7 @@ if ($_POST) {
                 $eventDate = new DateTime($event["date"]); //creating a DateTime with the date of the event 
                 $interval = $today->diff($eventDate); // getting the interval between the two dates 
                 $dayDif = $interval->days; // getting the interval in days
-                if($eventDate>$today){ // ensure that the date is in the future
+                if($eventDate>=$today){ // ensure that the date is in the future
                 if(array_key_exists((string)$event["date"],$data)){
                     $data[$event["date"]][] = $event; // if their has been an event on that day add the event after it 
                 }else{
