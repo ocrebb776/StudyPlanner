@@ -16,7 +16,8 @@ if ($_POST) {
                 $eventDate = new DateTime($event["date"]);
                 $interval = $today->diff($eventDate);
                 $dayDif = $interval->days;
-                if($dayDif>=0 && $dayDif <7){
+
+                if($dayDif>=0 && $dayDif <7 && $eventDate>=$today){
                 if(array_key_exists((string)$dayDif,$data)){
                     $data[$dayDif][] = $event;
                 }else{

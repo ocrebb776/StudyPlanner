@@ -1,3 +1,6 @@
 -- make sure that when a descrition is created with an event that it creates a note
 -- fix the event form update issuw
 -- talk about dropping repeating events
+--modifications to the dletion method 
+--test the whitelist function with ' " does it work
+--liks on subjects
