@@ -1079,7 +1079,7 @@ function viewSubject(data, closeFtn = false, modal = new Popup()) {
   let listOfNotes = getNotes(data.ID, "subjects");
 
   listOfNotes.forEach((el) => {
-    notes.append(convertNoteToHTML(el, viewSubjects()));
+    //notes.append(convertNoteToHTML(el, viewSubjects()));
    
   });
   //create the edit button
