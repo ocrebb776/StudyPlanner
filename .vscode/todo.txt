@@ -4,3 +4,4 @@
 --modifications to the dletion method 
 --test the whitelist function with ' " does it work
 --liks on subjects
+-- change the ajax request on create note to no for ajax to allow the program to update , talk about this issue in testing 
