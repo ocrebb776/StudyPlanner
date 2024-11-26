@@ -12,13 +12,13 @@ if ($_POST) {
         $SQLconnection->oneResult = false;
         if ($_POST["id"] == 'false') {
             $sql = "SELECT * FROM subjects WHERE user={$_POST['ID']}";
-            $events = $SQLconnection->sql($sql); // all events with the user's ID
+            $subject = $SQLconnection->sql($sql); // all events with the user's ID
         } else {
             $sql = "SELECT * FROM subjects WHERE user={$_POST['ID']} && ID='{$_POST["id"]}'";
-            $events = $SQLconnection->sql($sql); // all events with the user's ID
+            $subject = $SQLconnection->sql($sql); // all events with the user's ID
         }
-        if ($events != null) {
-            $data = $events;
+        if ($subject != null) {
+            $data = $subject;
             echo json_encode($data);
         } else {
             echo "[]";

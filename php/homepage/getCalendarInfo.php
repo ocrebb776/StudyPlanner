@@ -8,11 +8,11 @@ if ($_POST) {
     if($output){
         $today = date("Y-m-d");
         $SQLconnection->oneResult = false;
-        $events = $SQLconnection->sql("SELECT * FROM events WHERE user={$_POST['ID']}");
-        if($events != null){
+        $subject = $SQLconnection->sql("SELECT * FROM events WHERE user={$_POST['ID']}");
+        if($subject != null){
             $today = new DateTime($today);
             $data = [];
-            foreach($events as $event){
+            foreach($subject as $event){
                 $eventDate = new DateTime($event["date"]);
                 $interval = $today->diff($eventDate);
                 $dayDif = $interval->days;

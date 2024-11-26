@@ -293,8 +293,14 @@ class FormPopUp extends Popup {
           el.opt.forEach((opt) => {
             //creating an <option> tag for each option
             let option = document.createElement("option");
-            option.setAttribute("value", opt);
-            option.textContent = opt;
+            //if the option is a list then have 
+            //the value being the first item and the second being the display
+            if(typeof opt != "object"){
+              //if set both of the value and text content to be the option
+              opt = [opt,opt]
+            }
+            option.setAttribute("value", opt[0]);
+            option.textContent = opt[1];
             input.append(option); //ading to the <select> tag
           });
           input.value = el.value; //assging the value
@@ -544,7 +550,7 @@ function convertNoteToHTML(data, pageRefresh) {
   buttonList.append(deleteBtn, edit, timeStamp);
   //adding the cards to the buttonList
   container.append(card, buttonList);
-  //return container;
+  return container;
 }
 let noteForm;
 function createNote(

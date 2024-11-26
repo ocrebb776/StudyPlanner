@@ -200,13 +200,13 @@ class TopicAndSubjectSection extends Screen {
       });
 
       //toggleDarkMode button
-      let createTopic = createButton("Create Topic", "outline-primary");
-      createTopic.addEventListener("click", function () {
-        createTopic();
+      let createTopicButton = createButton("Create Topic", "outline-primary");
+      createTopicButton.addEventListener("click", function () {
+        createTopic()
       });
 
       //adding buttons to the buttonList
-      buttonList.append(createSubject, createTopic);
+      buttonList.append(createSubject, createTopicButton);
 
       //creating the title
       CreateButtonMenu.title("Create?");
@@ -513,15 +513,7 @@ function createNewEventForm(
         placeholder: "--",
         value: inputData.Type,
         opt: ["study", "engagement", "other"],
-      },
-      {
-        name: "desc",
-        displayName: "Description",
-        type: "textarea",
-        placeholder: "--",
-        value: "",
-        height: "200px",
-      },
+      }
     ],
     function () {
       //input validation
@@ -645,7 +637,7 @@ function createNewEventForm(
         //create a new syncronus request
         let repeatInfo;
 
-        let request = new AjaxTemplate(true);
+        let request = new AjaxTemplate(false);
         //send the request to different files depending of if it is a new event or an older event
         if (newEvent) {
           request.href = "php/homepage/createCalendarEvent.php";
@@ -1076,10 +1068,12 @@ function viewSubject(data, closeFtn = false, modal = new Popup()) {
 
   //get list of notes in the element
   let notes = document.createElement("div");
+  notes.append()
   let listOfNotes = getNotes(data.ID, "subjects");
 
   listOfNotes.forEach((el) => {
-    //notes.append(convertNoteToHTML(el, viewSubjects()));
+    console.log(el)
+    notes.append(convertNoteToHTML(el, viewSubjects))
    
   });
   //create the edit button
@@ -1137,9 +1131,86 @@ function viewSubject(data, closeFtn = false, modal = new Popup()) {
   modal.title(TitleInfoCard);
   //add the buttons to the footer
   //modal.title("l")
-  modal.body(editBTN);
+  modal.body(editBTN,notes);
   modal.footer(addNoteBtn, deleteBtn, closeBtn);
   modal.show();
 }
-function deleteSubject(id) {}
-function editSubject(id) {}
+function deleteSubject(id) {
+  let request = new AjaxTemplate(true);
+  request.href = "php/homepage/subjects/deleteSubject.php";
+  //login credentials and the subjectID
+  request.data = {
+    ID: StoredID,
+    password: StoredPassword,
+    subjectID: id,
+  };
+  request.send();
+
+  //refresh the homepage to update everything
+  homeScreen.show();
+}
+
+
+function editSubject(id) {
+  //get the info on the subject
+  let info = getSubjectInfo(id);
+  //create the form with prefilled info
+  createSubjectForm(info.name, "Edit Subject", "Save Changes", false, id,false);
+
+}
+
+function getSubjectInfo(id) {
+  //send new request
+  let request = new AjaxTemplate(false);
+  request.href = "php/homepage/subjects/getSubject.php";
+  //login credentials and the SubjectID
+  request.data = {
+    ID: StoredID,
+    password: StoredPassword,
+    subjectID: id,
+  };
+  request.dataType = "json";
+  //return the JSON part of the response
+  return request.send().responseJSON;
+}
+
+
+function createTopic(
+    name = "",
+    subject = "",
+    startText = "New Topic",
+    endText = "Create Topic",
+    newTopic = true,
+    id = false,
+    pageRefresh = false
+  ){
+
+  // get a list of all the subjects
+  let Subjects = getSubject()
+  //empty list to contain the subect
+  let subjectOptions = []
+  Subjects.forEach(el =>{
+    //add the subject name and topic
+    subjectOptions.push([el.ID,el.name])
+  })
+  
+  let topicForm = new FormPopUp(startText,[
+    {
+      name: "Title",
+      displayName: "Topic Title",
+      type: "text",
+      placeholder: "--",
+      value: name,
+    },
+    {name:"subject",
+      displayName:"Subject",
+      type:"select",
+      placeholder:"--",
+      value:subject,
+      opt:subjectOptions
+
+    }
+  ],function(){},endText)
+  topicForm.show()
+}
+
