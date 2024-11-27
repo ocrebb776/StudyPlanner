@@ -278,8 +278,8 @@ function ValidateCreateAccount(){
         };
         CheckIfUsernameIsAvaliable.send();
 valid = IsTheUsernameNotTaken
-    if(password.value.length < 8 || password.value.length > 15){
-        alert("Password Must Be within 8 and 15 characters")
+    if(password.value.length < 8 || password.value.length > 30){
+        alert("Password Must Be within 8 and 30 characters")
         valid = false
     }
     if(password.value != confirmPassword.value){

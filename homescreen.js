@@ -1066,7 +1066,7 @@ function viewSubjects() {
   modal.body(SubjectList);
   //a button for creating a Subject
   let createSubjectButton = createButton("Create Subject","warning")
-  createSubjectButton.addEventListener("click",function(){createSubject()})
+  createSubjectButton.addEventListener("click",function(){createSubjectForm()})
   //add the close button to the footer
   modal.footer(createSubjectButton,modal.closeBtn());
   //show the modal
