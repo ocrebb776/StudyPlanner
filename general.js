@@ -502,7 +502,7 @@ function convertNoteToHTML(data, pageRefresh) {
   console.log(data);
   //creating the container
   let container = document.createElement("div");
-  // bootsrap classes
+  // bootstrap classes
   container.classList.add("row", "g-1", "m-2");
   //card containing the text
   let card = document.createElement("textarea");
@@ -510,7 +510,7 @@ function convertNoteToHTML(data, pageRefresh) {
   card.classList.add("card", "p-2", "col-8");
   //adding the notes content to the text content
   card.textContent = data.text;
-  card.setAttribute("disabled", "");
+  card.setAttribute("readonly", "");
   card.style.resize = "none";
   card;
 

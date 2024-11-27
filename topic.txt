@@ -1,0 +1,141 @@
+function viewTopics() {
+  //get topic data
+  let data = getTopic();
+  //create popup
+  let modal = new Popup();
+  //define the title
+  modal.title("View Topics");
+  //this is so that the user can clikc on the background to close the modal
+  //modal.element.setAttribute("data-bs-backdrop", "true");
+  //element to store the list of topics
+  let TopicList = document.createElement("div");
+  //for each topic
+  data.forEach((el) => {
+    //create an empty cardButton
+    let btn = createInfoClickBtn({});
+    //create a title element
+    let title = document.createElement("div");
+    //make it big
+    title.setAttribute("class", "col h-4");
+    //set the name to the text content
+    title.textContent = el.name;
+    //add the title into the button
+    btn.append(title);
+    //add an event listener for the button
+    btn.addEventListener("click", function () {
+      viewTopic(el, viewTopics(), modal);
+    });
+    //add the button to the topic list
+    TopicList.append(btn);
+  });
+  //add the topic list into the body
+  modal.body(TopicList);
+
+  //add the close button to the footer
+  modal.footer(modal.closeBtn());
+  //show the modal
+  modal.show();
+}
+function viewTopic(data, closeFtn = false, modal = new Popup()) {
+  //create new modal
+  modal = new Popup();
+  //get information about the request
+  let topicInfo = getTopic(data.ID);
+  //create the info
+  let displayInfo = structuredClone(topicInfo);
+  //delete unnecessary information that the user won't need
+  delete displayInfo.ID;
+  delete displayInfo.user;
+
+  //get list of notes in the element
+  let notes = document.createElement("div");
+  notes.append()
+  let listOfNotes = getNotes(data.ID, "topics");
+
+  listOfNotes.forEach((el) => {
+    console.log(el)
+    notes.append(convertNoteToHTML(el, viewTopics))
+   
+  });
+  //create the edit button
+  let editBTN = document.createElement("button");
+  editBTN.classList.add("btn", "btn-primary");
+  //text edit
+  editBTN.textContent = "Edit Topic";
+  //adding an event listener for opening the edit event form modal
+  editBTN.addEventListener("click", function () {
+    editTopic(data.ID);
+  });
+  //create addNoteBtn
+  let addNoteBtn = document.createElement("button");
+  addNoteBtn.classList.add("btn", "btn-primary");
+  addNoteBtn.textContent = "Add Note";
+  addNoteBtn.addEventListener("click", function () {
+    createNote(data.ID, "topic", true, false, "", viewTopics);
+  });
+  //create deleteBtn
+  let deleteBtn = document.createElement("button");
+  deleteBtn.classList.add("btn", "btn-danger");
+  deleteBtn.textContent = "Delete Topic";
+  deleteBtn.addEventListener("click", function () {
+    if (confirm("are you sure you want to delete" + displayInfo.name)) {
+      deleteTopic(data.ID);
+
+      //hide the popup
+      modal.hide();
+    }
+  });
+  let titleInfo = structuredClone(displayInfo);
+  delete titleInfo.name;
+  //change the title to hold information about the Topic
+  let TitleInfoCard = createInfoClickBtn(titleInfo);
+  //change styling
+  TitleInfoCard.classList.remove("btn", "btn-light", "card");
+  //create
+  let titleEL = document.createElement("div");
+  titleEL.setAttribute("class", "col-7 h2");
+  //create a close Button
+  let closeBtn = modal.closeBtn("Back");
+  //change background color
+  closeBtn.classList.remove("btn-danger");
+  closeBtn.classList.add("btn-secondary");
+  //if there is a close function
+  if (closeFtn) {
+    //add eventListener for that function
+    closeBtn.addEventListener("click", function () {
+      closeFtn();
+    });
+  }
+  //text content
+  titleEL.textContent = displayInfo.name;
+  TitleInfoCard.prepend(titleEL);
+  modal.title(TitleInfoCard);
+  //add the buttons to the footer
+  //modal.title("l")
+  modal.body(editBTN,notes);
+  modal.footer(addNoteBtn, deleteBtn, closeBtn);
+  modal.show();
+}
+function deleteTopic(id) {
+  let request = new AjaxTemplate(true);
+  request.href = "php/homepage/topics/deleteTopic.php";
+  //login credentials and the topicID
+  request.data = {
+    ID: StoredID,
+    password: StoredPassword,
+    topicID: id,
+  };
+  request.send();
+
+  //refresh the homepage to update everything
+  homeScreen.show();
+}
+
+
+function editTopic(id) {
+  //get the info on the topic
+  let info = getTopic(id);
+  //create the form with prefilled info
+  createTopicForm(info.name, "Edit Topic", "Save Changes", false, id,false);
+
+}

@@ -161,7 +161,7 @@ class TopicAndSubjectSection extends Screen {
     //make sure it fills the wrapper horizontally
     this.createButton.classList.add("w-100");
     //make the width of the wrapper to be 9/12 of the space
-    this.createButtonWr.classList.add("col-9");
+    this.createButtonWr.classList.add("col");
     //put the create button within it wrapper
     this.createButtonWr.append(this.createButton);
     //create a wrapper to contain the Subject button
@@ -174,8 +174,18 @@ class TopicAndSubjectSection extends Screen {
     this.subjectButton.classList.add("w-100");
     //put the button within its wrapper
     this.subjectButtonWr.appendChild(this.subjectButton);
+        //create a wrapper to contain the Topic button
+        this.TopicButtonWr = document.createElement("div");
+        //create the create button itself
+        this.TopicButton = createButton("Topics", "success");
+        //make the width of the wrapper to fill the rest of the row
+        this.TopicButtonWr.classList.add("col");
+        //make sure it fills the wrapper horizontally
+        this.TopicButton.classList.add("w-100");
+        //put the button within its wrapper
+        this.TopicButtonWr.appendChild(this.TopicButton);
     //add the wrappers to the button row
-    this.buttonRow.append(this.createButtonWr, this.subjectButtonWr);
+    this.buttonRow.append( this.subjectButtonWr,this.createButtonWr,this.TopicButtonWr);
     //add the buttonRow to the header
     this.cardHeader.append(this.buttonRow);
     //add the header to the element
@@ -220,6 +230,11 @@ class TopicAndSubjectSection extends Screen {
     this.subjectButton.addEventListener("click", function () {
       viewSubjects();
     });
+
+    //topic button event listenrt
+    this.TopicButton.addEventListener("click",function(){
+      viewTopics()
+    })
   }
 }
 
@@ -1049,9 +1064,11 @@ function viewSubjects() {
   });
   //add the subject list into the body
   modal.body(SubjectList);
-
+  //a button for creating a Subject
+  let createSubjectButton = createButton("Create Subject","warning")
+  createSubjectButton.addEventListener("click",function(){createSubject()})
   //add the close button to the footer
-  modal.footer(modal.closeBtn());
+  modal.footer(createSubjectButton,modal.closeBtn());
   //show the modal
   modal.show();
 }
@@ -1153,26 +1170,26 @@ function deleteSubject(id) {
 
 function editSubject(id) {
   //get the info on the subject
-  let info = getSubjectInfo(id);
+  let info = getSubject(id);
   //create the form with prefilled info
   createSubjectForm(info.name, "Edit Subject", "Save Changes", false, id,false);
 
 }
 
-function getSubjectInfo(id) {
-  //send new request
-  let request = new AjaxTemplate(false);
-  request.href = "php/homepage/subjects/getSubject.php";
-  //login credentials and the SubjectID
-  request.data = {
-    ID: StoredID,
-    password: StoredPassword,
-    subjectID: id,
-  };
-  request.dataType = "json";
-  //return the JSON part of the response
-  return request.send().responseJSON;
-}
+// function getSubjectInfo(id) {
+//   //send new request
+//   let request = new AjaxTemplate(false);
+//   request.href = "php/homepage/subjects/getSubject.php";
+//   //login credentials and the SubjectID
+//   request.data = {
+//     ID: StoredID,
+//     password: StoredPassword,
+//     subjectID: id,
+//   };
+//   request.dataType = "json";
+//   //return the JSON part of the response
+//   return request.send().responseJSON;
+// }
 
 
 function createTopic(
@@ -1193,7 +1210,8 @@ function createTopic(
     //add the subject name and topic
     subjectOptions.push([el.ID,el.name])
   })
-  
+
+  //create the for input with the Title and subject fields with the the startText and EndText 
   let topicForm = new FormPopUp(startText,[
     {
       name: "Title",
@@ -1210,7 +1228,226 @@ function createTopic(
       opt:subjectOptions
 
     }
-  ],function(){},endText)
+  ],function(){
+    //function to validate the input and add it to the topic list
+
+     //get name info
+     let name = this.formData.Title;
+     //get subject
+     let subject = this.formData.subject
+     //whitelist name and subject
+     let whName = whiteList(name, true);
+     let whSubject = whiteList(String(subject) , true)
+     let valid;
+     if (whName === true && whSubject === true) {
+       //if name and the subject is valid
+       valid = true;
+     } else {
+       //if it is not valid
+       valid = false;
+       let list = whName + whSubject
+       //tell user that the characters are not allowed
+       txt = `These characters are not allowed in t \n• ${list.join("\n• ")}`;
+       //alert this to the user
+       alert(txt);
+     }
+     if (valid && name !== "" && subject != 0) {
+       //start request
+       let request = new AjaxTemplate(true);
+       //creating data about the request
+       let data = {};
+       data.name = name;
+       data.subjectID = subject
+       //send the request to different files depending of if it is a new Topic or an older Topic
+       if (newTopic) {
+         request.href = "php/homepage/topics/createTopic.php";
+       } else {
+         request.href = "php/homepage/topics/editTopic.php";
+         //the id is used to find the Topic in the database
+         data.id = id;
+       }
+       request.data = {
+         // login details necessary for the php file
+         ID: StoredID,
+         password: StoredPassword,
+         data: data,
+       };
+       //send request
+       request.send();
+       //hideMobile
+       this.hide();
+       if (pageRefresh) {
+         //if there is a page to go back to go to it
+         pageRefresh(id);
+       }
+     }
+    //hide the form after submitting
+    this.hide()
+  },endText)
+
+  //show the form
   topicForm.show()
 }
 
+function viewTopics() {
+  //get topic data
+  let data = getTopic();
+  //create popup
+  let modal = new Popup();
+  //define the title
+  modal.title("View Topics");
+  //this is so that the user can clikc on the background to close the modal
+  //modal.element.setAttribute("data-bs-backdrop", "true");
+  //element to store the list of topics
+  let TopicList = document.createElement("div");
+  //for each topic
+  data.forEach((el) => {
+    //create an empty cardButton
+    let btn = createInfoClickBtn({});
+    //create a title element
+    let title = document.createElement("div");
+    //make it big
+    title.setAttribute("class", "col h-4");
+    //set the name to the text content
+    title.textContent = el.name;
+    //add the title into the button
+    btn.append(title);
+    //add an event listener for the button
+    btn.addEventListener("click", function () {
+      viewTopic(el, viewTopics(), modal);
+    });
+    //add the button to the topic list
+    TopicList.append(btn);
+  });
+  //add the topic list into the body
+  modal.body(TopicList);
+
+  //a button for creating a Topic
+  let createTopicButton = createButton("Create Topic","warning")
+  createTopicButton.addEventListener("click",function(){createTopic()})
+  //add the close button to the footer
+  modal.footer(createTopicButton,modal.closeBtn());
+  console.log(modal)
+  //show the modal
+  modal.show();
+}
+function viewTopic(data, closeFtn = false, modal = new Popup()) {
+  //create new modal
+  modal = new Popup();
+  //get information about the request
+  let topicInfo = getTopic(data.ID);
+  //create the info
+  let displayInfo = structuredClone(topicInfo);
+  //delete unnecessary information that the user won't need
+  delete displayInfo.ID;
+  delete displayInfo.user;
+  delete displayInfo.subjectID
+
+  //get list of notes in the element
+  let notes = document.createElement("div");
+  notes.append()
+  let listOfNotes = getNotes(data.ID, "topics");
+
+  listOfNotes.forEach((el) => {
+    console.log(el)
+    notes.append(convertNoteToHTML(el, viewTopics))
+   
+  });
+  //create the edit button
+  let editBTN = document.createElement("button");
+  editBTN.classList.add("btn", "btn-primary");
+  //text edit
+  editBTN.textContent = "Edit Topic";
+  //adding an event listener for opening the edit event form modal
+  editBTN.addEventListener("click", function () {
+    editTopic(data.ID);
+  });
+  //create addNoteBtn
+  let addNoteBtn = document.createElement("button");
+  addNoteBtn.classList.add("btn", "btn-primary");
+  addNoteBtn.textContent = "Add Note";
+  addNoteBtn.addEventListener("click", function () {
+    createNote(data.ID, "topic", true, false, "", viewTopics);
+  });
+  //create deleteBtn
+  let deleteBtn = document.createElement("button");
+  deleteBtn.classList.add("btn", "btn-danger");
+  deleteBtn.textContent = "Delete Topic";
+  deleteBtn.addEventListener("click", function () {
+    if (confirm("are you sure you want to delete" + displayInfo.name)) {
+      deleteTopic(data.ID);
+
+      //hide the popup
+      modal.hide();
+    }
+  });
+  let titleInfo = structuredClone(displayInfo);
+  delete titleInfo.name;
+  //change the title to hold information about the Topic
+  let TitleInfoCard = createInfoClickBtn(titleInfo);
+  //change styling
+  TitleInfoCard.classList.remove("btn", "btn-light", "card");
+  //create
+  let titleEL = document.createElement("div");
+  titleEL.setAttribute("class", "col-7 h2");
+  //create a close Button
+  let closeBtn = modal.closeBtn("Back");
+  //change background color
+  closeBtn.classList.remove("btn-danger");
+  closeBtn.classList.add("btn-secondary");
+  //if there is a close function
+  if (closeFtn) {
+    //add eventListener for that function
+    closeBtn.addEventListener("click", function () {
+      closeFtn();
+    });
+  }
+  //text content
+  titleEL.textContent = displayInfo.name;
+  TitleInfoCard.prepend(titleEL);
+  modal.title(TitleInfoCard);
+  //add the buttons to the footer
+  //modal.title("l")
+  modal.body(editBTN,notes);
+  modal.footer(addNoteBtn, deleteBtn, closeBtn);
+  modal.show();
+}
+function deleteTopic(id) {
+  let request = new AjaxTemplate(true);
+  request.href = "php/homepage/topics/deleteTopic.php";
+  //login credentials and the topicID
+  request.data = {
+    ID: StoredID,
+    password: StoredPassword,
+    topicID: id,
+  };
+  request.send();
+
+  //refresh the homepage to update everything
+  homeScreen.show();
+}
+
+
+function editTopic(id) {
+  //get the info on the topic
+  let info = getTopic(id);
+  //create the form with prefilled info
+  createTopic(info.name,info.subjectID, "Edit Topic", "Save Changes", false, id,false);
+
+}
+function getTopic(id = false) {
+  let request = new AjaxTemplate(false);
+  request.href = "php/homepage/topics/getTopic.php";
+  request.data = {
+    ID: StoredID,
+    password: StoredPassword,
+    id: id,
+  };
+  request.dataType = "json";
+  let send = request.send();
+  if (id === false) {
+    return send.responseJSON;
+  } else {
+    return send.responseJSON[0];
+  }
+}
