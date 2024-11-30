@@ -5,3 +5,4 @@
 --test the whitelist function with ' " does it work
 --liks on subjects
 -- go back an comment and rescreenshot code from earlier in the document 
+-- show visits with notes

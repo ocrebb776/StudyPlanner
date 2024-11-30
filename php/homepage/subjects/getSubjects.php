@@ -8,7 +8,6 @@ if ($_POST) {
     //checking the account credentials
     $output = $SQLconnection->sql("SELECT * FROM users WHERE Pass='{$_POST["password"]}' && ID='{$_POST["ID"]}'");
     if ($output) {
-        $today = date("Y-m-d");  // getting todays date
         $SQLconnection->oneResult = false;
         if ($_POST["id"] == 'false') {
             $sql = "SELECT * FROM subjects WHERE user={$_POST['ID']}";

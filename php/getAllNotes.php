@@ -9,7 +9,7 @@ if ($_POST) {
         $today = date("Y-m-d");
         $SQLconnection->oneResult = false;
         //get the 
-        $sql = "SELECT * FROM notes WHERE `user`='{$_POST['ID']}' && frID='{$_POST['id']}' && frTable='{$_POST["table"]}'ORDER BY date DESC";
+        $sql = "SELECT * FROM notes WHERE `user`='{$_POST['ID']}' ORDER BY date DESC";
         
         $notes = $SQLconnection->sql($sql);
         

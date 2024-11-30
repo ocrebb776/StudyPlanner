@@ -10,32 +10,17 @@ if ($_POST) {
     if ($output) {
         //default  sql request  using a left join
         $sql = "SELECT 
-         topics.*,
-         subjects.name as subjectName,
-         COALESCE(visit.diffrating, -1) as diffrating,
-         COALESCE(visit.date,topics.dateCreated) as date
-        FROM topics 
-        LEFT JOIN subjects
-        ON topics.subjectID = subjects.ID 
-        LEFT JOIN visit
-        ON visit.ID = (
-            SELECT v1.ID
-            FROM visit v1
-            WHERE topics.ID = v1.topicID
-            ORDER BY v1.date desc
-            LIMIT 1
-        )
-        WHERE topics.user='{$_POST["ID"]}' 
-        && 
-        (subjects.user='{$_POST["ID"]}' || topics.subjectID = -1) 
-        && 
-        (visit.ID is null || visit.user='{$_POST["ID"]}')";
+         *
+         FROM visit
+
+        WHERE user='{$_POST["ID"]}' 
+        ";
         //to say that no one result is needed 
         $SQLconnection->oneResult = false;
         //if a id is given
         if ($_POST["id"] != 'false') {
             //add a clause to check for that id 
-            $sql .= " && topics.ID='{$_POST["id"]}'";
+            $sql .= " && {$_POST["ref"]}='{$_POST["id"]}'";
         }
         //send the requst to the database 
         //echo $sql;

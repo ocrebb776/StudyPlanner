@@ -39,6 +39,7 @@ let homeScreen;
 let darkMode = false;
 let StoredID = false;
 let StoredPassword = false;
+let search
 // wait until the page has loaded to add items such as event listeners
 window.onload = function () {
   lockScreen = new LockScreen();
@@ -53,7 +54,6 @@ window.onload = function () {
 
   //checking if there is any cookies
   let pageCookies = Cookies.get();
-  console.log(pageCookies);
   //if the cookies password and username exists
   if (
     pageCookies.hasOwnProperty("password") &&
@@ -73,6 +73,10 @@ window.onload = function () {
   } else {
     Cookies.set("darkMode", "light", { expires: 100 });
   }
+
+
+  //the for searching 
+  search = new Search()
 };
 function toggleDarkmode(preset = "") {
   darkMode = Cookies.get("darkMode");
@@ -91,7 +95,6 @@ function toggleDarkmode(preset = "") {
 }
 
 function setManyAttributes(Item) {
-  console.log(Item);
   for (let x = 1; x < arguments.length; x++) {
     Item.setAttribute(arguments[x][0], arguments[x][1]);
   }
@@ -325,7 +328,9 @@ class FormPopUp extends Popup {
         case "range":
           container.setAttribute("class", "mb-3"); //boostrap classes
           label = createLabel(el, title, "form-label");
+          label.textContent = el.displayName
           input = createInputElement(el, title);
+
           container.append(label, input);
           break;
         case "hidden":
@@ -643,4 +648,25 @@ function deleteNote(note, pageRefresh = false) {
   console.log();
   //go refresh the page
   pageRefresh(note.frID);
+}
+
+function getAllNotes(){
+    //new synchronous ajax request
+    let request = new AjaxTemplate(false);
+    request.href = "php/getAllNotes.php";
+  
+    // creating the request data
+    request.data = {
+      ID: StoredID,
+      password: StoredPassword,
+    };
+    //data type
+    request.dataType = "json";
+    //send request
+    let send = request.send();
+    //for debugging information
+    console.log(send.responseJSON);
+  
+    //return the data
+    return send.responseJSON;
 }

@@ -11,7 +11,7 @@ if ($_POST) {
 
         $SQLconnection->sql("DELETE FROM topics  WHERE ID='{$_POST["topicID"]}'", false);
         $SQLconnection->sql("DELETE FROM notes  WHERE frID='{$_POST["topicID"]}' && frTable='topic'", false);
-        // add delete topics by changing the topic field to -1 (to indicate that there is no topic )
+        $SQLconnection->sql("DELETE FROM visit  WHERE topicID='{$_POST["topicID"]}'", false);
     }
 } else {
     echo 'false';

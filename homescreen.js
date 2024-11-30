@@ -98,6 +98,7 @@ class HomeScreen extends Screen {
     this.searchButton.style.width = "100%";
     //put the button in the wrapper
     this.searchButtonWr.append(this.searchButton);
+    
     //The StudyButton
     //create a wrapper for the study Button
     this.studyButtonWr = document.createElement("div");
@@ -174,18 +175,22 @@ class TopicAndSubjectSection extends Screen {
     this.subjectButton.classList.add("w-100");
     //put the button within its wrapper
     this.subjectButtonWr.appendChild(this.subjectButton);
-        //create a wrapper to contain the Topic button
-        this.TopicButtonWr = document.createElement("div");
-        //create the create button itself
-        this.TopicButton = createButton("Topics", "success");
-        //make the width of the wrapper to fill the rest of the row
-        this.TopicButtonWr.classList.add("col");
-        //make sure it fills the wrapper horizontally
-        this.TopicButton.classList.add("w-100");
-        //put the button within its wrapper
-        this.TopicButtonWr.appendChild(this.TopicButton);
+    //create a wrapper to contain the Topic button
+    this.TopicButtonWr = document.createElement("div");
+    //create the create button itself
+    this.TopicButton = createButton("Topics", "success");
+    //make the width of the wrapper to fill the rest of the row
+    this.TopicButtonWr.classList.add("col");
+    //make sure it fills the wrapper horizontally
+    this.TopicButton.classList.add("w-100");
+    //put the button within its wrapper
+    this.TopicButtonWr.appendChild(this.TopicButton);
     //add the wrappers to the button row
-    this.buttonRow.append( this.subjectButtonWr,this.createButtonWr,this.TopicButtonWr);
+    this.buttonRow.append(
+      this.subjectButtonWr,
+      this.createButtonWr,
+      this.TopicButtonWr
+    );
     //add the buttonRow to the header
     this.cardHeader.append(this.buttonRow);
     //add the header to the element
@@ -212,7 +217,7 @@ class TopicAndSubjectSection extends Screen {
       //toggleDarkMode button
       let createTopicButton = createButton("Create Topic", "outline-primary");
       createTopicButton.addEventListener("click", function () {
-        createTopic()
+        createTopic();
       });
 
       //adding buttons to the buttonList
@@ -232,9 +237,9 @@ class TopicAndSubjectSection extends Screen {
     });
 
     //topic button event listenrt
-    this.TopicButton.addEventListener("click",function(){
-      viewTopics()
-    })
+    this.TopicButton.addEventListener("click", function () {
+      viewTopics();
+    });
   }
 }
 
@@ -528,7 +533,7 @@ function createNewEventForm(
         placeholder: "--",
         value: inputData.Type,
         opt: ["study", "engagement", "other"],
-      }
+      },
     ],
     function () {
       //input validation
@@ -700,14 +705,16 @@ function whiteList(string, allowNewLine = false) {
   //for each character in the string ensure that it is in the allowed characters
   string.split("").forEach((el) => {
     if (!allowed.includes(el)) {
-      // a = el= \n
-      // b = allownewLine
-      // a and b do nothing
-      // !a and !b
-      // !(a or b)
-      if (!(el != "\\n" || allowNewLine)) {
+      // a = newline
+      // b = allow
+      // a  + b = no
+      // b = yes
+      // a = yes
+      // = yesv
+      if (!(el == "\n" && allowNewLine)) {
         striped.push(el);
       }
+      console.log(striped);
     }
   });
   //if any characters a not allowed return them otherwise return true
@@ -847,7 +854,7 @@ function viewEvent(id, callBack = new Popup(), closeFtn = false) {
   addNoteBtn.classList.add("btn", "btn-primary");
   addNoteBtn.textContent = "Add Note";
   addNoteBtn.addEventListener("click", function () {
-    createNote(id, "event", true, false, "", viewEvent);
+    createNote(id, "events", true, false, "", viewEvent);
   });
 
   //create deleteByn
@@ -1065,10 +1072,12 @@ function viewSubjects() {
   //add the subject list into the body
   modal.body(SubjectList);
   //a button for creating a Subject
-  let createSubjectButton = createButton("Create Subject","warning")
-  createSubjectButton.addEventListener("click",function(){createSubjectForm()})
+  let createSubjectButton = createButton("Create Subject", "warning");
+  createSubjectButton.addEventListener("click", function () {
+    createSubjectForm();
+  });
   //add the close button to the footer
-  modal.footer(createSubjectButton,modal.closeBtn());
+  modal.footer(createSubjectButton, modal.closeBtn());
   //show the modal
   modal.show();
 }
@@ -1085,13 +1094,12 @@ function viewSubject(data, closeFtn = false, modal = new Popup()) {
 
   //get list of notes in the element
   let notes = document.createElement("div");
-  notes.append()
+  notes.append();
   let listOfNotes = getNotes(data.ID, "subjects");
 
   listOfNotes.forEach((el) => {
-    console.log(el)
-    notes.append(convertNoteToHTML(el, viewSubjects))
-   
+    console.log(el);
+    notes.append(convertNoteToHTML(el, viewSubjects));
   });
   //create the edit button
   let editBTN = document.createElement("button");
@@ -1107,7 +1115,7 @@ function viewSubject(data, closeFtn = false, modal = new Popup()) {
   addNoteBtn.classList.add("btn", "btn-primary");
   addNoteBtn.textContent = "Add Note";
   addNoteBtn.addEventListener("click", function () {
-    createNote(data.ID, "subject", true, false, "", viewSubjects);
+    createNote(data.ID, "subjects", true, false, "", viewSubjects);
   });
   //create deleteBtn
   let deleteBtn = document.createElement("button");
@@ -1148,7 +1156,7 @@ function viewSubject(data, closeFtn = false, modal = new Popup()) {
   modal.title(TitleInfoCard);
   //add the buttons to the footer
   //modal.title("l")
-  modal.body(editBTN,notes);
+  modal.body(editBTN, notes);
   modal.footer(addNoteBtn, deleteBtn, closeBtn);
   modal.show();
 }
@@ -1167,13 +1175,18 @@ function deleteSubject(id) {
   homeScreen.show();
 }
 
-
 function editSubject(id) {
   //get the info on the subject
   let info = getSubject(id);
   //create the form with prefilled info
-  createSubjectForm(info.name, "Edit Subject", "Save Changes", false, id,false);
-
+  createSubjectForm(
+    info.name,
+    "Edit Subject",
+    "Save Changes",
+    false,
+    id,
+    false
+  );
 }
 
 // function getSubjectInfo(id) {
@@ -1191,102 +1204,106 @@ function editSubject(id) {
 //   return request.send().responseJSON;
 // }
 
-
 function createTopic(
-    name = "",
-    subject = "",
-    startText = "New Topic",
-    endText = "Create Topic",
-    newTopic = true,
-    id = false,
-    pageRefresh = false
-  ){
-
+  name = "",
+  subject = "",
+  startText = "New Topic",
+  endText = "Create Topic",
+  newTopic = true,
+  id = false,
+  pageRefresh = false
+) {
   // get a list of all the subjects
-  let Subjects = getSubject()
+  let Subjects = getSubject();
   //empty list to contain the subect
-  let subjectOptions = []
-  Subjects.forEach(el =>{
+  let subjectOptions = [[-1, "No Subject"]];
+  Subjects.forEach((el) => {
     //add the subject name and topic
-    subjectOptions.push([el.ID,el.name])
-  })
+    subjectOptions.push([el.ID, el.name]);
+  });
 
-  //create the for input with the Title and subject fields with the the startText and EndText 
-  let topicForm = new FormPopUp(startText,[
-    {
-      name: "Title",
-      displayName: "Topic Title",
-      type: "text",
-      placeholder: "--",
-      value: name,
+  //create the for input with the Title and subject fields with the the startText and EndText
+  let topicForm = new FormPopUp(
+    startText,
+    [
+      {
+        name: "Title",
+        displayName: "Topic Title",
+        type: "text",
+        placeholder: "--",
+        value: name,
+      },
+      {
+        name: "subject",
+        displayName: "Subject",
+        type: "select",
+        placeholder: "--",
+        value: subject,
+        opt: subjectOptions,
+      },
+    ],
+    function () {
+      //function to validate the input and add it to the topic list
+
+      //get name info
+      let name = this.formData.Title;
+      //get subject
+      let subject = this.formData.subject;
+      //whitelist name and subject
+      let whName = whiteList(name, true);
+      let whSubject = whiteList(String(subject), true);
+      let valid;
+      if (whName === true && whSubject === true) {
+        //if name and the subject is valid
+        valid = true;
+      } else {
+        //if it is not valid
+        valid = false;
+        let list = whName + whSubject;
+        //tell user that the characters are not allowed
+        txt = `These characters are not allowed in t \n• ${list.join("\n• ")}`;
+        //alert this to the user
+        alert(txt);
+      }
+      console.log(valid, name, subject);
+      if (valid && name !== "" && subject != "") {
+        //start request
+        let request = new AjaxTemplate(true);
+        //creating data about the request
+        let data = {};
+        data.name = name;
+        data.subjectID = subject;
+        //send the request to different files depending of if it is a new Topic or an older Topic
+        if (newTopic) {
+          request.href = "php/homepage/topics/createTopic.php";
+        } else {
+          request.href = "php/homepage/topics/editTopic.php";
+          //the id is used to find the Topic in the database
+          data.id = id;
+        }
+        request.data = {
+          // login details necessary for the php file
+          ID: StoredID,
+          password: StoredPassword,
+          data: data,
+        };
+        //send request
+        request.send();
+        //hideMobile
+        this.hide();
+        if (pageRefresh) {
+          //if there is a page to go back to go to it
+          pageRefresh(id);
+        }
+      }
+      //hide the form after submitting
+      this.hide();
     },
-    {name:"subject",
-      displayName:"Subject",
-      type:"select",
-      placeholder:"--",
-      value:subject,
-      opt:subjectOptions
-
-    }
-  ],function(){
-    //function to validate the input and add it to the topic list
-
-     //get name info
-     let name = this.formData.Title;
-     //get subject
-     let subject = this.formData.subject
-     //whitelist name and subject
-     let whName = whiteList(name, true);
-     let whSubject = whiteList(String(subject) , true)
-     let valid;
-     if (whName === true && whSubject === true) {
-       //if name and the subject is valid
-       valid = true;
-     } else {
-       //if it is not valid
-       valid = false;
-       let list = whName + whSubject
-       //tell user that the characters are not allowed
-       txt = `These characters are not allowed in t \n• ${list.join("\n• ")}`;
-       //alert this to the user
-       alert(txt);
-     }
-     if (valid && name !== "" && subject != 0) {
-       //start request
-       let request = new AjaxTemplate(true);
-       //creating data about the request
-       let data = {};
-       data.name = name;
-       data.subjectID = subject
-       //send the request to different files depending of if it is a new Topic or an older Topic
-       if (newTopic) {
-         request.href = "php/homepage/topics/createTopic.php";
-       } else {
-         request.href = "php/homepage/topics/editTopic.php";
-         //the id is used to find the Topic in the database
-         data.id = id;
-       }
-       request.data = {
-         // login details necessary for the php file
-         ID: StoredID,
-         password: StoredPassword,
-         data: data,
-       };
-       //send request
-       request.send();
-       //hideMobile
-       this.hide();
-       if (pageRefresh) {
-         //if there is a page to go back to go to it
-         pageRefresh(id);
-       }
-     }
-    //hide the form after submitting
-    this.hide()
-  },endText)
+    endText
+  );
 
   //show the form
-  topicForm.show()
+  topicForm.show();
 }
 
 function viewTopics() {
@@ -1303,15 +1320,15 @@ function viewTopics() {
   //for each topic
   data.forEach((el) => {
     //create an empty cardButton
-    let btn = createInfoClickBtn({});
+    let btn = createInfoClickBtn({ subject: el.subjectName });
     //create a title element
     let title = document.createElement("div");
     //make it big
-    title.setAttribute("class", "col h-4");
+    title.setAttribute("class", "col-12 h4");
     //set the name to the text content
     title.textContent = el.name;
     //add the title into the button
-    btn.append(title);
+    btn.prepend(title);
     //add an event listener for the button
     btn.addEventListener("click", function () {
       viewTopic(el, viewTopics(), modal);
@@ -1323,11 +1340,13 @@ function viewTopics() {
   modal.body(TopicList);
 
   //a button for creating a Topic
-  let createTopicButton = createButton("Create Topic","warning")
-  createTopicButton.addEventListener("click",function(){createTopic()})
+  let createTopicButton = createButton("Create Topic", "warning");
+  createTopicButton.addEventListener("click", function () {
+    createTopic();
+  });
   //add the close button to the footer
-  modal.footer(createTopicButton,modal.closeBtn());
-  console.log(modal)
+  modal.footer(createTopicButton, modal.closeBtn());
+  console.log(modal);
   //show the modal
   modal.show();
 }
@@ -1341,17 +1360,16 @@ function viewTopic(data, closeFtn = false, modal = new Popup()) {
   //delete unnecessary information that the user won't need
   delete displayInfo.ID;
   delete displayInfo.user;
-  delete displayInfo.subjectID
+  delete displayInfo.subjectID;
 
   //get list of notes in the element
   let notes = document.createElement("div");
-  notes.append()
+  notes.append();
   let listOfNotes = getNotes(data.ID, "topics");
 
   listOfNotes.forEach((el) => {
-    console.log(el)
-    notes.append(convertNoteToHTML(el, viewTopics))
-   
+    console.log(el);
+    notes.append(convertNoteToHTML(el, viewTopics));
   });
   //create the edit button
   let editBTN = document.createElement("button");
@@ -1367,7 +1385,7 @@ function viewTopic(data, closeFtn = false, modal = new Popup()) {
   addNoteBtn.classList.add("btn", "btn-primary");
   addNoteBtn.textContent = "Add Note";
   addNoteBtn.addEventListener("click", function () {
-    createNote(data.ID, "topic", true, false, "", viewTopics);
+    createNote(data.ID, "topics", true, false, "", viewTopics);
   });
   //create deleteBtn
   let deleteBtn = document.createElement("button");
@@ -1405,11 +1423,18 @@ function viewTopic(data, closeFtn = false, modal = new Popup()) {
   //text content
   titleEL.textContent = displayInfo.name;
   TitleInfoCard.prepend(titleEL);
+
+  //mark as visited button
+  let markTopicAsVisited = createButton("Mark As Visited", "danger");
+  //call the visit function when button is clicked
+  markTopicAsVisited.addEventListener("click", function () {
+    visit(data.ID);
+  });
   modal.title(TitleInfoCard);
   //add the buttons to the footer
   //modal.title("l")
-  modal.body(editBTN,notes);
-  modal.footer(addNoteBtn, deleteBtn, closeBtn);
+  modal.body(editBTN, notes);
+  modal.footer(markTopicAsVisited, addNoteBtn, deleteBtn, closeBtn);
   modal.show();
 }
 function deleteTopic(id) {
@@ -1427,13 +1452,19 @@ function deleteTopic(id) {
   homeScreen.show();
 }
 
-
 function editTopic(id) {
   //get the info on the topic
   let info = getTopic(id);
   //create the form with prefilled info
-  createTopic(info.name,info.subjectID, "Edit Topic", "Save Changes", false, id,false);
-
+  createTopic(
+    info.name,
+    info.subjectID,
+    "Edit Topic",
+    "Save Changes",
+    false,
+    id,
+    false
+  );
 }
 function getTopic(id = false) {
   let request = new AjaxTemplate(false);
@@ -1444,10 +1475,181 @@ function getTopic(id = false) {
     id: id,
   };
   request.dataType = "json";
-  let send = request.send();
+
+  let send = request.send().responseJSON;
+  //for each subject
+  for (let i = 0; i < send.length; i++) {
+    // if the subjectName is null
+    if (send[i]["subjectName"] == null) {
+      //change it to Empty
+      send[i]["subjectName"] = "Empty";
+    }
+  }
+
   if (id === false) {
-    return send.responseJSON;
+    return send;
   } else {
-    return send.responseJSON[0];
+    return send[0];
   }
 }
+
+function visit(topicID) {
+  //get information about the topic
+  let topicInfo = getTopic(topicID);
+
+  // if the diffrating is -1 then display it as being in the middle of thje input
+  if (topicInfo.diffrating == -1) {
+    topicInfo.diffrating = 127;
+  }
+  //create a new form
+  let form = new FormPopUp(
+    // the header text with the topic name in it
+    `Mark "${topicInfo.name}" as Visited`,
+    [
+      //range input so that the user can input the difficulty of the task
+      {
+        name: "diffrating",
+        displayName: "Difficulty",
+        type: "range",
+        other: [
+          ["min", "0"],
+          ["max", "255"],
+          ["value", topicInfo.diffrating],
+        ],
+      },
+      //input to show the type of activity
+      {
+        name: "type",
+        displayName: "activity",
+        value: "",
+        type: "text",
+        placeholder: "--",
+      },
+      //number input so that the user can input the time spent studying
+      {
+        name: "time",
+        displayName: "Time spent(hours)",
+        value: 0,
+        type: "number",
+        placeholder: "--",
+      },
+      // a note so they can talk about what they did while studying
+      {
+        name: "note",
+        displayName: "note",
+        value: "",
+        type: "textarea",
+        placeholder: "--",
+        height: "200px",
+      },
+    ],
+    function () {
+      //reassing this.formData to a local variable data
+      let data = this.formData;
+      //asssume that the form is valid
+      valid = true;
+      //empty string to put the error message in to display in one single alert
+      txt = "";
+      //for each input
+      for (const key in data) {
+        if (data.hasOwnProperty(key)) {
+          //check if the program should allow for a new line
+          switch (key) {
+            case "note":
+              newLine = true;
+              break;
+            default:
+              newLine = false;
+          }
+          // get any false character
+          let chr = whiteList(data[key], newLine);
+          //if there are any disallowed  characters
+          if (chr !== true) {
+            //add the dissalowed charters to the txt
+            txt += `\n in ${key} these characters are not allowed \n• ${chr.join(
+              "\n• "
+            )}`;
+            //now the form is invalid
+            valid = false;
+          }
+        }
+      }
+      // if there is any text to alert, it should send the alert message
+      if (txt !== "") {
+        alert(txt);
+      }
+      data.time = Math.round(data.time * 60);
+      data.diffrating = Math.round(data.diffrating);
+
+      let request = new AjaxTemplate(false);
+
+      request.href = "php/homepage/topics/markTopicAsVisited.php";
+      data.topicID = topicID;
+      request.data = {
+        // login details necessary for the php file
+        ID: StoredID,
+        password: StoredPassword,
+        data: data,
+      };
+      request.send();
+      this.hide(); // close the form
+      homeScreen.show(); // to refresh the homepage
+    },
+    "Mark as Visited"
+  );
+  //show the form
+  form.show();
+}
+function getVisit(id = false,ref="ID") {
+  //creat a new ajax request 
+  let request = new AjaxTemplate(false);
+  //set the href of the php file
+  request.href = "php/homepage/topics/getVisit.php";
+  //set the request payload
+  request.data = {
+    ID: StoredID,
+    password: StoredPassword,
+    id: id,
+    ref:ref
+  };
+  //set the response type to be data
+  request.dataType = "json";
+  //send the request 
+  let send = request.send().responseJSON;
+
+  //if the request was for one item then 
+  if (id === false) {
+    return send;
+  } else {
+    return send[0];
+  }
+}
+
+function getSearchData(){
+  //using each of the relevant function return a
+  // dict with all of the different things that needed searching 
+
+  return {
+    events:homeScreen.calendar.GetCalendarData(),
+    notes:getAllNotes(),
+    subjects:getSubject(),
+    topics:getTopic()
+  }
+}
+
+class Search {
+  constructor(){
+    this.data  = getSearchData()
+
+  }
+  show(){
+    this.popup = new Popup()
+    this.popup.title("Search")
+    this.popup.show()
+    
+
+
+  }
+ 
+}
+

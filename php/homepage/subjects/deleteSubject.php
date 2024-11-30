@@ -9,9 +9,12 @@ if ($_POST) {
     if ($output) { // if there is a account with the same credentials 
         
 
+        //deleting the subject from the table
         $SQLconnection->sql("DELETE FROM subjects  WHERE ID='{$_POST["subjectID"]}'", false);
-        $SQLconnection->sql("DELETE FROM notes  WHERE frID='{$_POST["subjectID"]}' && frTable='subject'", false);
-        // add delete subjects by changing the subject field to -1 (to indicate that there is no subject )
+        //deleting all of the notes on the subject
+        $SQLconnection->sql("DELETE FROM notes  WHERE frID='{$_POST["subjectID"]}' && frTable='subjects'", false);
+        //changing all of the topics to gave a subject id of -1 so that any new subjects with the id dont get given the topics 
+        $SQLconnection->sql("UPDATE topics SET subjectID='-1' WHERE subjectID='{$_POST["subjectID"]}'");
     }
 } else {
     echo 'false';
