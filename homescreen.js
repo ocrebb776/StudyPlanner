@@ -96,9 +96,13 @@ class HomeScreen extends Screen {
     this.searchButton.classList.add("btn", "btn-secondary");
     this.searchButton.textContent = "Search";
     this.searchButton.style.width = "100%";
+    //adding the event listener to the search button
+    this.searchButton.addEventListener("click", function () {
+      search.show();
+    });
     //put the button in the wrapper
     this.searchButtonWr.append(this.searchButton);
-    
+
     //The StudyButton
     //create a wrapper for the study Button
     this.studyButtonWr = document.createElement("div");
@@ -143,8 +147,17 @@ class HomeScreen extends Screen {
       this.buttonListContainer,
       this.topicAndSubjectSectionWrapper
     );
+
+    //instantiating the search features for later in the program
+    search = new Search();
   }
 }
+
+let weightings = {
+  timeSince: 0.4,
+  diffRating: 0.3,
+  mood: 0.3,
+};
 
 class TopicAndSubjectSection extends Screen {
   show() {
@@ -240,7 +253,195 @@ class TopicAndSubjectSection extends Screen {
     this.TopicButton.addEventListener("click", function () {
       viewTopics();
     });
+
+    // the subject and topic managment section
+
+    this.cardBody = document.createElement("div");
+    this.cardBody.setAttribute("class", "card-body");
+    this.topics();
+    this.displayTopics()
+    //add the card body to the element
+    this.element.append(this.cardBody);
   }
+  topics() {
+    //get the topics
+    let topics = getTopic();
+    //calculate the weightings#
+
+    //max and min scores
+    let max = {
+      timeSince: 0,
+      diffRating: 0,
+      mood: 0,
+    };
+    let min = {
+      timeSince: -1,
+      diffRating: -1,
+      mood: -1,
+    };
+
+    //work out the maximum and minumum scores
+    for (const topicL in topics) {
+      let topic = topics[topicL];
+      //get the time difference
+      let date = new Date(topic.date);
+      //get the miliseconds from the date
+      let time = date.getTime();
+      //get the current date
+      let now = new Date();
+      //convert it to milliseconds
+      now = now.getTime();
+      //round the the nearest day
+      let timeDiff = Math.round((now - time) / 86400000);
+      //if the new timeDiff is higher than the current maximunt
+      if (max.timeSince < timeDiff) {
+        max.timeSince = timeDiff;
+      }
+      // if the timediff is lower than the minimum
+      if (min.timeSince > timeDiff) {
+        min.timeSince = timeDiff;
+      }
+      //add the timesdiff to the topic
+      topics[topicL].timeDiff = timeDiff;
+      //diff rating
+      //convert the diffrating to a number
+      topic.diffrating = Number(topic.diffrating);
+      //if the diff rating is -1(topic has not been visited since it was inputted into the system)
+      if (topic.diffrating == -1) {
+        //set the diffrating to 255/2
+        topics[topicL].diffrating = 255 / 2;
+        topic.diffrating = 255 / 2;
+      }
+      //if the new diffrating is hogher than the maximum
+      if (max.diffRating < topic.diffrating) {
+        max.diffRating = topic.diffrating;
+      }
+      //if the new diffrating is lower than the maximum
+      if (min.diffRating > topic.diffRating) {
+        min.diffRating = topic.diffrating;
+      }
+
+      //for the defaults
+      if (min.timeSince == -1) {
+        min.timeSince = timeDiff;
+      }
+      if (min.diffRating == -1) {
+        min.diffRating = topic.diffrating;
+      }
+    }
+
+    //next the total scores need to be calculated and the maximums and minimus
+    let maxLooseScore = 0;
+    let minLooseScore = -1;
+    for (const topicL in topics) {
+      let topic = topics[topicL];
+      console.log(topic);
+      //if aqll the topics are the same then to avoid zero divison
+      if (max.timeSince - min.timeSince == 0) {
+        max.timeSince++;
+      }
+      //if all the diffratings are the same then add one to avoid zero division
+      if (max.diffRating - min.diffRating == 0) {
+        max.diffRating++;
+      }
+      //work out the timescore by working out the distance form the minimum time in relation to the total length
+      let timeScore =
+        (topic.timeDiff - min.timeSince) / (max.timeSince - min.timeSince);
+      //workout the diffscore the same way
+      let diffScore =
+        (topic.diffrating - min.diffRating) / (max.diffRating - min.diffRating);
+
+      // combine the scores using the predefines weightings
+      let totalScore =
+        timeScore * weightings.timeSince + diffScore * weightings.diffRating;
+
+      //add the total score to the topic
+      topics[topicL].looseRating = totalScore;
+      topic = topics[topicL];
+
+      //if thr current rating is higher than the maximum
+      if (maxLooseScore < topic.looseRating) {
+        maxLooseScore = topic.looseRating;
+      }
+      //if the current rating is lower than the minumum
+      if (minLooseScore > topic.looseRating) {
+        minLooseScore = topic.looseRating;
+      }
+
+      //for the defaults
+      if (minLooseScore == -1) {
+        minLooseScore = topic.looseRating;
+      }
+    }
+    for (const topicL in topics) {
+      //work out the relative rating in comparison to the maximum and minimums scores
+      topics[topicL].rating =
+        (topics[topicL].looseRating - minLooseScore) /
+        (maxLooseScore - minLooseScore);
+      //if there as a divison by zero set the score to 1
+      if (maxLooseScore - minLooseScore == 0) {
+        topics[topicL].rating = 1;
+      }
+    }
+    //sort the topics asc
+    let sort = new SortByKey(topics, "rating");
+    //get the sorted list and reverse it to get the list in reverse order
+    topics = sort.sortedList.reverse();
+    this.rankedTopics = topics
+  }
+  displayTopics(){
+    this.topicListElement = document.createElement("div")
+    let c = 0
+
+    this.rankedTopics.forEach(topic=>{
+      let dispData = {
+        "Difficulty Rating":String(Math.round(topic.diffrating*100/255))+"%",
+        "Last Visited":topic.date.convertDate(),
+        "Rating":String(Math.round(100*(topic.rating)))
+      }
+      let btn = createInfoClickBtn(dispData)
+      let name = document.createElement("div")
+      name.classList.add("h4")
+      name.textContent = topic.name
+      btn.prepend(name)
+      btn.addEventListener("click",function(){
+        viewTopic(topic)
+      })
+      this.topicListElement.append(btn)
+    })
+    this.cardBody.innerHTML = ""
+    this.cardBody.append(this.topicListElement)
+    c++
+
+  }
+
+}
+//adding the convert date to the prototype of String
+String.prototype.convertDate = function(){
+  return this.split(" ")[0].split("-").reverse().join("/")
+}
+String.prototype.toWordCase = function(){
+  //  NOT MINE ?? 
+  //  FROM https://stackoverflow.com/questions/32589197/how-can-i-capitalize-the-first-letter-of-each-word-in-a-string-using-javascript 
+  // 01/12/2024 
+  /* 
+  
+edited Nov 28, 2016 at 20:17
+Aaron Goldsmith's user avatar
+Aaron Goldsmith
+5111 silver badge88 bronze badges
+answered Sep 15, 2015 at 14:56
+somethinghere's user avatar
+somethinghere
+  */
+  var splitStr = this.toLowerCase().split(' ');
+  for (var i = 0; i < splitStr.length; i++) {
+      // You do not need to check if i is larger than splitStr length, as your for does that for you
+      // Assign it back to the array
+      splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);     
+  }
+  // Directly return the joined string
+  return splitStr.join(' '); 
 }
 
 class HomeScreenCalendarWeek extends Screen {
@@ -737,18 +938,8 @@ function manageEvents(modal = new Popup()) {
   modal.element.setAttribute("data-bs-backdrop", "true");
   modal.title(title);
   //getting all the events
-  let request = new AjaxTemplate(false); // create an synchronous  ajax request
-  request.href = "php/homepage/getAllEvents.php"; // point the address to getAllEvents.php
-  request.data = {
-    // login details necessary for the php file
-    ID: StoredID,
-    password: StoredPassword,
-  };
-  //sending the events
-  let events = request.send().responseText;
-  // converting the string response into JSON
-  events = JSON.parse(events);
-  console.log(events);
+
+  events = getAllEvents();
 
   //collating all of the events into one list
   let allDays = [];
@@ -1362,6 +1553,10 @@ function viewTopic(data, closeFtn = false, modal = new Popup()) {
   delete displayInfo.user;
   delete displayInfo.subjectID;
 
+  displayInfo.date = displayInfo.date.convertDate()
+  displayInfo.dateCreated = displayInfo.date.convertDate()
+  displayInfo.diffrating = String(Math.round(displayInfo.diffrating*100/255))+"%"
+
   //get list of notes in the element
   let notes = document.createElement("div");
   notes.append();
@@ -1497,7 +1692,7 @@ function visit(topicID) {
   //get information about the topic
   let topicInfo = getTopic(topicID);
 
-  // if the diffrating is -1 then display it as being in the middle of thje input
+  // if the diffrating is -1 then display it as being in the middle of the input
   if (topicInfo.diffrating == -1) {
     topicInfo.diffrating = 127;
   }
@@ -1600,8 +1795,8 @@ function visit(topicID) {
   //show the form
   form.show();
 }
-function getVisit(id = false,ref="ID") {
-  //creat a new ajax request 
+function getVisit(id = false, ref = "ID") {
+  //creat a new ajax request
   let request = new AjaxTemplate(false);
   //set the href of the php file
   request.href = "php/homepage/topics/getVisit.php";
@@ -1610,14 +1805,14 @@ function getVisit(id = false,ref="ID") {
     ID: StoredID,
     password: StoredPassword,
     id: id,
-    ref:ref
+    ref: ref,
   };
   //set the response type to be data
   request.dataType = "json";
-  //send the request 
+  //send the request
   let send = request.send().responseJSON;
 
-  //if the request was for one item then 
+  //if the request was for one item then
   if (id === false) {
     return send;
   } else {
@@ -1625,31 +1820,334 @@ function getVisit(id = false,ref="ID") {
   }
 }
 
-function getSearchData(){
+function getSearchData() {
   //using each of the relevant function return a
-  // dict with all of the different things that needed searching 
+  // dict with all of the different things that needed searching
 
   return {
-    events:homeScreen.calendar.GetCalendarData(),
-    notes:getAllNotes(),
-    subjects:getSubject(),
-    topics:getTopic()
-  }
+    events: getAllEvents(),
+    notes: getAllNotes(),
+    subjects: getSubject(),
+    topics: getTopic(),
+  };
 }
 
 class Search {
-  constructor(){
-    this.data  = getSearchData()
-
+  constructor() {
+    // set this.last to be zero so that the program will fetch
+    this.last = 0;
+    //getting all the data needed to search
+    this.getData();
   }
-  show(){
-    this.popup = new Popup()
-    this.popup.title("Search")
-    this.popup.show()
-    
+  getData() {
+    //getting the current time in milliseconds
+    let now = Date.now();
+    // if it has been more than ten seconds since the data was fetched
+    if (now - this.last > 10000) {
+      //fetch the data
+      this.data = getSearchData();
+      //output the time between fetches to the console
+      console.log("Time between ", now - this.last);
+      // change the last attribute to be the current time
+      this.last = now;
 
-
+      //create a new empty list
+      this.data.eventList = [];
+      //for each date
+      for (const day in this.data.events) {
+        //for each event in that date
+        this.data.events[day].forEach((event) => {
+          //add the event to the main event
+          event.date = event.date.convertDate()
+          event.Type = event.Type.toWordCase()
+          this.data.eventList.push(event);
+        });
+      }
+      for(const notes in this.data.notes){
+        this.data.notes[notes].date = this.data.notes[notes].date.convertDate()
+        this.data.notes[notes].frTable = this.data.notes[notes].frTable.toWordCase()
+      }
+      for(const topic in this.data.topics){
+        this.data.topics[topic].date = this.data.topics[topic].date.convertDate()
+        this.data.topics[topic].diffrating = String(Math.round(this.data.topics[topic].diffrating*100/255))+"%"
+      }
+      //return the data
+      return this.data;
+    }
   }
- 
+  show() {
+    this.getData();
+    //create a new popup
+    this.popup = new Popup();
+    this.popup.element.setAttribute("data-bs-backdrop", "true");
+    //set the title to be search
+    this.popup.title("Search");
+
+    //other ui elements goes here
+
+    //Creating the search element
+
+    //input data
+    let el = {
+      type: "text",
+      name: "searchInput",
+      value: "",
+      placeholder: "-",
+      displayName: " Search Everything",
+    };
+    //set the Title for the inputs
+    let title = "search";
+    //creating the input element
+    this.searchElement = createInputElement(el, title);
+    //crating the container
+    this.searchInputContainer = document.createElement("div");
+    this.searchInputContainer.setAttribute("class", "form-floating mt-3 mb-3"); //boostrap classes
+    //creating the label
+    this.searchLabel = createLabel(el, title);
+    //creating the magnifying glass
+    let magnifyingGlass = document.createElement("i");
+    magnifyingGlass.classList.add("fa-solid", "fa-magnifying-glass");
+    //adding the magnifying class to the from odf the label
+    this.searchLabel.prepend(magnifyingGlass);
+    //adning the label and input to the container
+    this.searchInputContainer.append(this.searchElement, this.searchLabel);
+
+    //container to contain all the tables
+    this.table = document.createElement("div");
+    this.table.classList.add("card");
+    this.tableEvents = document.createElement("table");
+    this.tableNotes = document.createElement("table");
+    this.tableSubjects = document.createElement("table");
+    this.tableTopics = document.createElement("table");
+
+    let eventsLabel = document.createElement("div");
+    eventsLabel.setAttribute("class", "h3 text-center");
+    eventsLabel.textContent = "Events";
+    let notesLabel = document.createElement("div");
+    notesLabel.setAttribute("class", "h3 text-center");
+    notesLabel.textContent = "Notes";
+    let subjectLabel = document.createElement("div");
+    subjectLabel.setAttribute("class", "h3 text-center");
+    subjectLabel.textContent = "Subjects";
+    let topicsLabel = document.createElement("div");
+    topicsLabel.setAttribute("class", "h3 text-center");
+    topicsLabel.textContent = "Topics";
+
+    this.updateTables();
+    this.table.append(
+      eventsLabel,
+      this.tableEvents,
+      notesLabel,
+      this.tableNotes,
+      subjectLabel,
+      this.tableSubjects,
+      topicsLabel,
+      this.tableTopics
+    );
+
+    //adding everything to the container
+    this.popup.body(this.searchInputContainer, this.table);
+
+    this.popup.footer(this.popup.closeBtn());
+
+    //show the popup
+    this.popup.show();
+  }
+
+  updateTables() {
+    /* 
+    •	Events
+      o	Name
+      o	Type
+      o	date
+•	Notes
+      o	Text
+      o	date
+      o for 
+•	Subjects
+      o	name
+•	Topics
+      o	Name
+      o	Date created 
+*/
+
+    // the events table
+    this.tableEvents = this.createTable(
+      ["name", "Type", "date"],
+      ["Name", "Type", "Date"],
+      this.data.eventList,
+      "eventsTable",
+      function (data) {
+        //call viewEvent with the id
+        viewEvent(data.ID);
+      }
+    );
+    // the Notes Table
+    this.tableNotes = this.createTable(
+      ["text", "date", "frTable", "name"],
+      ["Note", "Date", "For", "Name"],
+      this.data.notes,
+      "notesTable",
+      function (data) {
+        switch (data.frTable) {
+          case "events":
+            viewEvent(data.frID);
+            break;
+          case "subjects":
+            viewSubject({ ID: data.frID });
+            break;
+          case "topics":
+            viewTopic({ ID: data.frID });
+            break;
+        }
+      }
+    );
+    //tje subjects Table
+    this.tableSubjects = this.createTable(
+      ["name"],
+      ["Name"],
+      this.data.subjects,
+      "subjectsTable",
+      function (data) {
+        viewSubject({ ID: data.ID });
+      }
+    );
+    //the topics table
+    this.tableTopics = this.createTable(
+      ["name", "date", "diffrating", "subjectName"],
+      ["Name", "Last Visited", "Difficulty", "Subject Name"],
+      this.data.topics,
+      "topicsTable",
+      function (data) {
+        viewTopic({ ID: data.ID });
+      }
+    );
+
+    //when the user enters a something into the search bar
+    this.searchElement.addEventListener("keyup", function () {
+      //convert the search to lowercase
+      let val = this.value.toLowerCase();
+      //filter through the events table
+      $("#eventsTable tr").filter(function () {
+        $(this).toggle(
+          // if the search term is found in the content of the row
+          // then dont hide it
+          $(this).text().toLowerCase().indexOf(val) > -1
+        );
+      });
+      //filter through the notes Table
+      $("#notesTable tr").filter(function () {
+        $(this).toggle(
+          // if the search term is found in the content of the row
+          // then dont hide it
+          $(this).text().toLowerCase().indexOf(val) > -1
+        );
+      });
+      // filter through the subjects table
+      $("#subjectsTable tr").filter(function () {
+        $(this).toggle(
+          // if the search term is found in the content of the row
+          // then dont hide it
+          $(this).text().toLowerCase().indexOf(val) > -1
+        );
+      });
+      // filter through thhe topics table
+      $("#topicsTable tr").filter(function () {
+        $(this).toggle(
+          // if the search term is found in the content of the row
+          // then dont hide it
+          $(this).text().toLowerCase().indexOf(val) > -1
+        );
+      });
+    });
+  }
+
+  createTable(columns, display, data, id = "", btn = false) {
+    //create a table element
+    let tableContainer = document.createElement("div");
+    tableContainer.style.maxWidth = "100%";
+    tableContainer.style.overflowX = "auto";
+    let table = document.createElement("table");
+    //add the table classes
+    table.classList.add("table", "table-striped");
+    //create the tow to contain the headers
+    let headerRow = document.createElement("tr");
+    let headerThead = document.createElement("thead");
+
+    //add the header text
+    display.forEach((header) => {
+      let headerElement = document.createElement("th");
+      headerElement.textContent = header;
+      headerElement.classList.add("text-center");
+      headerRow.append(headerElement);
+    });
+    headerThead.appendChild(headerRow);
+    //create an element to contain the elements
+    let tableBody = document.createElement("tbody");
+    tableBody.setAttribute("id", id);
+
+    //for each row
+    for (const rowID in data) {
+      //set the row variable
+      let row = data[rowID];
+      //crete the row element
+      let rowElement = document.createElement("tr");
+
+      //for each of the columns needing to be displayed
+      for (const col in columns) {
+        //get the value from the row
+        let val = row[columns[col]];
+        //create an element to contain the value
+        let bodyElement = document.createElement("td");
+        //add the value into the element
+        bodyElement.textContent = val;
+        //set styling to ensure that the value does not get too long
+        bodyElement.style.maxWidth = "20ch";
+        bodyElement.style.whiteSpace = "nowrap";
+        bodyElement.style.overflow = "hidden";
+        bodyElement.style.textOverflow = "ellipsis";
+        bodyElement.classList.add("text-center");
+        if (col == 0) {
+          bodyElement.style.borderRadius = "20px 0px 0px 20px";
+        } else if (col == columns.length - 1) {
+          bodyElement.style.borderRadius = "0px 20px 20px 0px ";
+        }
+        if (columns.length == 1) {
+          bodyElement.style.borderRadius = "20px 20px 20px 20px ";
+        }
+        //add the element to the row
+        rowElement.append(bodyElement);
+        rowElement.style.borderColor = "#00000000";
+      }
+
+      //adding an onclick event listerner to the row
+      if (btn) {
+        rowElement.addEventListener("click", function () {
+          btn(row);
+        });
+      }
+
+      //add  the row to the table body
+      tableBody.append(rowElement);
+    }
+
+    //add the header and body to the table
+    table.append(headerThead, tableBody);
+    //return the table
+    tableContainer.append(table);
+    return tableContainer;
+  }
 }
 
+function getAllEvents() {
+  let request = new AjaxTemplate(false); // create an synchronous  ajax request
+  request.href = "php/homepage/getAllEvents.php"; // point the address to getAllEvents.php
+  request.data = {
+    // login details necessary for the php file
+    ID: StoredID,
+    password: StoredPassword,
+  };
+  request.dataType = "json";
+  //sending the events
+  return request.send().responseJSON;
+}

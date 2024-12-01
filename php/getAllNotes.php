@@ -9,8 +9,37 @@ if ($_POST) {
         $today = date("Y-m-d");
         $SQLconnection->oneResult = false;
         //get the 
-        $sql = "SELECT * FROM notes WHERE `user`='{$_POST['ID']}' ORDER BY date DESC";
+$sql = "SELECT
+         notes.*,
+         fr.name
+         FROM notes 
+         LEFT JOIN  events fr
+         ON fr.ID = notes.frID
+         WHERE notes.user='{$_POST['ID']}' && notes.frTable='events'  
+         && fr.user='{$_POST['ID']}'
+        UNION ALL
+         SELECT
+          notes.*,
+          fr.name
+          FROM notes 
+          LEFT JOIN  subjects fr 
+          ON fr.ID = notes.frID
+          WHERE notes.user='{$_POST['ID']}' && notes.frTable='subjects' 
+          && fr.user='{$_POST['ID']}'
+        UNION ALL
+        SELECT
+         notes.*,
+         fr.name
+         FROM notes 
+         LEFT JOIN  topics fr
+         ON fr.ID = notes.frID
+         WHERE notes.user='{$_POST['ID']}' && notes.frTable='topics'
+          && fr.user='{$_POST['ID']}'
+         
+          ORDER BY date DESC
+        ";
         
+ 
         $notes = $SQLconnection->sql($sql);
         
         if($notes){

@@ -6,3 +6,6 @@
 --liks on subjects
 -- go back an comment and rescreenshot code from earlier in the document 
 -- show visits with notes
+-- visits need to be deleted when topics are deleted 
+-- make sure that all tables are emptied of the stufdf when an account is deleted 
+-- notes new line does not work

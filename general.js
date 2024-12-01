@@ -74,9 +74,6 @@ window.onload = function () {
     Cookies.set("darkMode", "light", { expires: 100 });
   }
 
-
-  //the for searching 
-  search = new Search()
 };
 function toggleDarkmode(preset = "") {
   darkMode = Cookies.get("darkMode");
@@ -276,7 +273,7 @@ class FormPopUp extends Popup {
     formdata.forEach((el) => {
       //creating a container to store the input
       let container = document.createElement("div");
-      //pre-decaring the variables
+      //pre-declaring the variables
       let label;
       let input;
       switch (el.type) {
