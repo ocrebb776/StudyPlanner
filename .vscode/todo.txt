@@ -8,4 +8,4 @@
 -- show visits with notes
 -- visits need to be deleted when topics are deleted 
 -- make sure that all tables are emptied of the stufdf when an account is deleted 
--- notes new line does not work
+-- notes new line does not work(sql side)

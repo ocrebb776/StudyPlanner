@@ -262,6 +262,11 @@ class TopicAndSubjectSection extends Screen {
     this.displayTopics()
     //add the card body to the element
     this.element.append(this.cardBody);
+
+
+
+    
+
   }
   topics() {
     //get the topics
@@ -388,30 +393,41 @@ class TopicAndSubjectSection extends Screen {
     //get the sorted list and reverse it to get the list in reverse order
     topics = sort.sortedList.reverse();
     this.rankedTopics = topics
+    return topics
   }
   displayTopics(){
+    //create a blanbk list
     this.topicListElement = document.createElement("div")
-    let c = 0
 
+    //loop through the ranket Topics
     this.rankedTopics.forEach(topic=>{
+      //define the data to display
       let dispData = {
+        //convert the rating to a percentage
         "Difficulty Rating":String(Math.round(topic.diffrating*100/255))+"%",
+        //convert theTimepstamp to the date 
         "Last Visited":topic.date.convertDate(),
+        //show the rating 
         "Rating":String(Math.round(100*(topic.rating)))
       }
+      //create the button
       let btn = createInfoClickBtn(dispData)
+      // create an element to hold the name
       let name = document.createElement("div")
       name.classList.add("h4")
       name.textContent = topic.name
+      //add the name to the front of the button
       btn.prepend(name)
+      //adding the viewElement event listenrer 
       btn.addEventListener("click",function(){
         viewTopic(topic)
       })
+      //adding the button to the topicLisyElement
       this.topicListElement.append(btn)
     })
+    //adding the listElement to a blank card body
     this.cardBody.innerHTML = ""
     this.cardBody.append(this.topicListElement)
-    c++
 
   }
 
@@ -421,27 +437,21 @@ String.prototype.convertDate = function(){
   return this.split(" ")[0].split("-").reverse().join("/")
 }
 String.prototype.toWordCase = function(){
-  //  NOT MINE ?? 
-  //  FROM https://stackoverflow.com/questions/32589197/how-can-i-capitalize-the-first-letter-of-each-word-in-a-string-using-javascript 
-  // 01/12/2024 
-  /* 
-  
-edited Nov 28, 2016 at 20:17
-Aaron Goldsmith's user avatar
-Aaron Goldsmith
-5111 silver badge88 bronze badges
-answered Sep 15, 2015 at 14:56
-somethinghere's user avatar
-somethinghere
-  */
-  var splitStr = this.toLowerCase().split(' ');
-  for (var i = 0; i < splitStr.length; i++) {
-      // You do not need to check if i is larger than splitStr length, as your for does that for you
-      // Assign it back to the array
-      splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);     
+  //make the entire string to  lowercase 
+  let string = this.toLowerCase()
+  //split the sting by the word
+  string =string.split(" ")
+  //for each word 
+  for(const key in string){
+    //set the word to equal to the first letter to uppercase plus the rest of the word
+    string[key] =string[key].split("")[0].toUpperCase() + string[key].substring(1)
   }
-  // Directly return the joined string
-  return splitStr.join(' '); 
+  //join the elements back toGether 
+  string = string.join(" ")
+  //return the sting /
+
+  return string
+
 }
 
 class HomeScreenCalendarWeek extends Screen {

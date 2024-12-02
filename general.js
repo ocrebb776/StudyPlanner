@@ -73,7 +73,6 @@ window.onload = function () {
   } else {
     Cookies.set("darkMode", "light", { expires: 100 });
   }
-
 };
 function toggleDarkmode(preset = "") {
   darkMode = Cookies.get("darkMode");
