@@ -563,7 +563,7 @@ function createNote(
   pageRefresh
 ) {
   noteForm = new FormPopUp(
-    "Add Note",
+   newNote ? "Add Note":"Edit Note",
     [
       {
         name: "note",
@@ -626,7 +626,7 @@ function createNote(
         }
       }
     },
-    "Add Note"
+    newNote ? "Add Note" : "Save Changes"
   );
   noteForm.show();
 }

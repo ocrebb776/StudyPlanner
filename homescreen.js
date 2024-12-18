@@ -44,7 +44,7 @@ class HomeScreen extends Screen {
 
     buttonMiddle.setAttribute("type", "button");
     buttonMiddle.setAttribute("class", "btn btn-primary w-100");
-    buttonMiddle.textContent = "Create";
+    buttonMiddle.textContent = "Create Event ";
     buttonMiddle.addEventListener("click", function () {
       createNewEventForm();
     });
@@ -60,7 +60,7 @@ class HomeScreen extends Screen {
     //right button
     this.buttonRight.setAttribute("type", "button");
     this.buttonRight.setAttribute("class", "btn btn-secondary w-100");
-    this.buttonRight.textContent = "dayView";
+    this.buttonRight.textContent = "Day View";
     this.buttonRight.addEventListener("click", calendarDayView);
     //event listener to show the day view
     buttonRightWrapper.append(this.buttonRight);
@@ -142,6 +142,13 @@ class HomeScreen extends Screen {
     this.topicAndSubjectSection = new TopicAndSubjectSection();
     this.topicAndSubjectSection.element = this.topicAndSubjectSectionWrapper;
     this.topicAndSubjectSection.show();
+
+    //creating the Calendar title
+    let CalendarTitle = document.createElement("div")
+    CalendarTitle.classList.add("card-header")
+    CalendarTitle.textContent = "Calendar"
+    //adding it to the title
+    calendarWrapper.prepend(CalendarTitle)
     this.element.append(
       calendarWrapper,
       this.buttonListContainer,
@@ -466,25 +473,28 @@ class HomeScreenCalendarWeek extends Screen {
     let DayList = this.daysList();
   }
   GetCalendarData() {
+    //send a request
     let request = new AjaxTemplate(false);
     request.href = "php/homepage/getCalendarInfo.php";
     request.data = {
       ID: StoredID,
       password: StoredPassword,
     };
-
     let result = request.send();
-    console.log(result.responseText);
+    
+    //if it was a succses 
     if (result.status == 200) {
       return JSON.parse(result.responseText);
     } else {
-      return "there as been a silly little error";
+      console.log(result)
+      //if not return false 
+      return false;
     }
   }
   daysList() {
     //get todays date
     let currentDay = new Date();
-    //abreviations of dates
+    //abbreviations of dates
     let days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
     //iterates through 7 days starting with the current date at the top
     for (let x = 0; x < 7; x++) {
@@ -521,10 +531,12 @@ class HomeScreenCalendarWeek extends Screen {
 
       //addinging the current days dates data to varaibale todat
       let today = this.data[x];
+      console.log(this.data)
       // if there is event on that date
       if (today) {
         //convert the database response into the day
         today = this.processWeekDay(today);
+        console.log(today)
         ViewElement.style.display = "grid";
         ViewElement.style.gridTemplateColumns = today[1];
         today[0].forEach((el) => {
@@ -561,9 +573,12 @@ class HomeScreenCalendarWeek extends Screen {
 
 // CALENDAR FUNCTIONS
 const getStartAndEndTimesCalendar = function (data) {
+  //empty list to contain the elemnt 
   let startAndEnd = [];
 
   data.forEach((el) => {
+    //add the start time and the end time to the list with the data inbetween
+    //if the event cuts of an event before, to avoid breakage stop the event before 1 minute before the next one stqaerts 
     time = hr_minToMin(el.startTime);
     if (startAndEnd[startAndEnd.length - 1] >= time) {
       startAndEnd[startAndEnd.length - 1] = time - 1;
@@ -571,19 +586,25 @@ const getStartAndEndTimesCalendar = function (data) {
     startAndEnd.push(time, el);
     startAndEnd.push(hr_minToMin(el.endTime));
   });
+  //retunr the l;ist 
   return startAndEnd;
 };
 
 const createElementOrder = function (data) {
   let last = "number";
   let order = [];
+  //go through each element 
   data.forEach((el) => {
+    //if it was a number
     if (typeof el == "number") {
+      //and the last one was a number 
       if (last == "number") {
+        //then a space should be next 
         order.push(0);
       }
       last = "number";
     } else {
+      //if it not a number then an event should be there 
       order.push(el);
       last = "string";
     }
@@ -595,7 +616,7 @@ const getRatios = function (data) {
   let last = 0;
   let total = 24 * 60;
   let times = [];
-  let fr = ""; // blank ration
+  let fr = ""; // blank ratio
 
   //add all the numbers in the list to times
   data.forEach((el) => {
@@ -607,11 +628,14 @@ const getRatios = function (data) {
   times.push(total);
   for (let x = 0; x < times.length; x++) {
     if (x != 0) {
-      //except for the
+      // unless it it the first one then the last should be the the one before
       last = times[x - 1];
     }
+    //length of that section
     let length = times[x] - last;
+    //get the ratio relative to the length of the day
     let ratio = Math.round((10000 * length) / total);
+    //add the ratio
     fr += ` ${ratio}fr`;
   }
   return fr;
@@ -690,7 +714,7 @@ function calendarWeekView() {
   homeScreen.calendar.element = homeScreen.calendarBody;
   homeScreen.calendar.show();
   //changing the button text
-  homeScreen.buttonRight.textContent = "dayView";
+  homeScreen.buttonRight.textContent = "Day View";
   //changing the eventListeners
   homeScreen.buttonRight.removeEventListener("click", calendarWeekView);
   homeScreen.buttonRight.addEventListener("click", calendarDayView);
@@ -1093,7 +1117,7 @@ function getEventInfo(id) {
 }
 
 function deleteEvent(id) {
-  let request = new AjaxTemplate(true);
+  let request = new AjaxTemplate(false);
   request.href = "php/homepage/deleteEvent.php";
   //login credentials and the eventID
   request.data = {

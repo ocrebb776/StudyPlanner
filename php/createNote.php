@@ -11,7 +11,7 @@ if ($_POST) {
     if ($output) { // if there is a account with the same credentials 
         $SQLconnection->oneResult = false; // change the expected result 
         $valid = true; //assume all inputs a valid 
-        $newVal = whitelist($_POST["data"]["note"], $trimList);
+        $newVal = whitelist($_POST["data"]["note"], $trimList,true);
         if ($newVal != $_POST["data"]["note"]) {
             //if the function striped any characters then it must be invalid 
             $valid = false;

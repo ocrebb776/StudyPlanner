@@ -16,7 +16,7 @@ if ($_POST) {
         $valid = true; //assume all inputs a valid 
         foreach ($_POST["data"] as $key => $value) {
             //checking the input to check for any characters that could cause an issue with the SQL
-            $newVal = whitelist($value, $trimList);
+            $newVal = whitelist($value, $trimList,true);
             if ($newVal != $value) {
                 //if the function striped any characters then it must be invalid 
                 $valid = false;
