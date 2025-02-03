@@ -460,6 +460,9 @@ String.prototype.toWordCase = function(){
   return string
 
 }
+String.prototype.toMins = function(){
+return hr_minToMin(this)
+}
 
 class HomeScreenCalendarWeek extends Screen {
   show() {
@@ -545,9 +548,42 @@ class HomeScreenCalendarWeek extends Screen {
             event.addEventListener("click", function () {
               viewEvent(el.ID);
             });
-            if (el.Type == "study") {
-              event.classList.add("bg-warning");
+            //if the event is a study event
+            // if (el.Type == "study") {
+            //   event.classList.add("bg-warning");
+            // }
+
+            //default style is none
+            let style = ""
+            //switch to define what the type should be 
+            switch(el.Type){
+              //if the type is study
+              case "study":
+                style = "warning"
+                break;
+              //all colour specific cases
+              case "blue":
+                style = "primary"
+                break;
+              case "green":
+                style = "success"
+                break;
+                case "red":
+                style = "danger"
+                break;
+                case "yellow":
+                style = "warning"
+                break;
+                case "purple":
+                style = "purple"
+                break;
+                //incase no colour is set 
+                default:
+                  style = "secondary"
             }
+            event.classList.add("bg-"+style);
+
+
             event.classList.add("progress-bar");
             event.style.borderRadius = "20px";
           }
@@ -887,6 +923,19 @@ function createNewEventForm(
           }
         }
       }
+      //if the start time is after the end time
+      if(data.StartTime.toMins() >= data.EndTime.toMins()){
+        //the form is invalid 
+        valid = false
+        //tell the user that there is an issue 
+        alert("The start time must be before the end time")
+      }else{
+        console.log(data.StartTime.toMins(),data.EndTime.toMins())
+      }
+
+
+
+
       if (valid) {
         // if the user wants to proceed
         //create a new syncronus request

@@ -12,9 +12,9 @@ class MySQLRequest
     function __construct($oneResult = false)
     { // if  no value is given then 
         // defining the variables
-        $this->servername = "localhost";
-        $this->username = "username";
-        $this->password = "password";
+        $this->servername = "localhost:3306";
+        $this->username = "";
+        $this->password = "";
         $this->dbname = "studyplanner";
         $this->oneResult = $oneResult;
         // Create Connection to mysql server
