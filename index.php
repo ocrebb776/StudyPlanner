@@ -13,6 +13,7 @@
   <script src="general.js"></script>
   <script src="login.js"></script>
   <script src="homescreen.js"></script>
+  <script src="study.js"></script>
   <link rel="stylesheet" href="css.css">
   <link rel="manifest" href="manifest.json">
 </head>

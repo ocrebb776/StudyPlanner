@@ -39,6 +39,7 @@ let homeScreen;
 let darkMode = false;
 let StoredID = false;
 let StoredPassword = false;
+let search
 // wait until the page has loaded to add items such as event listeners
 window.onload = function () {
   lockScreen = new LockScreen();
@@ -53,7 +54,6 @@ window.onload = function () {
 
   //checking if there is any cookies
   let pageCookies = Cookies.get();
-  console.log(pageCookies);
   //if the cookies password and username exists
   if (
     pageCookies.hasOwnProperty("password") &&
@@ -91,7 +91,6 @@ function toggleDarkmode(preset = "") {
 }
 
 function setManyAttributes(Item) {
-  console.log(Item);
   for (let x = 1; x < arguments.length; x++) {
     Item.setAttribute(arguments[x][0], arguments[x][1]);
   }
@@ -273,7 +272,7 @@ class FormPopUp extends Popup {
     formdata.forEach((el) => {
       //creating a container to store the input
       let container = document.createElement("div");
-      //pre-decaring the variables
+      //pre-declaring the variables
       let label;
       let input;
       switch (el.type) {
@@ -293,8 +292,14 @@ class FormPopUp extends Popup {
           el.opt.forEach((opt) => {
             //creating an <option> tag for each option
             let option = document.createElement("option");
-            option.setAttribute("value", opt);
-            option.textContent = opt;
+            //if the option is a list then have 
+            //the value being the first item and the second being the display
+            if(typeof opt != "object"){
+              //if set both of the value and text content to be the option
+              opt = [opt,opt]
+            }
+            option.setAttribute("value", opt[0]);
+            option.textContent = opt[1];
             input.append(option); //ading to the <select> tag
           });
           input.value = el.value; //assging the value
@@ -319,7 +324,9 @@ class FormPopUp extends Popup {
         case "range":
           container.setAttribute("class", "mb-3"); //boostrap classes
           label = createLabel(el, title, "form-label");
+          label.textContent = el.displayName
           input = createInputElement(el, title);
+
           container.append(label, input);
           break;
         case "hidden":
@@ -496,7 +503,7 @@ function convertNoteToHTML(data, pageRefresh) {
   console.log(data);
   //creating the container
   let container = document.createElement("div");
-  // bootsrap classes
+  // bootstrap classes
   container.classList.add("row", "g-1", "m-2");
   //card containing the text
   let card = document.createElement("textarea");
@@ -504,7 +511,7 @@ function convertNoteToHTML(data, pageRefresh) {
   card.classList.add("card", "p-2", "col-8");
   //adding the notes content to the text content
   card.textContent = data.text;
-  card.setAttribute("disabled", "");
+  card.setAttribute("readonly", "");
   card.style.resize = "none";
   card;
 
@@ -544,7 +551,7 @@ function convertNoteToHTML(data, pageRefresh) {
   buttonList.append(deleteBtn, edit, timeStamp);
   //adding the cards to the buttonList
   container.append(card, buttonList);
-  //return container;
+  return container;
 }
 let noteForm;
 function createNote(
@@ -556,7 +563,7 @@ function createNote(
   pageRefresh
 ) {
   noteForm = new FormPopUp(
-    "Add Note",
+   newNote ? "Add Note":"Edit Note",
     [
       {
         name: "note",
@@ -619,7 +626,7 @@ function createNote(
         }
       }
     },
-    "Add Note"
+    newNote ? "Add Note" : "Save Changes"
   );
   noteForm.show();
 }
@@ -637,4 +644,25 @@ function deleteNote(note, pageRefresh = false) {
   console.log();
   //go refresh the page
   pageRefresh(note.frID);
+}
+
+function getAllNotes(){
+    //new synchronous ajax request
+    let request = new AjaxTemplate(false);
+    request.href = "php/getAllNotes.php";
+  
+    // creating the request data
+    request.data = {
+      ID: StoredID,
+      password: StoredPassword,
+    };
+    //data type
+    request.dataType = "json";
+    //send request
+    let send = request.send();
+    //for debugging information
+    console.log(send.responseJSON);
+  
+    //return the data
+    return send.responseJSON;
 }

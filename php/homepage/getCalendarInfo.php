@@ -1,26 +1,38 @@
 <?php
-// to allow for the sql requests neccesary for this 
+// to allow for the sql requests necessary for this 
 require "../SQL.php";
 if ($_POST) {
+    //start the connection 
     $SQLconnection = new MySQLRequest();
+    //expect only one rsult 
     $SQLconnection->oneResult = true;
+    // validate the login 
     $output = $SQLconnection->sql("SELECT * FROM users WHERE Pass='{$_POST["password"]}' && ID='{$_POST["ID"]}'");
     if($output){
-        $today = date("Y-m-d");
+        //get todays date
+        $today = date("Y-m-d 00:00:00");
+        //expect multiple results 
         $SQLconnection->oneResult = false;
-        $events = $SQLconnection->sql("SELECT * FROM events WHERE user={$_POST['ID']}");
-        if($events != null){
+        //send the sql
+        $subject = $SQLconnection->sql("SELECT * FROM events WHERE user={$_POST['ID']}");
+        //if events
+        if($subject != null){
+            //convert todays date to a DateTime
             $today = new DateTime($today);
+            //empty list for the data
             $data = [];
-            foreach($events as $event){
+            foreach($subject as $event){
+                //find the difference in days 
                 $eventDate = new DateTime($event["date"]);
                 $interval = $today->diff($eventDate);
                 $dayDif = $interval->days;
-
+                //id it is within seven days 
                 if($dayDif>=0 && $dayDif <7 && $eventDate>=$today){
                 if(array_key_exists((string)$dayDif,$data)){
+                    //if there is already events on this day add it after
                     $data[$dayDif][] = $event;
                 }else{
+                    //if not create a new list and add ot to it 
                     $data[(string)$dayDif] = array();
                     $data[(string)$dayDif][] = $event;
                 }}

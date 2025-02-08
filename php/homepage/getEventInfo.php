@@ -9,11 +9,11 @@ if ($_POST) {
     $output = $SQLconnection->sql("SELECT * FROM users WHERE Pass='{$_POST["password"]}' && ID='{$_POST["ID"]}'"); 
     if($output){
         $today = date("Y-m-d");  // getting todays date
-        $events = $SQLconnection->sql("SELECT * FROM events WHERE user={$_POST['ID']} &&ID='{$_POST["eventID"]}'"); // all events with the user's ID
-        if($events != null){
+        $subject = $SQLconnection->sql("SELECT * FROM events WHERE user={$_POST['ID']} &&ID='{$_POST["eventID"]}'"); // all events with the user's ID
+        if($subject != null){
 
             //return the data
-            echo json_encode($events);
+            echo json_encode($subject);
         }else{
          echo 'false';
         }

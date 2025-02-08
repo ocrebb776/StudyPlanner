@@ -10,11 +10,11 @@ if ($_POST) {
     if($output){
         $today = date("Y-m-d");  // getting todays date
         $SQLconnection->oneResult = false; 
-        $events = $SQLconnection->sql("SELECT * FROM events WHERE user={$_POST['ID']}"); // all events with the user's ID
-        if($events != null){
+        $subject = $SQLconnection->sql("SELECT * FROM events WHERE user={$_POST['ID']}"); // all events with the user's ID
+        if($subject != null){
             $today = new DateTime($today); // creating a new datetime with todays date
             $data = []; // empty associative  array with for events over the next dates
-            foreach($events as $event){ 
+            foreach($subject as $event){ 
                 $eventDate = new DateTime($event["date"]); //creating a DateTime with the date of the event 
                 $interval = $today->diff($eventDate); // getting the interval between the two dates 
                 $dayDif = $interval->days; // getting the interval in days

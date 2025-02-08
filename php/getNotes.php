@@ -8,8 +8,11 @@ if ($_POST) {
     if ($output) {
         $today = date("Y-m-d");
         $SQLconnection->oneResult = false;
-        $sql = "SELECT * FROM notes WHERE `user`='{$_POST['ID']}' && frID='{$_POST['id']}' ORDER BY date DESC";
+        //get the 
+        $sql = "SELECT * FROM notes WHERE `user`='{$_POST['ID']}' && frID='{$_POST['id']}' && frTable='{$_POST["table"]}'ORDER BY date DESC";
+        
         $notes = $SQLconnection->sql($sql);
+        
         if($notes){
         
         echo json_encode($notes);
