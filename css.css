@@ -29,3 +29,6 @@
 :root, [data-bs-theme=light],[data-bs-theme=dark] {
   --bs-font-sans-serif:-apple-system, BlinkMacSystemFont, sans-serif;
 }
+.bg-purple{
+  background-color: rgb(172, 52, 206);
+}

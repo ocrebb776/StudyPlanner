@@ -1,0 +1,1 @@
+/Applications/XAMPP/htdocs/webstudyplanner/StudyPlanner/homescreen.js

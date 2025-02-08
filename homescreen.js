@@ -144,11 +144,11 @@ class HomeScreen extends Screen {
     this.topicAndSubjectSection.show();
 
     //creating the Calendar title
-    let CalendarTitle = document.createElement("div")
-    CalendarTitle.classList.add("card-header")
-    CalendarTitle.textContent = "Calendar"
+    let CalendarTitle = document.createElement("div");
+    CalendarTitle.classList.add("card-header");
+    CalendarTitle.textContent = "Calendar";
     //adding it to the title
-    calendarWrapper.prepend(CalendarTitle)
+    calendarWrapper.prepend(CalendarTitle);
     this.element.append(
       calendarWrapper,
       this.buttonListContainer,
@@ -266,14 +266,9 @@ class TopicAndSubjectSection extends Screen {
     this.cardBody = document.createElement("div");
     this.cardBody.setAttribute("class", "card-body");
     this.topics();
-    this.displayTopics()
+    this.displayTopics();
     //add the card body to the element
     this.element.append(this.cardBody);
-
-
-
-    
-
   }
   topics() {
     //get the topics
@@ -399,70 +394,69 @@ class TopicAndSubjectSection extends Screen {
     let sort = new SortByKey(topics, "rating");
     //get the sorted list and reverse it to get the list in reverse order
     topics = sort.sortedList.reverse();
-    this.rankedTopics = topics
-    return topics
+    this.rankedTopics = topics;
+    return topics;
   }
-  displayTopics(){
+  displayTopics() {
     //create a blanbk list
-    this.topicListElement = document.createElement("div")
+    this.topicListElement = document.createElement("div");
 
     //loop through the ranket Topics
-    this.rankedTopics.forEach(topic=>{
+    this.rankedTopics.forEach((topic) => {
       //define the data to display
       let dispData = {
         //convert the rating to a percentage
-        "Difficulty Rating":String(Math.round(topic.diffrating*100/255))+"%",
-        //convert theTimepstamp to the date 
-        "Last Visited":topic.date.convertDate(),
-        //show the rating 
-        "Rating":String(Math.round(100*(topic.rating)))
-      }
+        "Difficulty Rating":
+          String(Math.round((topic.diffrating * 100) / 255)) + "%",
+        //convert theTimepstamp to the date
+        "Last Visited": topic.date.convertDate(),
+        //show the rating
+        Rating: String(Math.round(100 * topic.rating)),
+      };
       //create the button
-      let btn = createInfoClickBtn(dispData)
+      let btn = createInfoClickBtn(dispData);
       // create an element to hold the name
-      let name = document.createElement("div")
-      name.classList.add("h4")
-      name.textContent = topic.name
+      let name = document.createElement("div");
+      name.classList.add("h4");
+      name.textContent = topic.name;
       //add the name to the front of the button
-      btn.prepend(name)
-      //adding the viewElement event listenrer 
-      btn.addEventListener("click",function(){
-        viewTopic(topic)
-      })
+      btn.prepend(name);
+      //adding the viewElement event listenrer
+      btn.addEventListener("click", function () {
+        viewTopic(topic);
+      });
       //adding the button to the topicLisyElement
-      this.topicListElement.append(btn)
-    })
+      this.topicListElement.append(btn);
+    });
     //adding the listElement to a blank card body
-    this.cardBody.innerHTML = ""
-    this.cardBody.append(this.topicListElement)
-
+    this.cardBody.innerHTML = "";
+    this.cardBody.append(this.topicListElement);
   }
-
 }
 //adding the convert date to the prototype of String
-String.prototype.convertDate = function(){
-  return this.split(" ")[0].split("-").reverse().join("/")
-}
-String.prototype.toWordCase = function(){
-  //make the entire string to  lowercase 
-  let string = this.toLowerCase()
+String.prototype.convertDate = function () {
+  return this.split(" ")[0].split("-").reverse().join("/");
+};
+String.prototype.toWordCase = function () {
+  //make the entire string to  lowercase
+  let string = this.toLowerCase();
   //split the sting by the word
-  string =string.split(" ")
-  //for each word 
-  for(const key in string){
+  string = string.split(" ");
+  //for each word
+  for (const key in string) {
     //set the word to equal to the first letter to uppercase plus the rest of the word
-    string[key] =string[key].split("")[0].toUpperCase() + string[key].substring(1)
+    string[key] =
+      string[key].split("")[0].toUpperCase() + string[key].substring(1);
   }
-  //join the elements back toGether 
-  string = string.join(" ")
+  //join the elements back toGether
+  string = string.join(" ");
   //return the sting /
 
-  return string
-
-}
-String.prototype.toMins = function(){
-return hr_minToMin(this)
-}
+  return string;
+};
+String.prototype.toMins = function () {
+  return hr_minToMin(this);
+};
 
 class HomeScreenCalendarWeek extends Screen {
   show() {
@@ -484,13 +478,13 @@ class HomeScreenCalendarWeek extends Screen {
       password: StoredPassword,
     };
     let result = request.send();
-    
-    //if it was a succses 
+
+    //if it was a succses
     if (result.status == 200) {
       return JSON.parse(result.responseText);
     } else {
-      console.log(result)
-      //if not return false 
+      console.log(result);
+      //if not return false
       return false;
     }
   }
@@ -534,12 +528,12 @@ class HomeScreenCalendarWeek extends Screen {
 
       //addinging the current days dates data to varaibale todat
       let today = this.data[x];
-      console.log(this.data)
+      console.log(this.data);
       // if there is event on that date
       if (today) {
         //convert the database response into the day
         today = this.processWeekDay(today);
-        console.log(today)
+        console.log(today);
         ViewElement.style.display = "grid";
         ViewElement.style.gridTemplateColumns = today[1];
         today[0].forEach((el) => {
@@ -554,35 +548,34 @@ class HomeScreenCalendarWeek extends Screen {
             // }
 
             //default style is none
-            let style = ""
-            //switch to define what the type should be 
-            switch(el.Type){
+            let style = "";
+            //switch to define what the type should be
+            switch (el.Type) {
               //if the type is study
               case "study":
-                style = "warning"
+                style = "warning";
                 break;
               //all colour specific cases
               case "blue":
-                style = "primary"
+                style = "primary";
                 break;
               case "green":
-                style = "success"
+                style = "success";
                 break;
-                case "red":
-                style = "danger"
+              case "red":
+                style = "danger";
                 break;
-                case "yellow":
-                style = "warning"
+              case "yellow":
+                style = "warning";
                 break;
-                case "purple":
-                style = "purple"
+              case "purple":
+                style = "purple";
                 break;
-                //incase no colour is set 
-                default:
-                  style = "secondary"
+              //incase no colour is set
+              default:
+                style = "secondary";
             }
-            event.classList.add("bg-"+style);
-
+            event.classList.add("bg-" + style);
 
             event.classList.add("progress-bar");
             event.style.borderRadius = "20px";
@@ -609,12 +602,12 @@ class HomeScreenCalendarWeek extends Screen {
 
 // CALENDAR FUNCTIONS
 const getStartAndEndTimesCalendar = function (data) {
-  //empty list to contain the elemnt 
+  //empty list to contain the elemnt
   let startAndEnd = [];
 
   data.forEach((el) => {
     //add the start time and the end time to the list with the data inbetween
-    //if the event cuts of an event before, to avoid breakage stop the event before 1 minute before the next one stqaerts 
+    //if the event cuts of an event before, to avoid breakage stop the event before 1 minute before the next one stqaerts
     time = hr_minToMin(el.startTime);
     if (startAndEnd[startAndEnd.length - 1] >= time) {
       startAndEnd[startAndEnd.length - 1] = time - 1;
@@ -622,25 +615,25 @@ const getStartAndEndTimesCalendar = function (data) {
     startAndEnd.push(time, el);
     startAndEnd.push(hr_minToMin(el.endTime));
   });
-  //retunr the l;ist 
+  //retunr the l;ist
   return startAndEnd;
 };
 
 const createElementOrder = function (data) {
   let last = "number";
   let order = [];
-  //go through each element 
+  //go through each element
   data.forEach((el) => {
     //if it was a number
     if (typeof el == "number") {
-      //and the last one was a number 
+      //and the last one was a number
       if (last == "number") {
-        //then a space should be next 
+        //then a space should be next
         order.push(0);
       }
       last = "number";
     } else {
-      //if it not a number then an event should be there 
+      //if it not a number then an event should be there
       order.push(el);
       last = "string";
     }
@@ -803,7 +796,7 @@ function createNewEventForm(
         type: "select",
         placeholder: "--",
         value: inputData.Type,
-        opt: ["study", "engagement", "other"],
+        opt: ["study", "blue", "green", "red", "yellow", "purple", "other"],
       },
     ],
     function () {
@@ -924,17 +917,14 @@ function createNewEventForm(
         }
       }
       //if the start time is after the end time
-      if(data.StartTime.toMins() >= data.EndTime.toMins()){
-        //the form is invalid 
-        valid = false
-        //tell the user that there is an issue 
-        alert("The start time must be before the end time")
-      }else{
-        console.log(data.StartTime.toMins(),data.EndTime.toMins())
+      if (data.StartTime.toMins() >= data.EndTime.toMins()) {
+        //the form is invalid
+        valid = false;
+        //tell the user that there is an issue
+        alert("The start time must be before the end time");
+      } else {
+        console.log(data.StartTime.toMins(), data.EndTime.toMins());
       }
-
-
-
 
       if (valid) {
         // if the user wants to proceed
@@ -1636,9 +1626,10 @@ function viewTopic(data, closeFtn = false, modal = new Popup()) {
   delete displayInfo.user;
   delete displayInfo.subjectID;
 
-  displayInfo.date = displayInfo.date.convertDate()
-  displayInfo.dateCreated = displayInfo.date.convertDate()
-  displayInfo.diffrating = String(Math.round(displayInfo.diffrating*100/255))+"%"
+  displayInfo.date = displayInfo.date.convertDate();
+  displayInfo.dateCreated = displayInfo.date.convertDate();
+  displayInfo.diffrating =
+    String(Math.round((displayInfo.diffrating * 100) / 255)) + "%";
 
   //get list of notes in the element
   let notes = document.createElement("div");
@@ -1941,18 +1932,22 @@ class Search {
         //for each event in that date
         this.data.events[day].forEach((event) => {
           //add the event to the main event
-          event.date = event.date.convertDate()
-          event.Type = event.Type.toWordCase()
+          event.date = event.date.convertDate();
+          event.Type = event.Type.toWordCase();
           this.data.eventList.push(event);
         });
       }
-      for(const notes in this.data.notes){
-        this.data.notes[notes].date = this.data.notes[notes].date.convertDate()
-        this.data.notes[notes].frTable = this.data.notes[notes].frTable.toWordCase()
+      for (const notes in this.data.notes) {
+        this.data.notes[notes].date = this.data.notes[notes].date.convertDate();
+        this.data.notes[notes].frTable =
+          this.data.notes[notes].frTable.toWordCase();
       }
-      for(const topic in this.data.topics){
-        this.data.topics[topic].date = this.data.topics[topic].date.convertDate()
-        this.data.topics[topic].diffrating = String(Math.round(this.data.topics[topic].diffrating*100/255))+"%"
+      for (const topic in this.data.topics) {
+        this.data.topics[topic].date =
+          this.data.topics[topic].date.convertDate();
+        this.data.topics[topic].diffrating =
+          String(Math.round((this.data.topics[topic].diffrating * 100) / 255)) +
+          "%";
       }
       //return the data
       return this.data;

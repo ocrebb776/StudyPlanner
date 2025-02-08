@@ -10,7 +10,7 @@ if ($_POST) {
         
 
         $SQLconnection->sql("DELETE FROM topics  WHERE ID='{$_POST["topicID"]}'", false);
-        $SQLconnection->sql("DELETE FROM notes  WHERE frID='{$_POST["topicID"]}' && frTable='topic'", false);
+        $SQLconnection->sql("DELETE FROM notes  WHERE frID='{$_POST["topicID"]}' && frTable='topics'", false);
         $SQLconnection->sql("DELETE FROM visit  WHERE topicID='{$_POST["topicID"]}'", false);
     }
 } else {
