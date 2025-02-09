@@ -2,6 +2,7 @@
 // to allow for the sql requests necessary for this 
 require "../SQL.php";
 if ($_POST) {
+
     //start the connection 
     $SQLconnection = new MySQLRequest();
     //expect only one rsult 
@@ -9,24 +10,33 @@ if ($_POST) {
     // validate the login 
     $output = $SQLconnection->sql("SELECT * FROM users WHERE Pass='{$_POST["password"]}' && ID='{$_POST["ID"]}'");
     if($output){
-        //get todays date
-        $today = date("Y-m-d 00:00:00");
+     /*   take the Javascript dateTime string and convert it to a format that can be used in the php 
+        format 
+        */
+        $_POST['date'] = preg_replace('/\s\([^)]+\)$/', '', $_POST['date']);
+        //parse the updates String to a dateTime object
+        $today = new dateTime($_POST['date']);
+        $today->setTime(0,0,0);
+        
+  
         //expect multiple results 
         $SQLconnection->oneResult = false;
         //send the sql
         $subject = $SQLconnection->sql("SELECT * FROM events WHERE user={$_POST['ID']}");
         //if events
         if($subject != null){
-            //convert todays date to a DateTime
-            $today = new DateTime($today);
             //empty list for the data
             $data = [];
             foreach($subject as $event){
                 //find the difference in days 
-                $eventDate = new DateTime($event["date"]);
-                $interval = $today->diff($eventDate);
+
+                //parse the date to a dateTime object with the correct timezone
+                $eventDate = new DateTime($event["date"],new DateTimeZone('UTC'));
+                //getting the difference 
+                $interval = $today->diff($eventDate,false);
                 $dayDif = $interval->days;
-                //id it is within seven days 
+                //is it is within seven days 
+         
                 if($dayDif>=0 && $dayDif <7 && $eventDate>=$today){
                 if(array_key_exists((string)$dayDif,$data)){
                     //if there is already events on this day add it after

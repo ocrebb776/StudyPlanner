@@ -157,6 +157,9 @@ class HomeScreen extends Screen {
 
     //instantiating the search features for later in the program
     search = new Search();
+
+    //HomeScreen Calendar Date Attribute, to be used to select a different date
+    this.selectedDate = null;
   }
 }
 
@@ -457,9 +460,28 @@ String.prototype.toWordCase = function () {
 String.prototype.toMins = function () {
   return hr_minToMin(this);
 };
+Date.prototype.isDateOnTheSameDayAs = function (date) {
+  //check if both dates are on the same day 
+  let sameDay = this.getDate() == date.getDate();
+  if (sameDay) {
+    //if they are on the same day check to see if they are on the same month
+    let sameMonth = this.getMonth() == date.getMonth();
+    if (sameMonth) {
+      //and finally check if they are on the same year 
+      let sameYear = this.getFullYear() == date.getFullYear();
+      if (sameYear) {
+        // if all three are true then return true
+        return true;
+      }
+    }
+  }
+  //if any of the above are false then return false
+  return false;
+};
 
 class HomeScreenCalendarWeek extends Screen {
   show() {
+    this.changeSelectedDate = this.changeSelectedDate.bind(this);
     this.element.innerHTML = "";
     this.calendarColours = {
       Study: "#ed80f2",
@@ -470,16 +492,19 @@ class HomeScreenCalendarWeek extends Screen {
     let DayList = this.daysList();
   }
   GetCalendarData() {
+    // IF no date has been selected or the Date Selected is invallid then use todays date
+    this.updateCurrentDay();
     //send a request
     let request = new AjaxTemplate(false);
     request.href = "php/homepage/getCalendarInfo.php";
     request.data = {
       ID: StoredID,
       password: StoredPassword,
+      date: this.currentDay,
     };
     let result = request.send();
 
-    //if it was a succses
+    //if it was a success
     if (result.status == 200) {
       return JSON.parse(result.responseText);
     } else {
@@ -490,7 +515,7 @@ class HomeScreenCalendarWeek extends Screen {
   }
   daysList() {
     //get todays date
-    let currentDay = new Date();
+
     //abbreviations of dates
     let days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
     //iterates through 7 days starting with the current date at the top
@@ -503,20 +528,33 @@ class HomeScreenCalendarWeek extends Screen {
       //container to display the date
       let date = document.createElement("div");
       date.classList.add("col");
-      if (x == 0) {
+      if (x == 0 ) {
         //if it is today as a background(as defined by bootStrap)
-        date.classList.add("bg-primary", "text-white");
+        date.classList.add("text-white");
+        date.textContent = this.currentDay.getDate() + "-";
+        // add an eventListener when the first date is clicked
+
+        date.addEventListener("click", this.changeSelectedDate);
+        //check to see if the first date is today 
+        if(this.currentDay.isDateOnTheSameDayAs(new Date())){
+          //if it is set the colour to be blue 
+          date.classList.add("bg-primary");
+        }else{
+          //if not set it to be grey
+          date.classList.add("bg-secondary");
+        }
+
       }
       date.style.borderRadius = "30px";
       date.style.height = 110 % date.classList.add("text-center", "rounded");
       //getting the day of the week of the new date
-      let dayOf = x + currentDay.getDay() - 1 + days.length;
+      let dayOf = x + this.currentDay.getDay() - 1 + days.length;
       // if the dayOd is more than the list of arrays loop back to the beginning
       if (dayOf >= days.length) {
         dayOf = dayOf % days.length;
       }
       //adding the date to the date element
-      date.textContent = days[dayOf];
+      date.textContent += days[dayOf];
 
       //the viewElement contains te bar that all events exist in
       let ViewElement = document.createElement("div");
@@ -597,6 +635,41 @@ class HomeScreenCalendarWeek extends Screen {
     let elementOrder = createElementOrder(startEndTimes);
     let frs = getRatios(startEndTimes);
     return [elementOrder, frs];
+  }
+  updateCurrentDay() {
+    if (
+      homeScreen.selectedDate == null ||
+      homeScreen.selectedDate.constructor != Date
+    ) {
+      this.currentDay = new Date();
+    } else {
+      // use selected date
+      this.currentDay = homeScreen.selectedDate;
+    }
+  }
+  changeSelectedDate() {
+    //update the current date
+    this.updateCurrentDay();
+    //a for to edit the date
+    let form = new FormPopUp(
+      "Change Date",
+      [
+        {
+          name: "Date",
+          displayName: "Date",
+          type: "date",
+          placeholder: "--",
+          value: this.currentDay.toISOString().split("T")[0],
+        },
+      ],
+      function () {
+        homeScreen.selectedDate = new Date(this.formData.Date);
+        homeScreen.calendar.show();
+        this.hide();
+      },
+      "close"
+    );
+    form.show();
   }
 }
 
@@ -705,9 +778,35 @@ class HomeScreenDayView extends HomeScreenCalendarWeek {
             viewEvent(el.ID);
           });
 
-          if (el.Type == "study") {
-            event.classList.add("bg-warning");
-          }
+      //default style is none
+      let style = "";
+      //switch to define what the type should be
+      switch (el.Type) {
+        //if the type is study
+        case "study":
+          style = "warning";
+          break;
+        //all colour specific cases
+        case "blue":
+          style = "primary";
+          break;
+        case "green":
+          style = "success";
+          break;
+        case "red":
+          style = "danger";
+          break;
+        case "yellow":
+          style = "warning";
+          break;
+        case "purple":
+          style = "purple";
+          break;
+        //incase no colour is set
+        default:
+          style = "secondary";
+      }
+      event.classList.add("bg-" + style);
           event.classList.add("progress-bar");
           event.classList.add("text-black");
           event.style.borderRadius = "20px";
@@ -717,7 +816,24 @@ class HomeScreenDayView extends HomeScreenCalendarWeek {
         ViewElement.append(event);
       });
     }
-    body.append(ViewElement);
+    //creating a button to change the event
+    let changeDateBtn = document.createElement("button");
+    //adding button styling and text
+    changeDateBtn.classList.add("btn", "btn-primary");
+    changeDateBtn.textContent = "Change Date";
+    //adding the change event listener
+    changeDateBtn.addEventListener("click", this.changeSelectedDate);
+
+    //create text to display the current date
+    let crrDate = document.createElement("div");
+    crrDate.classList.add("m-2");
+    crrDate.textContent = `${this.currentDay.toLocaleDateString("en-EN", {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+    })} `;
+    //adding everything into the body of the card
+    body.append(changeDateBtn, crrDate, ViewElement);
     dayContainer.append(body);
     card.append(dayContainer);
     this.element.append(card);
@@ -726,10 +842,10 @@ class HomeScreenDayView extends HomeScreenCalendarWeek {
 
 function calendarDayView() {
   //create an instance of HomeScreenDayView
-  let dayView = new HomeScreenDayView();
+  homeScreen.calendar = new HomeScreenDayView();
   //assigning the element
-  dayView.element = homeScreen.calendar.element;
-  dayView.show();
+  homeScreen.calendar.element = homeScreen.calendarBody;
+  homeScreen.calendar.show();
   //changing th button text
   homeScreen.buttonRight.textContent = "Week View";
   //changing the EventListeners
