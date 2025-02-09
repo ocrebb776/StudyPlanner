@@ -39,7 +39,7 @@ let homeScreen;
 let darkMode = false;
 let StoredID = false;
 let StoredPassword = false;
-let search
+let search;
 // wait until the page has loaded to add items such as event listeners
 window.onload = function () {
   lockScreen = new LockScreen();
@@ -202,8 +202,8 @@ https://getbootstrap.com/docs/5.0/components/modal/
   }
   show() {
     //allowing for it to be opend
-    bootstrap.Modal.getInstance(this.element).show()
-    console.log(bootstrap.Modal.getInstance(this.element))
+    bootstrap.Modal.getInstance(this.element).show();
+    console.log(bootstrap.Modal.getInstance(this.element));
   }
   hide() {
     //alowing it to be closed
@@ -292,11 +292,11 @@ class FormPopUp extends Popup {
           el.opt.forEach((opt) => {
             //creating an <option> tag for each option
             let option = document.createElement("option");
-            //if the option is a list then have 
+            //if the option is a list then have
             //the value being the first item and the second being the display
-            if(typeof opt != "object"){
+            if (typeof opt != "object") {
               //if set both of the value and text content to be the option
-              opt = [opt,opt]
+              opt = [opt, opt];
             }
             option.setAttribute("value", opt[0]);
             option.textContent = opt[1];
@@ -324,7 +324,7 @@ class FormPopUp extends Popup {
         case "range":
           container.setAttribute("class", "mb-3"); //boostrap classes
           label = createLabel(el, title, "form-label");
-          label.textContent = el.displayName
+          label.textContent = el.displayName;
           input = createInputElement(el, title);
 
           container.append(label, input);
@@ -513,39 +513,78 @@ function convertNoteToHTML(data, pageRefresh) {
   card.textContent = data.text;
   card.setAttribute("readonly", "");
   card.style.resize = "none";
-  card;
+  
 
   //container containing the buttons
   let buttonList = document.createElement("div");
   buttonList.classList.add("col-4");
+  //default values 
+  let deleteBtn = ''
+  let edit = ''
 
+  //if the note is actually a note 
+  if ((data.frTable != "aVisit")) {
   //icon EDIT ICON
-  let edit = document.createElement("i");
+  edit = document.createElement("i");
   edit.classList.add("fa-solid", "fa-pen-to-square", "btn", "btn-outline");
-  //onclick eventListeners
-  edit.addEventListener("click", function () {
-    createNote(
-      data.frID,
-      data.frTable,
-      (newNote = false),
-      (noteID = data.ID),
-      (oldNote = data.text),
-      pageRefresh,
-      data
-    );
-  });
+  
+  //adding an event listener to the edit button
+    edit.addEventListener("click", function () {
+      //show a form to edit the note
+      createNote(
+        data.frID,
+        data.frTable,
+        (newNote = false),
+        (noteID = data.ID),
+        (oldNote = data.text),
+        pageRefresh,
+        data
+      );
+    });
+  
 
   //icon DELETE ICON
-  let deleteBtn = document.createElement("i");
+  deleteBtn = document.createElement("i");
   deleteBtn.classList.add("fa-solid", "fa-trash", "btn", "btn-outline");
   deleteBtn.addEventListener("click", function () {
     console.log(pageRefresh);
     //pageRefresh reloads that part of the page to update it without the note
     deleteNote(data, pageRefresh);
   });
+
+}else{
+
+  //calculating the percentage difficulty from the diffracting vale
+  let diffRating = Math.round(100*data.diffrating/255)
+  //making the current card into another variable called text 
+  let text = card
+  //creating a new element to contain everything 
+  card = document.createElement("div");
+
+  //making sure the bootstrap classes are correct to make the look consistent 
+  text.classList.remove("col-8");
+  card.classList.add("card", "p-2", "col-8");
+
+  //creating a progress bar to show the difficulty rating
+  let progress = document.createElement("div");
+  progress.classList.add("progress",'m-2');
+  let progressBar = document.createElement("div");
+  progressBar.classList.add("progress-bar");
+  progressBar.setAttribute("role", "progressbar");
+  progressBar.setAttribute("style", `width: ${diffRating}%`);
+  progress.append(progressBar);
+  //adding everything to the card
+  card.append(data.type +"-" + diffRating+"%",progress,text)
+}
   //display the timestamp when created
   let timeStamp = document.createElement("div");
   timeStamp.textContent = data.date;
+
+  
+
+
+
+
 
   //adding icons to the button list
   buttonList.append(deleteBtn, edit, timeStamp);
@@ -563,7 +602,7 @@ function createNote(
   pageRefresh
 ) {
   noteForm = new FormPopUp(
-   newNote ? "Add Note":"Edit Note",
+    newNote ? "Add Note" : "Edit Note",
     [
       {
         name: "note",
@@ -646,23 +685,23 @@ function deleteNote(note, pageRefresh = false) {
   pageRefresh(note.frID);
 }
 
-function getAllNotes(){
-    //new synchronous ajax request
-    let request = new AjaxTemplate(false);
-    request.href = "php/getAllNotes.php";
-  
-    // creating the request data
-    request.data = {
-      ID: StoredID,
-      password: StoredPassword,
-    };
-    //data type
-    request.dataType = "json";
-    //send request
-    let send = request.send();
-    //for debugging information
-    console.log(send.responseJSON);
-  
-    //return the data
-    return send.responseJSON;
+function getAllNotes() {
+  //new synchronous ajax request
+  let request = new AjaxTemplate(false);
+  request.href = "php/getAllNotes.php";
+
+  // creating the request data
+  request.data = {
+    ID: StoredID,
+    password: StoredPassword,
+  };
+  //data type
+  request.dataType = "json";
+  //send request
+  let send = request.send();
+  //for debugging information
+  console.log(send.responseJSON);
+
+  //return the data
+  return send.responseJSON;
 }

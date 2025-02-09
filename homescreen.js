@@ -178,16 +178,6 @@ class TopicAndSubjectSection extends Screen {
     //create ButtonRow to contain both of the buttons
     this.buttonRow = document.createElement("div");
     this.buttonRow.classList.add("row");
-    //create a wrapper to contain the create button
-    this.createButtonWr = document.createElement("div");
-    //create the create button itself
-    this.createButton = createButton("Create", "primary");
-    //make sure it fills the wrapper horizontally
-    this.createButton.classList.add("w-100");
-    //make the width of the wrapper to be 9/12 of the space
-    this.createButtonWr.classList.add("col");
-    //put the create button within it wrapper
-    this.createButtonWr.append(this.createButton);
     //create a wrapper to contain the Subject button
     this.subjectButtonWr = document.createElement("div");
     //create the create button itself
@@ -198,10 +188,14 @@ class TopicAndSubjectSection extends Screen {
     this.subjectButton.classList.add("w-100");
     //put the button within its wrapper
     this.subjectButtonWr.appendChild(this.subjectButton);
+
+    //create button twas here 
+
+
     //create a wrapper to contain the Topic button
     this.TopicButtonWr = document.createElement("div");
     //create the create button itself
-    this.TopicButton = createButton("Topics", "success");
+    this.TopicButton = createButton("Topics", "secondary");
     //make the width of the wrapper to fill the rest of the row
     this.TopicButtonWr.classList.add("col");
     //make sure it fills the wrapper horizontally
@@ -211,7 +205,6 @@ class TopicAndSubjectSection extends Screen {
     //add the wrappers to the button row
     this.buttonRow.append(
       this.subjectButtonWr,
-      this.createButtonWr,
       this.TopicButtonWr
     );
     //add the buttonRow to the header
@@ -220,40 +213,40 @@ class TopicAndSubjectSection extends Screen {
     this.element.append(this.cardHeader);
     //adding the eventLisners to the button
 
-    //Create Button
-    this.createButton.addEventListener("click", function () {
-      let CreateButtonMenu = new Popup();
+    // //Create Button
+    // this.createButton.addEventListener("click", function () {
+    //   let CreateButtonMenu = new Popup();
 
-      //this is so that the user can clikc on the background to close the modal
-      CreateButtonMenu.element.setAttribute("data-bs-backdrop", "true");
-      //create a new element to contain all the buttons
-      let buttonList = document.createElement("div");
-      buttonList.classList.add("row", "g-3");
-      buttonList.style.margin = "auto";
+    //   //this is so that the user can clikc on the background to close the modal
+    //   CreateButtonMenu.element.setAttribute("data-bs-backdrop", "true");
+    //   //create a new element to contain all the buttons
+    //   let buttonList = document.createElement("div");
+    //   buttonList.classList.add("row", "g-3");
+    //   buttonList.style.margin = "auto";
 
-      //the CreateSubject button
-      let createSubject = createButton("Create Subject", "primary");
-      createSubject.addEventListener("click", function () {
-        createSubjectForm();
-      });
+    //   //the CreateSubject button
+    //   let createSubject = createButton("Create Subject", "primary");
+    //   createSubject.addEventListener("click", function () {
+    //     createSubjectForm();
+    //   });
 
-      //toggleDarkMode button
-      let createTopicButton = createButton("Create Topic", "outline-primary");
-      createTopicButton.addEventListener("click", function () {
-        createTopic();
-      });
+    //   //toggleDarkMode button
+    //   let createTopicButton = createButton("Create Topic", "outline-primary");
+    //   createTopicButton.addEventListener("click", function () {
+    //     createTopic();
+    //   });
 
-      //adding buttons to the buttonList
-      buttonList.append(createSubject, createTopicButton);
+    //   //adding buttons to the buttonList
+    //   buttonList.append(createSubject, createTopicButton);
 
-      //creating the title
-      CreateButtonMenu.title("Create?");
-      //adding the button list to the body element
-      CreateButtonMenu.body(buttonList);
-      CreateButtonMenu.footer(CreateButtonMenu.closeBtn("cancel"));
-      //showing the modal
-      CreateButtonMenu.show();
-    });
+    //   //creating the title
+    //   CreateButtonMenu.title("Create?");
+    //   //adding the button list to the body element
+    //   CreateButtonMenu.body(buttonList);
+    //   CreateButtonMenu.footer(CreateButtonMenu.closeBtn("cancel"));
+    //   //showing the modal
+    //   CreateButtonMenu.show();
+    // });
 
     this.subjectButton.addEventListener("click", function () {
       viewSubjects();
