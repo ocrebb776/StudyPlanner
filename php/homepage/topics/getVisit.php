@@ -8,7 +8,7 @@ if ($_POST) {
     //checking the account credentials
     $output = $SQLconnection->sql("SELECT * FROM users WHERE Pass='{$_POST["password"]}' && ID='{$_POST["ID"]}'");
     if ($output) {
-        //default  sql request  using a left join
+     
         $sql = "SELECT 
          *
          FROM visit

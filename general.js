@@ -130,7 +130,7 @@ class SortByKey {
     return this.sortedList;
   }
 }
-
+let CURRENTPOPUPOBJECT
 class Popup {
   constructor(id = "popup") {
     this.id = id;
@@ -201,6 +201,7 @@ https://getbootstrap.com/docs/5.0/components/modal/
     this.modalInstance = bootstrap.Modal.getInstance(this.element);
   }
   show() {
+    CURRENTPOPUPOBJECT = this
     //allowing for it to be opend
     bootstrap.Modal.getInstance(this.element).show();
     console.log(bootstrap.Modal.getInstance(this.element));
@@ -574,7 +575,24 @@ function convertNoteToHTML(data, pageRefresh) {
   progressBar.setAttribute("style", `width: ${diffRating}%`);
   progress.append(progressBar);
   //adding everything to the card
-  card.append(data.type +"-" + diffRating+"%",progress,text)
+  let time = String(Math.floor(data.time/60) + "h" + data.time%60 + "m")
+  card.append(data.type +" - " + diffRating+"%" +" - " + time,progress,text)
+
+  edit = document.createElement("i");
+  edit.classList.add("fa-solid", "fa-pen-to-square", "btn", "btn-outline");
+  edit.addEventListener("click", function () {
+    visit(data.frID,data.ID)
+  })
+    //icon DELETE ICON
+    deleteBtn = document.createElement("i");
+    deleteBtn.classList.add("fa-solid", "fa-trash", "btn", "btn-outline");
+    deleteBtn.addEventListener("click", function () {
+      //pageRefresh reloads that part of the page to update it without the note
+      deleteVisit(data.ID);
+      homeScreen.show();
+      CURRENTPOPUPOBJECT.hide()
+    });
+  
 }
   //display the timestamp when created
   let timeStamp = document.createElement("div");

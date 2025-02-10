@@ -13,7 +13,8 @@ if ($_POST) {
          topics.*,
          subjects.name as subjectName,
          COALESCE(visit.diffrating, -1) as diffrating,
-         COALESCE(visit.date,topics.dateCreated) as date
+         COALESCE(visit.date,topics.dateCreated) as date,
+         (SELECT SUM(time)  FROM visit WHERE topicID=topics.ID) as TotalTime
         FROM topics 
         LEFT JOIN subjects
         ON topics.subjectID = subjects.ID 

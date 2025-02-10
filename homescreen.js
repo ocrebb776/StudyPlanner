@@ -408,6 +408,7 @@ class TopicAndSubjectSection extends Screen {
         "Last Visited": topic.date.convertDate(),
         //show the rating
         Rating: String(Math.round(100 * topic.rating)),
+        "total time spent": topic.TotalTime
       };
       //create the button
       let btn = createInfoClickBtn(dispData);
@@ -453,6 +454,7 @@ String.prototype.toWordCase = function () {
 String.prototype.toMins = function () {
   return hr_minToMin(this);
 };
+
 Date.prototype.isDateOnTheSameDayAs = function (date) {
   //check if both dates are on the same day 
   let sameDay = this.getDate() == date.getDate();
@@ -471,6 +473,10 @@ Date.prototype.isDateOnTheSameDayAs = function (date) {
   //if any of the above are false then return false
   return false;
 };
+
+Number.prototype.convertToReadableFormat = function () {
+  return String(Math.floor(this/60) + "h" + this%60 + "m")
+}
 
 class HomeScreenCalendarWeek extends Screen {
   show() {
@@ -660,7 +666,7 @@ class HomeScreenCalendarWeek extends Screen {
         homeScreen.calendar.show();
         this.hide();
       },
-      "close"
+      "Change Selected Date"
     );
     form.show();
   }
@@ -1405,10 +1411,14 @@ function getSubject(id = false) {
   };
   request.dataType = "json";
   let send = request.send();
+  send = send.responseJSON
+  for(let x = 0; x < send.length; x++){
+    send[x].totalTime = Number(send[x].totalTime).convertToReadableFormat()
+  }
   if (id === false) {
-    return send.responseJSON;
+    return send
   } else {
-    return send.responseJSON[0];
+    return send[0]
   }
 }
 
@@ -1862,6 +1872,8 @@ function getTopic(id = false) {
       //change it to Empty
       send[i]["subjectName"] = "Empty";
     }
+    send[i].TotalTime =  Number(send[i].TotalTime).convertToReadableFormat()
+
   }
 
   if (id === false) {
@@ -1871,18 +1883,34 @@ function getTopic(id = false) {
   }
 }
 
-function visit(topicID) {
+function visit(topicID,visitID = false) {
+  console.log(visitID);
   //get information about the topic
   let topicInfo = getTopic(topicID);
+
+  //default values to use in the form
+  let visitValues = {
+    diffrating: 127,
+    type: "",
+    time: 0,
+    note: ""
+  }
+  if(visitID != false){
+    //if the visitIS is not false then get the date from the existing visit
+    visitValues = getVisit(visitID);
+    visitValues.time = (visitValues.time / 60);
+
+  }
 
   // if the diffrating is -1 then display it as being in the middle of the input
   if (topicInfo.diffrating == -1) {
     topicInfo.diffrating = 127;
   }
+  console.log(visitValues);
   //create a new form
   let form = new FormPopUp(
     // the header text with the topic name in it
-    `Mark "${topicInfo.name}" as Visited`,
+    (visitID!==false ) ? `Edit "${topicInfo.name}'s" Visit on ${visitValues.date}` :`Mark "${topicInfo.name}" as Visited` ,
     [
       //range input so that the user can input the difficulty of the task
       {
@@ -1892,14 +1920,14 @@ function visit(topicID) {
         other: [
           ["min", "0"],
           ["max", "255"],
-          ["value", topicInfo.diffrating],
+          ["value", visitValues.diffrating],
         ],
       },
       //input to show the type of activity
       {
         name: "type",
         displayName: "activity",
-        value: "",
+        value: visitValues.type,
         type: "text",
         placeholder: "--",
       },
@@ -1907,7 +1935,7 @@ function visit(topicID) {
       {
         name: "time",
         displayName: "Time spent(hours)",
-        value: 0,
+        value: visitValues.time,
         type: "number",
         placeholder: "--",
       },
@@ -1915,7 +1943,7 @@ function visit(topicID) {
       {
         name: "note",
         displayName: "note",
-        value: "",
+        value: visitValues.note,
         type: "textarea",
         placeholder: "--",
         height: "200px",
@@ -1943,7 +1971,7 @@ function visit(topicID) {
           let chr = whiteList(data[key], newLine);
           //if there are any disallowed  characters
           if (chr !== true) {
-            //add the dissalowed charters to the txt
+            //add the disallowed charters to the txt
             txt += `\n in ${key} these characters are not allowed \n• ${chr.join(
               "\n• "
             )}`;
@@ -1961,19 +1989,24 @@ function visit(topicID) {
 
       let request = new AjaxTemplate(false);
 
+      if(visitID == false){
       request.href = "php/homepage/topics/markTopicAsVisited.php";
+      }else{
+        request.href = "php/homepage/topics/editVisit.php";
+      }
       data.topicID = topicID;
       request.data = {
         // login details necessary for the php file
         ID: StoredID,
         password: StoredPassword,
         data: data,
+        visitID: visitID
       };
       request.send();
       this.hide(); // close the form
       homeScreen.show(); // to refresh the homepage
     },
-    "Mark as Visited"
+   (visitID !== false ) ? "Save Changes " : "Mark as Visited"
   );
   //show the form
   form.show();
@@ -2337,4 +2370,16 @@ function getAllEvents() {
   request.dataType = "json";
   //sending the events
   return request.send().responseJSON;
+}
+
+function deleteVisit(id){
+  let request = new AjaxTemplate(true);
+  request.href = "php/homepage/topics/deleteVisit.php";
+  //login credentials and the topicID
+  request.data = {
+    ID: StoredID,
+    password: StoredPassword,
+    visitID: id,
+  };
+  request.send();
 }
