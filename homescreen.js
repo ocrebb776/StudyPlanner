@@ -408,7 +408,8 @@ class TopicAndSubjectSection extends Screen {
         "Last Visited": topic.date.convertDate(),
         //show the rating
         Rating: String(Math.round(100 * topic.rating)),
-        "total time spent": topic.TotalTime
+        "total time spent": topic.TotalTime,
+        "Subject": topic.subjectName
       };
       //create the button
       let btn = createInfoClickBtn(dispData);
@@ -1087,7 +1088,7 @@ function hr_minToMin(l) {
 function whiteList(string, allowNewLine = false) {
   //list of allowed characters
   let allowed =
-    "qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM!£$%&_-+=,.<>#: ".split(
+    "qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM!£$%&_-+=,.<>#: /@".split(
       ""
     );
   let striped = [];
@@ -1312,8 +1313,15 @@ function openOptionsView() {
     toggleDarkmode();
   });
 
+  let refreshButton = createButton("Refresh", "outline-warning");
+  refreshButton.addEventListener("click", function(){
+    homeScreen.show()
+    optionsView.hide()
+  });
+  refreshButton.textContent = "Refresh";
+
   //adding buttons to the buttonList
-  buttonList.append(logoutButton, toggleDarkModeButton);
+  buttonList.append(logoutButton, toggleDarkModeButton,refreshButton);
 
   //creating the title
   optionsView.title("Options");
@@ -1520,7 +1528,7 @@ function viewSubject(data, closeFtn = false, modal = new Popup()) {
   TitleInfoCard.classList.remove("btn", "btn-light", "card");
   //create
   let titleEL = document.createElement("div");
-  titleEL.setAttribute("class", "col-7 h2");
+  titleEL.setAttribute("class", "col-24 h2");
   //create a close Button
   let closeBtn = modal.closeBtn("Back");
   //change background color
@@ -1533,8 +1541,15 @@ function viewSubject(data, closeFtn = false, modal = new Popup()) {
       closeFtn();
     });
   }
-  //text content
-  titleEL.textContent = displayInfo.name;
+  //creating a button to view all of the topics in the subject
+  let viewTopicsButton = document.createElement("button");
+  viewTopicsButton.classList.add("btn", "btn-primary");
+  viewTopicsButton.textContent = "View Topics";
+  viewTopicsButton.addEventListener("click", function () {
+    viewTopics(data.ID);
+  })
+  //addning the name of the subject and a button to view all of the topics in the subject
+  titleEL.append(displayInfo.name," ",viewTopicsButton)
   TitleInfoCard.prepend(titleEL);
   modal.title(TitleInfoCard);
   //add the buttons to the footer
@@ -1689,19 +1704,29 @@ function createTopic(
   topicForm.show();
 }
 
-function viewTopics() {
+function viewTopics(subjectID = false) {
+  //if there is a subjectID then then the functions should filter for only that subject
+  let subjectSpec = !(subjectID == false)
   //get topic data
   let data = getTopic();
   //create popup
   let modal = new Popup();
   //define the title
   modal.title("View Topics");
+  if(subjectSpec){
+    //get the information about the subject
+    let subject = getSubject(subjectID)
+    //change the title to show the name of the subject 
+    modal.title(`View Topics for ${subject.name}`)
+  }
   //this is so that the user can clikc on the background to close the modal
   //modal.element.setAttribute("data-bs-backdrop", "true");
   //element to store the list of topics
   let TopicList = document.createElement("div");
   //for each topic
   data.forEach((el) => {
+    //if the program is not subject specific or the topic is in the subject given
+    if(!subjectSpec || el.subjectID == subjectID){
     //create an empty cardButton
     let btn = createInfoClickBtn({ subject: el.subjectName });
     //create a title element
@@ -1717,7 +1742,7 @@ function viewTopics() {
       viewTopic(el, viewTopics(), modal);
     });
     //add the button to the topic list
-    TopicList.append(btn);
+    TopicList.append(btn);}
   });
   //add the topic list into the body
   modal.body(TopicList);
@@ -1728,7 +1753,10 @@ function viewTopics() {
     createTopic();
   });
   //add the close button to the footer
-  modal.footer(createTopicButton, modal.closeBtn());
+  let modalCloseBtn = modal.closeBtn();
+
+
+  modal.footer(createTopicButton, modalCloseBtn);
   console.log(modal);
   //show the modal
   modal.show();
@@ -1821,7 +1849,19 @@ function viewTopic(data, closeFtn = false, modal = new Popup()) {
   modal.title(TitleInfoCard);
   //add the buttons to the footer
   //modal.title("l")
-  modal.body(editBTN, notes);
+
+  //a button to go to the subject that the link is attached to
+  let goToSubject = ''
+  //if there is a subjectID then the button should be created
+  if(topicInfo.subjectID != -1){
+    //creating the button
+  goToSubject = document.createElement("button");
+  goToSubject.classList.add("btn", "btn-primary");
+  goToSubject.textContent = "Go to Subject";
+  goToSubject.addEventListener("click", function () {
+    viewSubject({ ID: topicInfo.subjectID });
+  })}
+  modal.body(goToSubject," ",editBTN, notes);
   modal.footer(markTopicAsVisited, addNoteBtn, deleteBtn, closeBtn);
   modal.show();
 }

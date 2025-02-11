@@ -256,6 +256,7 @@ function loginValidation(
         }
         //set the homescreen to be shown
         homeScreen.swapStatus();
+        document.getElementById("nameGoesHere").innerHTML = username;
       }
     };
     //send the request

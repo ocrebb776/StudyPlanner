@@ -105,22 +105,25 @@ class SortByKey {
     this.pivot(list); // start sequence
   }
   pivot(list) {
+    console.log(list);
     // if their is items to sort
     if (list.length > 1) {
       let lower = []; // where all values lower of the pivot will go
       let higher = []; // where all values Higher than the pivot will og
       let pivot = list[list.length - 1][this.key]; // the value of the pivot
+      let sameAsPivot = []
       list.forEach((item) => {
         if (item[this.key] > pivot) {
           higher.push(item); // if higher than pivot
         } else if (item[this.key] < pivot) {
           lower.push(item); // if lower than pivot
+        }else{
+          //if it is the same as the 
+          sameAsPivot.push(item)
         }
       });
       this.pivot(lower); // start sequnce again for lower values
-
-      this.sortedList.push(list[list.length - 1]); // when the call stack reaches this line it will already have put all values lower than into the sorted list, so the pivot can now enter
-
+      this.sortedList = this.sortedList.concat(sameAsPivot)
       this.pivot(higher); // start sequnce again for higher values after lower values have been put in
     } else if (list.length == 1) {
       this.sortedList.push(list[0]);
@@ -423,7 +426,7 @@ function createInputElement(el, title) {
     input,
     ["type", el.type],
     ["class", inputClass],
-    ["id", el.name + "--" + title],
+    ["id", el.name + "--" + "FORMPOPUPELEMENT"],
     ["name", el.name],
     ["value", el.value]
   );
@@ -442,7 +445,7 @@ function createInputElement(el, title) {
 
 function createLabel(el, title, labelTextClass = "") {
   const label = document.createElement("label");
-  label.setAttribute("for", el.name + "--" + title);
+  label.setAttribute("for", el.name + "--" + "FORMPOPUPELEMENT");
   label.textContent = el.displayName;
   if (labelTextClass) label.setAttribute("class", labelTextClass);
   return label;
@@ -514,6 +517,24 @@ function convertNoteToHTML(data, pageRefresh) {
   card.textContent = data.text;
   card.setAttribute("readonly", "");
   card.style.resize = "none";
+
+  //find all of the links in the text using the linkify plugin
+  let links = linkify.find(data.text);
+
+  let linkElement = document.createElement("div");
+  linkElement.classList.add("col-8");
+  //for each link
+  links.forEach((el) => {
+    //create a link element
+    let link = document.createElement("a");
+    //bootstrap classes
+    link.classList.add("btn", "btn-outline", "btn-primary");
+    link.setAttribute("href", el.href);
+    //set the button text to be the link
+    link.textContent = el.href;
+    
+    linkElement.append(link);
+  });
   
 
   //container containing the buttons
@@ -600,14 +621,10 @@ function convertNoteToHTML(data, pageRefresh) {
 
   
 
-
-
-
-
   //adding icons to the button list
   buttonList.append(deleteBtn, edit, timeStamp);
   //adding the cards to the buttonList
-  container.append(card, buttonList);
+  container.append(card, buttonList,linkElement);
   return container;
 }
 let noteForm;
@@ -629,6 +646,10 @@ function createNote(
         placeholder: "-",
         value: oldNote,
         height: "300px",
+        other: [
+          ["contenteditable", ""],
+        ]
+      
       },
     ],
     function () {

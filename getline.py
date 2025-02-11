@@ -30,5 +30,6 @@ def count_lines_in_text_files(directory):
     return total_lines
 
 # Usage
-directory_path = "C:/xampp/htdocs/StudyPlanner"
+directory_path = "/Applications/XAMPP/xamppfiles/htdocs/webstudyplanner"
 count_lines_in_text_files(directory_path)
+

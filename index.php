@@ -16,8 +16,12 @@
   <script src="study.js"></script>
   <link rel="stylesheet" href="css.css">
   <link rel="manifest" href="manifest.json">
+  <script src="https://cdn.jsdelivr.net/npm/linkifyjs@3.0.3/dist/linkify.min.js"></script>
+
 </head>
 <body>
+  <div class="container p-1"><div class="h1">STUDY PLANNER <span id='nameGoesHere'></span> </div></div>
+  
 <div class="modal fade" id="popup" role="dialog"></div>
 </body>
 <div id="wrapper"></div>
