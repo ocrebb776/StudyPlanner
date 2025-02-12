@@ -109,9 +109,11 @@ class HomeScreen extends Screen {
     this.studyButtonWr.classList.add("col");
     //create the button
     this.studyButton = document.createElement("button");
+    this.studyButton.addEventListener("click", studyPage);
     this.studyButton.classList.add("btn", "btn-primary");
     this.studyButton.textContent = "Study";
     this.studyButton.style.width = "100%";
+
     //put the button in the wrapper
     this.studyButtonWr.append(this.studyButton);
     //the Options Button
@@ -143,6 +145,13 @@ class HomeScreen extends Screen {
     this.topicAndSubjectSection.element = this.topicAndSubjectSectionWrapper;
     this.topicAndSubjectSection.show();
 
+
+//itme to display total time spent
+    let totalTimeSpent = document.createElement('div')
+    totalTimeSpent.classList.add("container","p-2")
+    totalTimeSpent.setAttribute("id","totalTimeSpent")
+
+
     //creating the Calendar title
     let CalendarTitle = document.createElement("div");
     CalendarTitle.classList.add("card-header");
@@ -150,10 +159,19 @@ class HomeScreen extends Screen {
     //adding it to the title
     calendarWrapper.prepend(CalendarTitle);
     this.element.append(
+      totalTimeSpent,
       calendarWrapper,
       this.buttonListContainer,
       this.topicAndSubjectSectionWrapper
     );
+
+    //a element that can store the total time spent 
+    this.totalTimeSpent = document.getElementById("totalTimeSpent")
+
+    //get the total time spent studyting 
+    let totals = getStudyTotals(timeStudying())
+    //set the text content to display it 
+    this.totalTimeSpent.textContent = `Time spent over the past Week:${totals.week.convertToReadableFormat()}`
 
     //instantiating the search features for later in the program
     search = new Search();
@@ -189,8 +207,7 @@ class TopicAndSubjectSection extends Screen {
     //put the button within its wrapper
     this.subjectButtonWr.appendChild(this.subjectButton);
 
-    //create button twas here 
-
+    //create button twas here
 
     //create a wrapper to contain the Topic button
     this.TopicButtonWr = document.createElement("div");
@@ -203,10 +220,7 @@ class TopicAndSubjectSection extends Screen {
     //put the button within its wrapper
     this.TopicButtonWr.appendChild(this.TopicButton);
     //add the wrappers to the button row
-    this.buttonRow.append(
-      this.subjectButtonWr,
-      this.TopicButtonWr
-    );
+    this.buttonRow.append(this.subjectButtonWr, this.TopicButtonWr);
     //add the buttonRow to the header
     this.cardHeader.append(this.buttonRow);
     //add the header to the element
@@ -409,7 +423,7 @@ class TopicAndSubjectSection extends Screen {
         //show the rating
         Rating: String(Math.round(100 * topic.rating)),
         "total time spent": topic.TotalTime,
-        "Subject": topic.subjectName
+        Subject: topic.subjectName,
       };
       //create the button
       let btn = createInfoClickBtn(dispData);
@@ -457,13 +471,13 @@ String.prototype.toMins = function () {
 };
 
 Date.prototype.isDateOnTheSameDayAs = function (date) {
-  //check if both dates are on the same day 
+  //check if both dates are on the same day
   let sameDay = this.getDate() == date.getDate();
   if (sameDay) {
     //if they are on the same day check to see if they are on the same month
     let sameMonth = this.getMonth() == date.getMonth();
     if (sameMonth) {
-      //and finally check if they are on the same year 
+      //and finally check if they are on the same year
       let sameYear = this.getFullYear() == date.getFullYear();
       if (sameYear) {
         // if all three are true then return true
@@ -476,8 +490,8 @@ Date.prototype.isDateOnTheSameDayAs = function (date) {
 };
 
 Number.prototype.convertToReadableFormat = function () {
-  return String(Math.floor(this/60) + "h" + this%60 + "m")
-}
+  return String(Math.floor(this / 60) + "h" + (this % 60) + "m");
+};
 
 class HomeScreenCalendarWeek extends Screen {
   show() {
@@ -528,22 +542,21 @@ class HomeScreenCalendarWeek extends Screen {
       //container to display the date
       let date = document.createElement("div");
       date.classList.add("col");
-      if (x == 0 ) {
+      if (x == 0) {
         //if it is today as a background(as defined by bootStrap)
         date.classList.add("text-white");
         date.textContent = this.currentDay.getDate() + "-";
         // add an eventListener when the first date is clicked
 
         date.addEventListener("click", this.changeSelectedDate);
-        //check to see if the first date is today 
-        if(this.currentDay.isDateOnTheSameDayAs(new Date())){
-          //if it is set the colour to be blue 
+        //check to see if the first date is today
+        if (this.currentDay.isDateOnTheSameDayAs(new Date())) {
+          //if it is set the colour to be blue
           date.classList.add("bg-primary");
-        }else{
+        } else {
           //if not set it to be grey
           date.classList.add("bg-secondary");
         }
-
       }
       date.style.borderRadius = "30px";
       date.style.height = 110 % date.classList.add("text-center", "rounded");
@@ -778,35 +791,35 @@ class HomeScreenDayView extends HomeScreenCalendarWeek {
             viewEvent(el.ID);
           });
 
-      //default style is none
-      let style = "";
-      //switch to define what the type should be
-      switch (el.Type) {
-        //if the type is study
-        case "study":
-          style = "warning";
-          break;
-        //all colour specific cases
-        case "blue":
-          style = "primary";
-          break;
-        case "green":
-          style = "success";
-          break;
-        case "red":
-          style = "danger";
-          break;
-        case "yellow":
-          style = "warning";
-          break;
-        case "purple":
-          style = "purple";
-          break;
-        //incase no colour is set
-        default:
-          style = "secondary";
-      }
-      event.classList.add("bg-" + style);
+          //default style is none
+          let style = "";
+          //switch to define what the type should be
+          switch (el.Type) {
+            //if the type is study
+            case "study":
+              style = "warning";
+              break;
+            //all colour specific cases
+            case "blue":
+              style = "primary";
+              break;
+            case "green":
+              style = "success";
+              break;
+            case "red":
+              style = "danger";
+              break;
+            case "yellow":
+              style = "warning";
+              break;
+            case "purple":
+              style = "purple";
+              break;
+            //incase no colour is set
+            default:
+              style = "secondary";
+          }
+          event.classList.add("bg-" + style);
           event.classList.add("progress-bar");
           event.classList.add("text-black");
           event.style.borderRadius = "20px";
@@ -1314,14 +1327,14 @@ function openOptionsView() {
   });
 
   let refreshButton = createButton("Refresh", "outline-warning");
-  refreshButton.addEventListener("click", function(){
-    homeScreen.show()
-    optionsView.hide()
+  refreshButton.addEventListener("click", function () {
+    homeScreen.show();
+    optionsView.hide();
   });
   refreshButton.textContent = "Refresh";
 
   //adding buttons to the buttonList
-  buttonList.append(logoutButton, toggleDarkModeButton,refreshButton);
+  buttonList.append(logoutButton, toggleDarkModeButton, refreshButton);
 
   //creating the title
   optionsView.title("Options");
@@ -1419,14 +1432,14 @@ function getSubject(id = false) {
   };
   request.dataType = "json";
   let send = request.send();
-  send = send.responseJSON
-  for(let x = 0; x < send.length; x++){
-    send[x].totalTime = Number(send[x].totalTime).convertToReadableFormat()
+  send = send.responseJSON;
+  for (let x = 0; x < send.length; x++) {
+    send[x].totalTime = Number(send[x].totalTime).convertToReadableFormat();
   }
   if (id === false) {
-    return send
+    return send;
   } else {
-    return send[0]
+    return send[0];
   }
 }
 
@@ -1547,9 +1560,9 @@ function viewSubject(data, closeFtn = false, modal = new Popup()) {
   viewTopicsButton.textContent = "View Topics";
   viewTopicsButton.addEventListener("click", function () {
     viewTopics(data.ID);
-  })
+  });
   //addning the name of the subject and a button to view all of the topics in the subject
-  titleEL.append(displayInfo.name," ",viewTopicsButton)
+  titleEL.append(displayInfo.name, " ", viewTopicsButton);
   TitleInfoCard.prepend(titleEL);
   modal.title(TitleInfoCard);
   //add the buttons to the footer
@@ -1696,6 +1709,7 @@ function createTopic(
       }
       //hide the form after submitting
       this.hide();
+      homeScreen.show();
     },
     endText
   );
@@ -1706,18 +1720,18 @@ function createTopic(
 
 function viewTopics(subjectID = false) {
   //if there is a subjectID then then the functions should filter for only that subject
-  let subjectSpec = !(subjectID == false)
+  let subjectSpec = !(subjectID == false);
   //get topic data
   let data = getTopic();
   //create popup
   let modal = new Popup();
   //define the title
   modal.title("View Topics");
-  if(subjectSpec){
+  if (subjectSpec) {
     //get the information about the subject
-    let subject = getSubject(subjectID)
-    //change the title to show the name of the subject 
-    modal.title(`View Topics for ${subject.name}`)
+    let subject = getSubject(subjectID);
+    //change the title to show the name of the subject
+    modal.title(`View Topics for ${subject.name}`);
   }
   //this is so that the user can clikc on the background to close the modal
   //modal.element.setAttribute("data-bs-backdrop", "true");
@@ -1726,23 +1740,24 @@ function viewTopics(subjectID = false) {
   //for each topic
   data.forEach((el) => {
     //if the program is not subject specific or the topic is in the subject given
-    if(!subjectSpec || el.subjectID == subjectID){
-    //create an empty cardButton
-    let btn = createInfoClickBtn({ subject: el.subjectName });
-    //create a title element
-    let title = document.createElement("div");
-    //make it big
-    title.setAttribute("class", "col-12 h4");
-    //set the name to the text content
-    title.textContent = el.name;
-    //add the title into the button
-    btn.prepend(title);
-    //add an event listener for the button
-    btn.addEventListener("click", function () {
-      viewTopic(el, viewTopics(), modal);
-    });
-    //add the button to the topic list
-    TopicList.append(btn);}
+    if (!subjectSpec || el.subjectID == subjectID) {
+      //create an empty cardButton
+      let btn = createInfoClickBtn({ subject: el.subjectName });
+      //create a title element
+      let title = document.createElement("div");
+      //make it big
+      title.setAttribute("class", "col-12 h4");
+      //set the name to the text content
+      title.textContent = el.name;
+      //add the title into the button
+      btn.prepend(title);
+      //add an event listener for the button
+      btn.addEventListener("click", function () {
+        viewTopic(el, viewTopics(), modal);
+      });
+      //add the button to the topic list
+      TopicList.append(btn);
+    }
   });
   //add the topic list into the body
   modal.body(TopicList);
@@ -1754,7 +1769,6 @@ function viewTopics(subjectID = false) {
   });
   //add the close button to the footer
   let modalCloseBtn = modal.closeBtn();
-
 
   modal.footer(createTopicButton, modalCloseBtn);
   console.log(modal);
@@ -1851,17 +1865,18 @@ function viewTopic(data, closeFtn = false, modal = new Popup()) {
   //modal.title("l")
 
   //a button to go to the subject that the link is attached to
-  let goToSubject = ''
+  let goToSubject = "";
   //if there is a subjectID then the button should be created
-  if(topicInfo.subjectID != -1){
+  if (topicInfo.subjectID != -1) {
     //creating the button
-  goToSubject = document.createElement("button");
-  goToSubject.classList.add("btn", "btn-primary");
-  goToSubject.textContent = "Go to Subject";
-  goToSubject.addEventListener("click", function () {
-    viewSubject({ ID: topicInfo.subjectID });
-  })}
-  modal.body(goToSubject," ",editBTN, notes);
+    goToSubject = document.createElement("button");
+    goToSubject.classList.add("btn", "btn-primary");
+    goToSubject.textContent = "Go to Subject";
+    goToSubject.addEventListener("click", function () {
+      viewSubject({ ID: topicInfo.subjectID });
+    });
+  }
+  modal.body(goToSubject, " ", editBTN, notes);
   modal.footer(markTopicAsVisited, addNoteBtn, deleteBtn, closeBtn);
   modal.show();
 }
@@ -1912,8 +1927,7 @@ function getTopic(id = false) {
       //change it to Empty
       send[i]["subjectName"] = "Empty";
     }
-    send[i].TotalTime =  Number(send[i].TotalTime).convertToReadableFormat()
-
+    send[i].TotalTime = Number(send[i].TotalTime).convertToReadableFormat();
   }
 
   if (id === false) {
@@ -1923,7 +1937,7 @@ function getTopic(id = false) {
   }
 }
 
-function visit(topicID,visitID = false) {
+function visit(topicID, visitID = false) {
   console.log(visitID);
   //get information about the topic
   let topicInfo = getTopic(topicID);
@@ -1933,13 +1947,12 @@ function visit(topicID,visitID = false) {
     diffrating: 127,
     type: "",
     time: 0,
-    note: ""
-  }
-  if(visitID != false){
+    note: "",
+  };
+  if (visitID != false) {
     //if the visitIS is not false then get the date from the existing visit
     visitValues = getVisit(visitID);
-    visitValues.time = (visitValues.time / 60);
-
+    visitValues.time = visitValues.time / 60;
   }
 
   // if the diffrating is -1 then display it as being in the middle of the input
@@ -1950,7 +1963,9 @@ function visit(topicID,visitID = false) {
   //create a new form
   let form = new FormPopUp(
     // the header text with the topic name in it
-    (visitID!==false ) ? `Edit "${topicInfo.name}'s" Visit on ${visitValues.date}` :`Mark "${topicInfo.name}" as Visited` ,
+    visitID !== false
+      ? `Edit "${topicInfo.name}'s" Visit on ${visitValues.date}`
+      : `Mark "${topicInfo.name}" as Visited`,
     [
       //range input so that the user can input the difficulty of the task
       {
@@ -2029,9 +2044,9 @@ function visit(topicID,visitID = false) {
 
       let request = new AjaxTemplate(false);
 
-      if(visitID == false){
-      request.href = "php/homepage/topics/markTopicAsVisited.php";
-      }else{
+      if (visitID == false) {
+        request.href = "php/homepage/topics/markTopicAsVisited.php";
+      } else {
         request.href = "php/homepage/topics/editVisit.php";
       }
       data.topicID = topicID;
@@ -2040,13 +2055,13 @@ function visit(topicID,visitID = false) {
         ID: StoredID,
         password: StoredPassword,
         data: data,
-        visitID: visitID
+        visitID: visitID,
       };
       request.send();
       this.hide(); // close the form
       homeScreen.show(); // to refresh the homepage
     },
-   (visitID !== false ) ? "Save Changes " : "Mark as Visited"
+    visitID !== false ? "Save Changes " : "Mark as Visited"
   );
   //show the form
   form.show();
@@ -2412,7 +2427,7 @@ function getAllEvents() {
   return request.send().responseJSON;
 }
 
-function deleteVisit(id){
+function deleteVisit(id) {
   let request = new AjaxTemplate(true);
   request.href = "php/homepage/topics/deleteVisit.php";
   //login credentials and the topicID
@@ -2422,4 +2437,120 @@ function deleteVisit(id){
     visitID: id,
   };
   request.send();
+}
+
+function timeStudying() {
+  let request = new AjaxTemplate(false);
+  request.href = "php/study/getTotalStudyTime.php";
+  request.data = {
+    // login details necessary for the php file
+    ID: StoredID,
+    password: StoredPassword,
+  };
+  request.dataType = "json";
+  //getting the json Response
+  let data = request.send().responseText;
+  //getting the time spent by day
+  let timeByDay = [];
+  //converting the date into a Object
+  data = JSON.parse(data);
+  //iterating through each event
+  data.forEach((x) => {
+    //Converting the date and time into A date obj and a integer
+    x.date = new Date(x.date);
+    x.time = Number(x.time);
+    //setting the Time to be midnight
+    x.date.setHours(0, 0, 0, 0);
+
+    if (timeByDay.length > 0) {
+      // if there is already an element in there then if it is on the same day then add the times
+      if (timeByDay[timeByDay.length - 1].date.isDateOnTheSameDayAs(x.date)) {
+        timeByDay[timeByDay.length - 1].time += x.time;
+      } else {
+        //if not then start a new item
+        timeByDay.push(x);
+      }
+    } else {
+      //add the first item
+      timeByDay.push(x);
+    }
+  });
+  //return the results
+  return timeByDay;
+}
+
+function getStudyTotals(data){
+    //initializing the default counting variables
+    let totalThisYear = 0;
+    let totalPastWeek = 0;
+    let totalThisMonth = 0;
+    let totalToday = 0;
+    //setting the date to compare to the current day at midnight
+    let today = new Date();
+    today.setHours(0, 0, 0, 0);
+  
+    //for each date counting down
+    for (x = data.length - 1; x >= 0; x--) {
+      //if on the same year
+      let sameYear = today.getFullYear() == data[x].date.getFullYear();
+      //use temp date to not mutilate the today Variable
+      let tempDate = new Date(today);
+      //if on the same day
+      if (data[x].date.isDateOnTheSameDayAs(today)) {
+        totalToday += data[x].time;
+      }
+      //if in the past week
+      if (tempDate.setDate(tempDate.getDate() - 6) <= data[x].date) {
+        totalPastWeek += data[x].time;
+      }
+      //if in the same month in the same year
+      if (today.getMonth() == data[x].date.getMonth() && sameYear) {
+        totalThisMonth += data[x].time;
+      }
+      //if in the same year
+      if (sameYear) {
+        totalThisYear += data[x].time;
+      }
+    }
+    return {
+      year:totalThisYear,
+      month:totalThisMonth,
+      week:totalPastWeek,
+      today:totalToday
+
+    }
+}
+
+function studyPage() {
+  const modal = new Popup();
+
+  // StudyStatistics
+  let timeByDate = timeStudying();
+
+
+  let totals = getStudyTotals(timeByDate)
+
+
+  //creating a div to display the Totals
+  let dateDisplay = document.createElement("div");
+
+  //using basic HTML to display the totals
+  dateDisplay.innerHTML = `
+  <b>Study Totals</b>
+  <br>
+  Total Today: ${totals.today.convertToReadableFormat()}
+  <br>
+  Total Over The Past Week: ${totals.week.convertToReadableFormat()}
+  <br>
+  Total This Month: ${totals.month.convertToReadableFormat()}
+  <br>
+  Total This Year: ${totals.year.convertToReadableFormat()}
+  `;
+
+  //setting the modal Titles , body and footer
+  modal.title("Study Page");
+  modal.body(dateDisplay);
+  let closeBTN = modal.closeBtn();
+  modal.footer("Fun Studying!", closeBTN);
+  modal.show();
 }

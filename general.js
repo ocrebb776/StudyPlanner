@@ -32,6 +32,7 @@ class Screen {
   }
   show() {}
 }
+//all of the global variables
 let TodayISO_Obj = new Date();
 let TodayISO = TodayISO_Obj.toISOString().split("T")[0];
 let lockScreen;
@@ -39,7 +40,9 @@ let homeScreen;
 let darkMode = false;
 let StoredID = false;
 let StoredPassword = false;
-let search;
+let search
+let CURRENTPOPUPOBJECT
+let noteForm;
 // wait until the page has loaded to add items such as event listeners
 window.onload = function () {
   lockScreen = new LockScreen();
@@ -133,7 +136,7 @@ class SortByKey {
     return this.sortedList;
   }
 }
-let CURRENTPOPUPOBJECT
+
 class Popup {
   constructor(id = "popup") {
     this.id = id;
@@ -627,7 +630,7 @@ function convertNoteToHTML(data, pageRefresh) {
   container.append(card, buttonList,linkElement);
   return container;
 }
-let noteForm;
+
 function createNote(
   id,
   table,
