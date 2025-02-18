@@ -2,6 +2,7 @@
 function logout() {}
 class HomeScreen extends Screen {
   show() {
+    this.element.classList.remove("container");
     this.element.currentScreen = this;
     this.element.innerHTML = "";
     document.title = "StudyPlanner Homepage";
@@ -470,6 +471,10 @@ String.prototype.toMins = function () {
   return hr_minToMin(this);
 };
 
+Number.prototype.pad = function (n) {
+  return String(this).padStart(n, "0");
+}
+
 Date.prototype.isDateOnTheSameDayAs = function (date) {
   //check if both dates are on the same day
   let sameDay = this.getDate() == date.getDate();
@@ -489,8 +494,10 @@ Date.prototype.isDateOnTheSameDayAs = function (date) {
   return false;
 };
 
-Number.prototype.convertToReadableFormat = function () {
-  return String(Math.floor(this / 60) + "h" + (this % 60) + "m");
+Number.prototype.convertToReadableFormat = function (showSecondsAnyway = false) {
+  let txt = String(Math.floor(this / 60) + "h" + Math.trunc(this % 60).pad(2) + "m");
+  txt+= (this % 1 > 0 || showSecondsAnyway) ?  (Math.trunc(this % 1 * 60)).pad(2) + "s":'';
+  return txt
 };
 
 class HomeScreenCalendarWeek extends Screen {
@@ -1600,20 +1607,7 @@ function editSubject(id) {
   );
 }
 
-// function getSubjectInfo(id) {
-//   //send new request
-//   let request = new AjaxTemplate(false);
-//   request.href = "php/homepage/subjects/getSubject.php";
-//   //login credentials and the SubjectID
-//   request.data = {
-//     ID: StoredID,
-//     password: StoredPassword,
-//     subjectID: id,
-//   };
-//   request.dataType = "json";
-//   //return the JSON part of the response
-//   return request.send().responseJSON;
-// }
+
 
 function createTopic(
   name = "",
@@ -1937,7 +1931,7 @@ function getTopic(id = false) {
   }
 }
 
-function visit(topicID, visitID = false) {
+function visit(topicID, visitID = false,onHome = true) {
   console.log(visitID);
   //get information about the topic
   let topicInfo = getTopic(topicID);
@@ -2059,7 +2053,10 @@ function visit(topicID, visitID = false) {
       };
       request.send();
       this.hide(); // close the form
+
+      if(onHome){
       homeScreen.show(); // to refresh the homepage
+      }
     },
     visitID !== false ? "Save Changes " : "Mark as Visited"
   );
@@ -2547,10 +2544,21 @@ function studyPage() {
   Total This Year: ${totals.year.convertToReadableFormat()}
   `;
 
+  //study Features PAge
+  let studyNowButton = document.createElement("button")
+  studyNowButton.classList.add('btn','btn-primary')
+  studyNowButton.textContent = 'STUDY NOW'
+  studyNowButton.addEventListener('click',function(){ 
+  startStudyMode()
+modal.hide()
+  })
+
+
+
   //setting the modal Titles , body and footer
   modal.title("Study Page");
   modal.body(dateDisplay);
   let closeBTN = modal.closeBtn();
-  modal.footer("Fun Studying!", closeBTN);
+  modal.footer(studyNowButton," Fun Studying! ", closeBTN);
   modal.show();
 }

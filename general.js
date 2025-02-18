@@ -77,17 +77,20 @@ window.onload = function () {
     Cookies.set("darkMode", "light", { expires: 100 });
   }
 };
-function toggleDarkmode(preset = "") {
+function toggleDarkmode(preset =false,change = true) {
   darkMode = Cookies.get("darkMode");
-  if (preset != "") {
-    darkMode = !preset;
+  if (preset != false) {
+    darkMode = (preset == "dark") ? "light" : "dark";
   }
   if (darkMode == "light") {
     darkMode = "dark";
-    Cookies.set("darkMode", "dark", { expires: 100 });
+    if(change){
+    Cookies.set("darkMode", "dark", { expires: 100 });}
     document.querySelector("html").setAttribute("data-bs-theme", "dark");
   } else {
+    if(change){
     darkMode = "light";
+    }
     document.querySelector("html").setAttribute("data-bs-theme", "light");
     Cookies.set("darkMode", "light", { expires: 100 });
   }
@@ -174,6 +177,8 @@ class Popup {
     this.Modalfooter = document.createElement("div");
     this.Modalfooter.classList.add("modal-footer");
 
+    this.open = false
+
     //creating the structure of the modal
 
     /*
@@ -205,17 +210,24 @@ https://getbootstrap.com/docs/5.0/components/modal/
     this.element.append(this.modalDialog);
     this.other();
     this.modalInstance = bootstrap.Modal.getInstance(this.element);
+    this.onClosing = function () {};
   }
   show() {
     CURRENTPOPUPOBJECT = this
     //allowing for it to be opend
     bootstrap.Modal.getInstance(this.element).show();
     console.log(bootstrap.Modal.getInstance(this.element));
+    this.open = true
   }
   hide() {
     //alowing it to be closed
     let modal = bootstrap.Modal.getInstance(this.element);
     modal.hide();
+    if(CURRENTPOPUPOBJECT === this){
+      CURRENTPOPUPOBJECT = null
+    }
+    this.open = false
+    this.onClosing()
   }
   forceHide() {}
   // for each part it takes n DOM elements as a list and
@@ -535,6 +547,10 @@ function convertNoteToHTML(data, pageRefresh) {
     link.setAttribute("href", el.href);
     //set the button text to be the link
     link.textContent = el.href;
+    link.style.maxWidth = "20ch";
+    link.style.whiteSpace = "nowrap";
+    link.style.overflow = "hidden";
+    link.style.textOverflow = "ellipsis";
     
     linkElement.append(link);
   });

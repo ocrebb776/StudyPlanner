@@ -1,34 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/editorjs-html@4.0.0/.build/edjsHTML.browser.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@editorjs/header@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@editorjs/link@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@editorjs/list@2"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="study.js"></script>
 </head>
-<div id="editorjs"></div>
 <body>
-    <div id="editorjs"></div>
-    <script>
-        const editor = new EditorJS({
-          holder: 'editorjs',
-          tools: {
-            header: Header,
-            list: EditorjsList,
-            linkTool: {
-              class: LinkTool,
-              config: {
-                endpoint: 'http://localhost:8008/fetchUrl', // Your backend endpoint for link data
-              }
-            },
-            // Add other tools as needed
-          },
-        });
-      </script>
-      
+  <div id="clockdisp"></div>
 </body>
+<script>
+  let clockdisp = document.getElementById('clockdisp');
+  let x = new Timer('s')
+
+  setInterval(() => {
+    clockdisp.innerHTML = x.getTime();
+  }, 100);
+</script>
 </html>
