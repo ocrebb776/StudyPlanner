@@ -146,12 +146,10 @@ class HomeScreen extends Screen {
     this.topicAndSubjectSection.element = this.topicAndSubjectSectionWrapper;
     this.topicAndSubjectSection.show();
 
-
-//itme to display total time spent
-    let totalTimeSpent = document.createElement('div')
-    totalTimeSpent.classList.add("container","p-2")
-    totalTimeSpent.setAttribute("id","totalTimeSpent")
-
+    //itme to display total time spent
+    let totalTimeSpent = document.createElement("div");
+    totalTimeSpent.classList.add("container", "p-2");
+    totalTimeSpent.setAttribute("id", "totalTimeSpent");
 
     //creating the Calendar title
     let CalendarTitle = document.createElement("div");
@@ -166,13 +164,13 @@ class HomeScreen extends Screen {
       this.topicAndSubjectSectionWrapper
     );
 
-    //a element that can store the total time spent 
-    this.totalTimeSpent = document.getElementById("totalTimeSpent")
+    //a element that can store the total time spent
+    this.totalTimeSpent = document.getElementById("totalTimeSpent");
 
-    //get the total time spent studyting 
-    let totals = getStudyTotals(timeStudying())
-    //set the text content to display it 
-    this.totalTimeSpent.textContent = `Time spent over the past Week:${totals.week.convertToReadableFormat()}`
+    //get the total time spent studyting
+    let totals = getStudyTotals(timeStudying());
+    //set the text content to display it
+    this.totalTimeSpent.textContent = `Time spent over the past Week:${totals.week.convertToReadableFormat()}`;
 
     //instantiating the search features for later in the program
     search = new Search();
@@ -184,7 +182,7 @@ class HomeScreen extends Screen {
 
 let weightings = {
   timeSince: 0.4,
-  diffRating: 0.3,
+  diffRating: 0.8,
   mood: 0.3,
 };
 
@@ -473,7 +471,7 @@ String.prototype.toMins = function () {
 
 Number.prototype.pad = function (n) {
   return String(this).padStart(n, "0");
-}
+};
 
 Date.prototype.isDateOnTheSameDayAs = function (date) {
   //check if both dates are on the same day
@@ -494,10 +492,17 @@ Date.prototype.isDateOnTheSameDayAs = function (date) {
   return false;
 };
 
-Number.prototype.convertToReadableFormat = function (showSecondsAnyway = false) {
-  let txt = String(Math.floor(this / 60) + "h" + Math.trunc(this % 60).pad(2) + "m");
-  txt+= (this % 1 > 0 || showSecondsAnyway) ?  (Math.trunc(this % 1 * 60)).pad(2) + "s":'';
-  return txt
+Number.prototype.convertToReadableFormat = function (
+  showSecondsAnyway = false
+) {
+  let txt = String(
+    Math.floor(this / 60) + "h" + Math.trunc(this % 60).pad(2) + "m"
+  );
+  txt +=
+    this % 1 > 0 || showSecondsAnyway
+      ? Math.trunc((this % 1) * 60).pad(2) + "s"
+      : "";
+  return txt;
 };
 
 class HomeScreenCalendarWeek extends Screen {
@@ -523,14 +528,19 @@ class HomeScreenCalendarWeek extends Screen {
       password: StoredPassword,
       date: this.currentDay,
     };
-    let result = request.send();
+    try {
+      let result = request.send();
 
-    //if it was a success
-    if (result.status == 200) {
-      return JSON.parse(result.responseText);
-    } else {
-      console.log(result);
-      //if not return false
+      //if it was a success
+      if (result.status == 200) {
+        return JSON.parse(result.responseText);
+      } else {
+        console.log(result);
+        //if not return false
+        return false;
+      }
+    } catch (e) {
+      console.log(e);
       return false;
     }
   }
@@ -1108,7 +1118,7 @@ function hr_minToMin(l) {
 function whiteList(string, allowNewLine = false) {
   //list of allowed characters
   let allowed =
-    "qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM!£$%&_-+=,.<>#: /@".split(
+    "qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM!£$%&?',_-+=,.<>#: /@".split(
       ""
     );
   let striped = [];
@@ -1192,6 +1202,9 @@ function manageEvents(modal = new Popup()) {
 }
 
 function viewEvent(id, callBack = new Popup(), closeFtn = false) {
+  if(id == undefined || typeof id != "number") {
+    return false
+  }
   console.log(callBack);
   //get information about the request
   let eventInfo = getEventInfo(id);
@@ -1430,6 +1443,10 @@ function createSubjectForm(
 }
 
 function getSubject(id = false) {
+  if(id !== false && typeof id !== "number") {
+    return false
+  }
+  //send new request
   let request = new AjaxTemplate(false);
   request.href = "php/homepage/subjects/getSubjects.php";
   request.data = {
@@ -1437,12 +1454,17 @@ function getSubject(id = false) {
     password: StoredPassword,
     id: id,
   };
+  //setting the dataType to JSON
   request.dataType = "json";
+  //send the request
   let send = request.send();
+  //convert the response into a JSON object
   send = send.responseJSON;
+  //convert the total time into a readable format
   for (let x = 0; x < send.length; x++) {
     send[x].totalTime = Number(send[x].totalTime).convertToReadableFormat();
   }
+  //return the response
   if (id === false) {
     return send;
   } else {
@@ -1606,8 +1628,6 @@ function editSubject(id) {
     false
   );
 }
-
-
 
 function createTopic(
   name = "",
@@ -1928,10 +1948,14 @@ function getTopic(id = false) {
     return send;
   } else {
     return send[0];
+
+
+
+
   }
 }
 
-function visit(topicID, visitID = false,onHome = true) {
+function visit(topicID, visitID = false, onHome = true) {
   console.log(visitID);
   //get information about the topic
   let topicInfo = getTopic(topicID);
@@ -2043,6 +2067,7 @@ function visit(topicID, visitID = false,onHome = true) {
       } else {
         request.href = "php/homepage/topics/editVisit.php";
       }
+      if(valid){
       data.topicID = topicID;
       request.data = {
         // login details necessary for the php file
@@ -2054,9 +2079,9 @@ function visit(topicID, visitID = false,onHome = true) {
       request.send();
       this.hide(); // close the form
 
-      if(onHome){
-      homeScreen.show(); // to refresh the homepage
-      }
+      if (onHome) {
+        homeScreen.show(); // to refresh the homepage
+      }}
     },
     visitID !== false ? "Save Changes " : "Mark as Visited"
   );
@@ -2476,46 +2501,45 @@ function timeStudying() {
   return timeByDay;
 }
 
-function getStudyTotals(data){
-    //initializing the default counting variables
-    let totalThisYear = 0;
-    let totalPastWeek = 0;
-    let totalThisMonth = 0;
-    let totalToday = 0;
-    //setting the date to compare to the current day at midnight
-    let today = new Date();
-    today.setHours(0, 0, 0, 0);
-  
-    //for each date counting down
-    for (x = data.length - 1; x >= 0; x--) {
-      //if on the same year
-      let sameYear = today.getFullYear() == data[x].date.getFullYear();
-      //use temp date to not mutilate the today Variable
-      let tempDate = new Date(today);
-      //if on the same day
-      if (data[x].date.isDateOnTheSameDayAs(today)) {
-        totalToday += data[x].time;
-      }
-      //if in the past week
-      if (tempDate.setDate(tempDate.getDate() - 6) <= data[x].date) {
-        totalPastWeek += data[x].time;
-      }
-      //if in the same month in the same year
-      if (today.getMonth() == data[x].date.getMonth() && sameYear) {
-        totalThisMonth += data[x].time;
-      }
-      //if in the same year
-      if (sameYear) {
-        totalThisYear += data[x].time;
-      }
-    }
-    return {
-      year:totalThisYear,
-      month:totalThisMonth,
-      week:totalPastWeek,
-      today:totalToday
+function getStudyTotals(data) {
+  //initializing the default counting variables
+  let totalThisYear = 0;
+  let totalPastWeek = 0;
+  let totalThisMonth = 0;
+  let totalToday = 0;
+  //setting the date to compare to the current day at midnight
+  let today = new Date();
+  today.setHours(0, 0, 0, 0);
 
+  //for each date counting down
+  for (x = data.length - 1; x >= 0; x--) {
+    //if on the same year
+    let sameYear = today.getFullYear() == data[x].date.getFullYear();
+    //use temp date to not mutilate the today Variable
+    let tempDate = new Date(today);
+    //if on the same day
+    if (data[x].date.isDateOnTheSameDayAs(today)) {
+      totalToday += data[x].time;
     }
+    //if in the past week
+    if (tempDate.setDate(tempDate.getDate() - 6) <= data[x].date) {
+      totalPastWeek += data[x].time;
+    }
+    //if in the same month in the same year
+    if (today.getMonth() == data[x].date.getMonth() && sameYear) {
+      totalThisMonth += data[x].time;
+    }
+    //if in the same year
+    if (sameYear) {
+      totalThisYear += data[x].time;
+    }
+  }
+  return {
+    year: totalThisYear,
+    month: totalThisMonth,
+    week: totalPastWeek,
+    today: totalToday,
+  };
 }
 
 function studyPage() {
@@ -2524,9 +2548,7 @@ function studyPage() {
   // StudyStatistics
   let timeByDate = timeStudying();
 
-
-  let totals = getStudyTotals(timeByDate)
-
+  let totals = getStudyTotals(timeByDate);
 
   //creating a div to display the Totals
   let dateDisplay = document.createElement("div");
@@ -2545,20 +2567,31 @@ function studyPage() {
   `;
 
   //study Features PAge
-  let studyNowButton = document.createElement("button")
-  studyNowButton.classList.add('btn','btn-primary')
-  studyNowButton.textContent = 'STUDY NOW'
-  studyNowButton.addEventListener('click',function(){ 
-  startStudyMode()
-modal.hide()
-  })
+  let studyNowButton = document.createElement("button");
+  studyNowButton.classList.add("btn", "btn-primary");
+  studyNowButton.textContent = "STUDY NOW";
+  studyNowButton.addEventListener("click", function () {
+    startStudyMode();
+    modal.hide();
+  });
 
+  //todo features
 
+  //edit button
+  let editToDo = document.createElement("button");
+  editToDo.classList.add("btn", "btn-primary");
+  editToDo.textContent = "Edit To Do List";
+  editToDo.addEventListener("click", function () {
+    Todo.edit();
+  });
+  //todo list
+  let todoListElement = document.createElement("div");
+  let stuffToDo = Todo.getToDo();
 
   //setting the modal Titles , body and footer
   modal.title("Study Page");
   modal.body(dateDisplay);
   let closeBTN = modal.closeBtn();
-  modal.footer(studyNowButton," Fun Studying! ", closeBTN);
+  modal.footer(editToDo, studyNowButton, " Fun Studying! ", closeBTN);
   modal.show();
 }

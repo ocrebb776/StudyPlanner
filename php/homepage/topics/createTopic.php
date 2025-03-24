@@ -4,7 +4,7 @@ require "../../SQL.php";
 require "../../whitelist.php";
 if ($_POST) {
     // a string containing all the allowed characters, this is to reduce the risk of a sql Injection
-    $trimList = "qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM!£$%&_-+=,.<>#;: /@@";
+    $trimList = "qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM!£$%&_-+=,.<>#;: /@?,'/@@";
 
     $SQLconnection = new MySQLRequest(); // new insance of the sql request
     $SQLconnection->oneResult = true; // as the sql should only return one value 

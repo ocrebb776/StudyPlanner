@@ -18,6 +18,7 @@
   <link rel="manifest" href="manifest.json">
   <script src="https://cdn.jsdelivr.net/npm/linkifyjs@3.0.3/dist/linkify.min.js"></script>
 <script src='https://ocrebb776.github.io/OcrebbtimerJS/timer.js'></script>
+<script src="todo.js"></script>
 </head>
 <body>
   <div class="container p-1"><div class="h1">STUDY PLANNER <span id='nameGoesHere'></span> </div></div>

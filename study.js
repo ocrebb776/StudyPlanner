@@ -5,11 +5,11 @@ let STUDY;
 class Study extends Screen {
   constructor(topics) {
     super();
-    this.topics = topics;
   }
 
   // Method to display the study screen
   show() {
+    this.topics = TopicAndSubjectSection.prototype.topics();
     this.timeDisplayText = "Time Remaining Until Break: ";
     let screen = document.createElement("div");
     screen.classList.add("container");
@@ -175,7 +175,22 @@ class Study extends Screen {
         this.endedByUser = true;
       }.bind(this)
     );
-    screen.append(cancelStudy, " ", stopStudy);
+    let playPauseButton = document.createElement("button");
+    playPauseButton.classList.add("btn", "btn-primary", "mt-3");
+    playPauseButton.textContent = "Pause";
+    playPauseButton.addEventListener(
+      "click",
+      function () {
+        if (this.timer.isPaused()) {
+          playPauseButton.textContent = "Pause";
+          this.timer.unpause();
+        } else {
+          playPauseButton.textContent = "Resume";
+          this.timer.pause();
+        }
+      }.bind(this)
+    );
+    screen.append(cancelStudy, " ", stopStudy,playPauseButton);
     this.element.append(screen);
     this.viewTopicDetails(this.currentTopic.ID);
   }
@@ -290,11 +305,19 @@ startCalmScreen(){
     screen.classList.add("container", "row");
     this.element.classList.add("container");
 
+    let topic = getTopic(topicID);
+
     // Left side for notes and visits
     let leftSide = document.createElement("div");
     leftSide.classList.add("col-12", "col-lg-6");
     leftSide.style.overflowY = "auto";
     leftSide.style.maxHeight = "80vh";
+
+    // Create a title for the left side
+    let title = document.createElement("div");
+    title.classList.add("h2", "card", "p-4", "bg-dark", "text-light");
+    title.textContent = "Notes and Visits for " + topic.name;
+    leftSide.append(title);
 
     // Fetch notes and visits
     let notes = getNotes(topicID, "topics");
@@ -364,8 +387,7 @@ startCalmScreen(){
 
 // Function to start the study mode
 function startStudyMode() {
-  let topics = TopicAndSubjectSection.prototype.topics();
-  STUDY = new Study(topics);
+  STUDY = new Study();
   STUDY.show();
 }
 

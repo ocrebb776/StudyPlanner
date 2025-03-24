@@ -528,6 +528,7 @@ function convertNoteToHTML(data, pageRefresh) {
   let card = document.createElement("textarea");
   //bootstrap classes
   card.classList.add("card", "p-2", "col-8");
+  card.style.height = '400px'
   //adding the notes content to the text content
   card.textContent = data.text;
   card.setAttribute("readonly", "");
@@ -729,6 +730,11 @@ function createNote(
 }
 
 function deleteNote(note, pageRefresh = false) {
+  //check the input is valid
+  if(note.ID == undefined || note.frID == undefined){
+    return
+  }
+  //start request
   let request = new AjaxTemplate(true);
   request.href = "php/deleteNote.php";
   request.data = {

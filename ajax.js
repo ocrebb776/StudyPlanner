@@ -26,7 +26,7 @@ class AjaxTemplate {
             error: this.ajaxError,
             url: this.href,
             data: this.data,
-            method: "POST",
+            method: this.type,
             success: this.ajaxSuccess,
             dataType: this.dataType
         })
