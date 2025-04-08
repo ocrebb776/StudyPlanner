@@ -21,7 +21,7 @@ if ($_POST) {
             visit 
             ON 
             topics.ID = visit.topicID 
-        WHERE subjects.user={$_POST['ID']} && visit.user={$_POST["ID"]} ";
+        WHERE subjects.user={$_POST['ID']} ";
 
         if ($_POST["id"] != 'false') {
             $sql .= "&& subjects.ID='{$_POST["id"]}'";

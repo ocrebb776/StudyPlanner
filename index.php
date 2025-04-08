@@ -9,16 +9,22 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="js/utils.js"></script>
   <script src="ajax.js"></script>
-  <script src="general.js"></script>
-  <script src="login.js"></script>
-  <script src="homescreen.js"></script>
-  <script src="study.js"></script>
+  <script src="js/login.js"></script>
+  <script src="js/events.js"></script>
+  <script src="js/homepage.js"></script>
+  <script src="js/notes.js"></script>
+  <script src="js/study.js"></script>
+  <script src="js/subjects.js"></script>
+  <script src="js/todo.js"></script>
+  <script src="js/topics.js"></script>
   <link rel="stylesheet" href="css.css">
   <link rel="manifest" href="manifest.json">
   <script src="https://cdn.jsdelivr.net/npm/linkifyjs@3.0.3/dist/linkify.min.js"></script>
 <script src='https://ocrebb776.github.io/OcrebbtimerJS/timer.js'></script>
-<script src="todo.js"></script>
+<script src="general.js"></script>
+
 </head>
 <body>
   <div class="container p-1"><div class="h1">STUDY PLANNER <span id='nameGoesHere'></span> </div></div>
