@@ -31,7 +31,9 @@ function getNotes(id, table) {
     let card = document.createElement("textarea");
     //bootstrap classes
     card.classList.add("card", "p-2", "col-8");
-    card.style.height = '400px'
+
+    let minRows = (data.text.split('\n').length+2)
+    card.style.minHeight = `${minRows}em`
     //adding the notes content to the text content
     card.textContent = data.text;
     card.setAttribute("readonly", "");

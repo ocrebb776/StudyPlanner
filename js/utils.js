@@ -69,7 +69,7 @@ String.prototype.convertDate = function () {
   function whiteList(string, allowNewLine = false) {
     //list of allowed characters
     let allowed =
-      "qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM!£$%&?()',_-+=,.<>#: /@".split(
+      "qwertyuiopasdfghjklzxcvbnm1234567890QW*ERTYUIOPASDFGHJKLZXCVBNM!£$%&?(),_-+=,.<>#: /@".split(
         ""
       );
     let striped = [];

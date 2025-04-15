@@ -1,6 +1,7 @@
 <?php
 function whitelist($str,$allowed,$newLine = false,$debug = false){
     //split the allowed sting
+    $allowed = "qwertyuiopasdfghjklzxcvbnm1234567890QW*ERTYUIOPASDFGHJKLZXCVBNM!£$%&?(),_-+=,.<>#: /@";
 $split = str_split($allowed);
 //split the inputed string
 $str = str_split($str);
