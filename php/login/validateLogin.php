@@ -12,9 +12,9 @@ if ($_POST) {
     //the program is only expecting one result 
     $SQLconnection->oneResult = true;
     //send the request
-    $output = $SQLconnection->sql("SELECT * FROM users WHERE name='{$_POST["username"]}' && pass='{$_POST["password"]}'");
+    $output = $SQLconnection->sql("SELECT * FROM users WHERE name='{$_POST["username"]}'");
     //if the program returns a result 
-    if($output){
+    if($output && (password_verify($_POST['password'],$output['Pass']))){
         //output the ID
         echo $output["ID"];
     }else{

@@ -12,8 +12,8 @@ if ($_POST) {
     //expect only one rsult 
     $SQLconnection->oneResult = true;
     // validate the login 
-    $output = $SQLconnection->sql("SELECT * FROM users WHERE Pass='{$_POST["password"]}' && ID='{$_POST["ID"]}'");
-    if($output){
+    $output = $SQLconnection->sql("SELECT * FROM users WHERE ID='{$_POST["ID"]}'");
+    if($output && (password_verify($_POST['password'],$output['Pass']))){
      /*   take the Javascript dateTime string and convert it to a format that can be used in the php 
         format 
         */

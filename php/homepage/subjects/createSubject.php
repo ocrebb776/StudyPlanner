@@ -5,13 +5,14 @@ require "../../whitelist.php";
 
 
 if ($_POST) {
+    
 
     
     $SQLconnection = new MySQLRequest(); // new insance of the sql request
     $_POST = whitelist($_POST,$SQLconnection->conn);
     $SQLconnection->oneResult = true; // as the sql should only return one value 
-    $output = $SQLconnection->sql("SELECT * FROM users WHERE Pass='{$_POST["password"]}' && ID='{$_POST["ID"]}'");
-    if ($output) { // if there is a account with the same credentials 
+    $output = $SQLconnection->sql("SELECT * FROM users WHERE ID='{$_POST["ID"]}'");
+    if($output && (password_verify($_POST['password'],$output['Pass']))) { // if there is a account with the same credentials 
         $SQLconnection->oneResult = false; // change the expected result 
         
             //if request is valid

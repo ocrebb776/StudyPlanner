@@ -10,8 +10,9 @@ if ($_POST) {
     
     $SQLconnection->oneResult = true;
     //checking the account credentials
-    $output = $SQLconnection->sql("SELECT * FROM users WHERE Pass='{$_POST["password"]}' && ID='{$_POST["ID"]}'");
-    if ($output) {
+    $output = $SQLconnection->sql("SELECT * FROM users WHERE ID='{$_POST["ID"]}'");
+
+    if($output && (password_verify($_POST['password'], $output['Pass'] ))) {
         //default  sql request  using a left join
         $sql = "SELECT 
          topics.*,

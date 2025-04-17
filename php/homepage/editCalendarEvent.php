@@ -10,7 +10,7 @@ if ($_POST) {
     $_POST = whitelist($_POST,$SQLconnection->conn);
 
     $SQLconnection->oneResult = true; // as the sql should only return one value 
-    $output = $SQLconnection->sql("SELECT * FROM users WHERE Pass='{$_POST["password"]}' && ID='{$_POST["ID"]}'");
+    $output = $SQLconnection->sql("SELECT * FROM users WHERE ID='{$_POST["ID"]}'");
    
 
         // sql request to change the record in the database 

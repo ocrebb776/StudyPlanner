@@ -10,8 +10,8 @@ if ($_POST) {
 
     $SQLconnection->oneResult = true; 
     //checking the account credentials
-    $output = $SQLconnection->sql("SELECT * FROM users WHERE Pass='{$_POST["password"]}' && ID='{$_POST["ID"]}'"); 
-    if($output){
+    $output = $SQLconnection->sql("SELECT * FROM users WHERE ID='{$_POST["ID"]}'"); 
+    if($output && (password_verify($_POST['password'],$output['Pass']))){
         $today = date("Y-m-d");  // getting todays date
         $SQLconnection->oneResult = false; 
         $subject = $SQLconnection->sql("SELECT * FROM events WHERE user={$_POST['ID']}"); // all events with the user's ID

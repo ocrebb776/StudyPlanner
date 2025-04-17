@@ -9,8 +9,8 @@ if ($_POST) {
     $_POST = whitelist($_POST,$SQLconnection->conn);
 
     $SQLconnection->oneResult = true;
-    $output = $SQLconnection->sql("SELECT * FROM users WHERE Pass='{$_POST["password"]}' && ID='{$_POST["ID"]}'");
-    if ($output) {
+    $output = $SQLconnection->sql("SELECT * FROM users WHERE ID='{$_POST["ID"]}'");
+    if($output && (password_verify($_POST['password'],$output['Pass']))) {
         $today = date("Y-m-d");
         $SQLconnection->oneResult = false;
    
