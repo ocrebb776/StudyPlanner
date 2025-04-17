@@ -144,20 +144,27 @@ class HomeScreen extends Screen {
       this.topicAndSubjectSection.element = this.topicAndSubjectSectionWrapper;
       this.topicAndSubjectSection.show();
   
+      if(showCalendar){
+        //creating the Calendar title
+        let CalendarTitle = document.createElement("div");
+        CalendarTitle.classList.add("card-header");
+        CalendarTitle.textContent = "Calendar";
+        //adding it to the title
+        calendarWrapper.prepend(CalendarTitle);
+        this.element.append(calendarWrapper)
+        }
+  
+
+
       //itme to display total time spent
       let totalTimeSpent = document.createElement("div");
       totalTimeSpent.classList.add("container", "p-2");
       totalTimeSpent.setAttribute("id", "totalTimeSpent");
   
-      //creating the Calendar title
-      let CalendarTitle = document.createElement("div");
-      CalendarTitle.classList.add("card-header");
-      CalendarTitle.textContent = "Calendar";
-      //adding it to the title
-      calendarWrapper.prepend(CalendarTitle);
+     
+      
       this.element.append(
         totalTimeSpent,
-        calendarWrapper,
         this.buttonListContainer,
         this.topicAndSubjectSectionWrapper
       );
@@ -846,14 +853,14 @@ class HomeScreen extends Screen {
     refreshButton.textContent = "Refresh";
 
 
-    let viewAJAXrequests = createButton("Refresh", "outline-warning");
+    let viewAJAXrequests = createButton("debg", "outline-warning");
     viewAJAXrequests.addEventListener("click", function () {
   viewAllAjax()    
     });
-    viewAJAXrequests.textContent = "debug";
-  
+
+  let hideCalendar = createButton('toggleCalendarView','warning',toggleCalendarView)
     //adding buttons to the buttonList
-    buttonList.append(logoutButton, toggleDarkModeButton, refreshButton,viewAJAXrequests);
+    buttonList.append(logoutButton, toggleDarkModeButton, refreshButton,viewAJAXrequests,hideCalendar);
   
     //creating the title
     optionsView.title("Options");

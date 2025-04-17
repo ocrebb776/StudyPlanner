@@ -93,10 +93,13 @@ String.prototype.convertDate = function () {
       return true;
     }
   }
-  function createButton(text, style) {
+  function createButton(text, style,call = false) {
     let btn = document.createElement("button");
     btn.classList.add("btn", "btn-" + style);
     btn.textContent = text;
+    if(call!==false){
+    btn.addEventListener('click',call)
+    }
     return btn;
   }
   
@@ -517,3 +520,5 @@ String.prototype.convertDate = function () {
     }
     show() {}
   }
+
+

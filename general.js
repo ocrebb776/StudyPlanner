@@ -16,10 +16,13 @@ let CURRENTPOPUPOBJECT
 let form
 let noteForm;
 let listOfAjaxRequests = []
+let showCalendar = true
 // wait until the page has loaded to add items such as event listeners
 window.onload = function () {
   lockScreen = new LockScreen();
   homeScreen = new HomeScreen();
+  toggleCalendarView(false)
+  toggleCalendarView(false)
 
   // create a new instance of the  lockscreen
 
@@ -69,7 +72,26 @@ function toggleDarkmode(preset =false,change = true) {
   }
 }
 
+function toggleCalendarView(repl = true) {
+  let pageCookies = Cookies.get()
+  if(pageCookies.hasOwnProperty('showcal')){
+    let curr = Cookies.get('showcal')
+    curr = (curr == 'true') ? 'false' : 'true'
+    console.log(curr)
+    showCalendar = (curr== 'true') ? true : false
+    
+    Cookies.set("showcal", curr, { expires: 100 })
+    
 
+  }else{
+    Cookies.set("showcal", "true", { expires: 100 })
+    showCalendar = true
+    
+  }
+  if(repl){
+    homeScreen.show()
+    }
+}
 
 function logOut() {
   //remove the login related cookies
