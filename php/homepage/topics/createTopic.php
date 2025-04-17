@@ -26,6 +26,7 @@ if ($_POST) {
             }
             // sql request to create the record in the database 
             $SQLconnection->sql("INSERT INTO `topics` (`ID`, `user`, `name`, `links`,`subjectID`,`dateCreated`) VALUES ($max, '{$_POST["ID"]}', '{$_POST["data"]["name"]}', '[]',{$_POST["data"]["subjectID"]},NOW())", false);
+            echo $max;
        
     } else {
         echo 'false';

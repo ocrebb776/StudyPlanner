@@ -225,7 +225,7 @@ function getNotes(id, table) {
           this.hide();
           if (pageRefresh) {
             //if there is a page to go back to go to it
-            pageRefresh(id);
+            pageRefresh({ID:id});
           }
         }
       },

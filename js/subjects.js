@@ -159,7 +159,7 @@ function createSubjectForm(
   
     listOfNotes.forEach((el) => {
       console.log(el);
-      notes.append(convertNoteToHTML(el, viewSubjects));
+      notes.append(convertNoteToHTML(el, viewSubject));
     });
     //create the edit button
     let editBTN = document.createElement("button");
@@ -175,7 +175,7 @@ function createSubjectForm(
     addNoteBtn.classList.add("btn", "btn-primary");
     addNoteBtn.textContent = "Add Note";
     addNoteBtn.addEventListener("click", function () {
-      createNote(data.ID, "subjects", true, false, "", viewSubjects);
+      createNote(data.ID, "subjects", true, false, "", viewSubject);
     });
     //create deleteBtn
     let deleteBtn = document.createElement("button");

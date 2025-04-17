@@ -67,7 +67,7 @@ function createTopic(
       console.log(valid, name, subject);
       if (valid && name !== "" && subject != "") {
         //start request
-        let request = new AjaxTemplate(true);
+        let request = new AjaxTemplate(false);
         //creating data about the request
         let data = {};
         data.name = name;
@@ -87,17 +87,26 @@ function createTopic(
           data: data,
         };
         //send request
-        request.send();
+        let r = request.send();
         //hideMobile
         this.hide();
         if (pageRefresh) {
+       
           //if there is a page to go back to go to it
-          pageRefresh(id);
+          pageRefresh({ID:id});
+        }else{
+          if(!isNaN(r.responseText)){
+ 
+            viewTopic({ID:parseInt(r.responseText)})
+          }
         }
-      }
+        }
+
       //hide the form after submitting
-      this.hide();
+      //this.hide();
       homeScreen.show();
+      
+     
     },
     endText
   );
@@ -194,7 +203,7 @@ function viewTopic(data, closeFtn = false, modal = new Popup()) {
 
   listOfNotes.forEach((el) => {
     console.log(el);
-    notes.append(convertNoteToHTML(el, viewTopics));
+    notes.append(convertNoteToHTML(el, viewTopic));
   });
   //create the edit button
   let editBTN = document.createElement("button");
@@ -210,7 +219,7 @@ function viewTopic(data, closeFtn = false, modal = new Popup()) {
   addNoteBtn.classList.add("btn", "btn-primary");
   addNoteBtn.textContent = "Add Note";
   addNoteBtn.addEventListener("click", function () {
-    createNote(data.ID, "topics", true, false, "", viewTopics);
+    createNote(data.ID, "topics", true, false, "", viewTopic);
   });
   //create deleteBtn
   let deleteBtn = document.createElement("button");
@@ -301,7 +310,7 @@ function editTopic(id) {
     "Save Changes",
     false,
     id,
-    false
+    viewTopic
   );
 }
 function getTopic(id = false) {
