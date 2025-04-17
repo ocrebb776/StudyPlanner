@@ -64,7 +64,6 @@ function createTopic(
         //alert this to the user
         alert(txt);
       }
-      console.log(valid, name, subject);
       if (valid && name !== "" && subject != "") {
         //start request
         let request = new AjaxTemplate(false);
@@ -115,7 +114,7 @@ function createTopic(
   topicForm.show();
 }
 
-function viewTopics(subjectID = false,disp=true) {
+function viewTopics(subjectID = false,disp=true,forceCallback = viewTopics) {
   //if there is a subjectID then then the functions should filter for only that subject
   let subjectSpec = !(subjectID == false);
   //get topic data
@@ -142,7 +141,7 @@ function viewTopics(subjectID = false,disp=true) {
       btn.prepend(title);
       //add an event listener for the button
       btn.addEventListener("click", function () {
-        viewTopic(el, viewTopics());
+        viewTopic(el, forceCallback,subjectID);
       });
       //add the button to the topic list
       TopicList.append(btn);
@@ -168,20 +167,19 @@ function viewTopics(subjectID = false,disp=true) {
   if (subjectSpec) {
     //get the information about the subject
     let subject = getSubject(subjectID);
-    console.log(subject)
     //change the title to show the name of the subject
     modal.title(`View Topics for ${subject.name}`);
   }
   modal.footer(createTopicButton, modalCloseBtn);
-  console.log(modal);
   //show the modal
   modal.show();}else{
     return TopicList
   }
 }
-function viewTopic(data, closeFtn = false, modal = new Popup()) {
+function viewTopic(data, closeFtn = false, subjectID=false) {
+
   //create new modal
-  modal = new Popup();
+  let modal = new Popup();
   //get information about the request
   let topicInfo = getTopic(data.ID);
   //create the info
@@ -202,7 +200,6 @@ function viewTopic(data, closeFtn = false, modal = new Popup()) {
   let listOfNotes = getNotes(data.ID, "topics");
 
   listOfNotes.forEach((el) => {
-    console.log(el);
     notes.append(convertNoteToHTML(el, viewTopic));
   });
   //create the edit button
@@ -251,7 +248,7 @@ function viewTopic(data, closeFtn = false, modal = new Popup()) {
   if (closeFtn) {
     //add eventListener for that function
     closeBtn.addEventListener("click", function () {
-      closeFtn();
+      closeFtn(subjectID);
     });
   }
   //text content
@@ -342,7 +339,6 @@ function getTopic(id = false) {
 }
 
 function visit(topicID, visitID = false, onHome = true) {
-  console.log(visitID);
   //get information about the topic
   let topicInfo = getTopic(topicID);
 
@@ -363,7 +359,6 @@ function visit(topicID, visitID = false, onHome = true) {
   if (topicInfo.diffrating == -1) {
     topicInfo.diffrating = 127;
   }
-  console.log(visitValues);
   //create a new form
   let form = new FormPopUp(
     // the header text with the topic name in it

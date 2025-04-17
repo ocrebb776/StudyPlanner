@@ -110,7 +110,6 @@ function createSubjectForm(
     let SubjectList = document.createElement("div");
     //for each subject
     data.forEach((el) => {
-      console.log(el)
       //create an empty cardButton
       let btn = createInfoClickBtn({});
       //create a title element
@@ -123,7 +122,7 @@ function createSubjectForm(
       btn.append(title);
       //add an event listener for the button
       btn.addEventListener("click", function () {
-        viewSubject(el, viewSubjects(), modal);
+        viewSubject(el, viewSubjects, modal);
       });
       //add the button to the subject list
       SubjectList.append(btn);
@@ -140,10 +139,15 @@ function createSubjectForm(
     //show the modal
     modal.show();
   }
-  function viewSubject(data, closeFtn = false, modal = new Popup()) {
+  function viewSubject(id, closeFtn = false, modal = new Popup()) {
+    let data
+    if(typeof id == "number" || typeof id == "string"){
+      data = {ID:id}
+    }else{
+      data = id
+    }
     //create new modal
     modal = new Popup();
-    console.log(data)
     //get information about the request
     let subjectInfo = getSubject(Number(data.ID));
     //create the info
@@ -158,7 +162,6 @@ function createSubjectForm(
     let listOfNotes = getNotes(data.ID, "subjects");
   
     listOfNotes.forEach((el) => {
-      console.log(el);
       notes.append(convertNoteToHTML(el, viewSubject));
     });
     //create the edit button
@@ -220,7 +223,7 @@ function createSubjectForm(
 
 //showing all of the topics 
 
-let TopicList = viewTopics(data.ID,false)
+let TopicList = viewTopics(data.ID,false,viewSubject)
 
 
     //addning the name of the subject and a button to view all of the topics in the subject

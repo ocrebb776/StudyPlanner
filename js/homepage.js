@@ -342,7 +342,6 @@ class HomeScreen extends Screen {
       let minLooseScore = -1;
       for (const topicL in topics) {
         let topic = topics[topicL];
-        console.log(topic);
         //if aqll the topics are the same then to avoid zero divison
         if (max.timeSince - min.timeSince == 0) {
           max.timeSince++;
@@ -465,12 +464,10 @@ class HomeScreen extends Screen {
         if (result.status == 200) {
           return JSON.parse(result.responseText);
         } else {
-          console.log(result);
           //if not return false
           return false;
         }
       } catch (e) {
-        console.log(e);
         return false;
       }
     }
@@ -526,12 +523,10 @@ class HomeScreen extends Screen {
   
         //addinging the current days dates data to varaibale todat
         let today = this.data[x];
-        console.log(this.data);
         // if there is event on that date
         if (today) {
           //convert the database response into the day
           today = this.processWeekDay(today);
-          console.log(today);
           ViewElement.style.display = "grid";
           ViewElement.style.gridTemplateColumns = today[1];
           today[0].forEach((el) => {
@@ -849,9 +844,16 @@ class HomeScreen extends Screen {
       optionsView.hide();
     });
     refreshButton.textContent = "Refresh";
+
+
+    let viewAJAXrequests = createButton("Refresh", "outline-warning");
+    viewAJAXrequests.addEventListener("click", function () {
+  viewAllAjax()    
+    });
+    viewAJAXrequests.textContent = "debug";
   
     //adding buttons to the buttonList
-    buttonList.append(logoutButton, toggleDarkModeButton, refreshButton);
+    buttonList.append(logoutButton, toggleDarkModeButton, refreshButton,viewAJAXrequests);
   
     //creating the title
     optionsView.title("Options");
@@ -888,7 +890,6 @@ class HomeScreen extends Screen {
         //fetch the data
         this.data = getSearchData();
         //output the time between fetches to the console
-        console.log("Time between ", now - this.last);
         // change the last attribute to be the current time
         this.last = now;
   
@@ -1182,4 +1183,24 @@ class HomeScreen extends Screen {
       tableContainer.append(table);
       return tableContainer;
     }
+  }
+
+
+
+  function viewAllAjax(){
+    let modal = new Popup()
+
+    let requests = listOfAjaxRequests
+
+    let wrapper = document.createElement('pre')
+    requests.forEach(el=>{
+      wrapper.append(JSON.stringify(el,null,4))
+    })
+    
+    modal.title('DEBUG')
+    modal.body(wrapper)
+    modal.footer(modal.closeBtn())
+    modal.show()
+
+
   }

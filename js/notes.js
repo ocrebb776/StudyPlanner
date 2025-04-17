@@ -15,14 +15,11 @@ function getNotes(id, table) {
     request.dataType = "json";
     //send request
     let send = request.send();
-    //for debugging information
-    console.log(send.responseJSON);
   
     //return the data
     return send.responseJSON;
   }
   function convertNoteToHTML(data, pageRefresh) {
-    console.log(data);
     //creating the container
     let container = document.createElement("div");
     // bootstrap classes
@@ -94,7 +91,6 @@ function getNotes(id, table) {
     deleteBtn = document.createElement("i");
     deleteBtn.classList.add("fa-solid", "fa-trash", "btn", "btn-outline");
     deleteBtn.addEventListener("click", function () {
-      console.log(pageRefresh);
       //pageRefresh reloads that part of the page to update it without the note
       deleteNote(data, pageRefresh);
     });
@@ -249,7 +245,6 @@ function getNotes(id, table) {
       id: note.ID,
     };
     request.send();
-    console.log();
     //go refresh the page
     pageRefresh(note.frID);
   }
@@ -269,7 +264,6 @@ function getNotes(id, table) {
     //send request
     let send = request.send();
     //for debugging information
-    console.log(send.responseJSON);
   
     //return the data
     return send.responseJSON;

@@ -264,7 +264,6 @@ function loginValidation(
     };
     //send the request
     request.send();
-    console.log(request);
   } else {
     //tell the user that either their username or password is empty
     alert("Your Username or password cannot be empty");
@@ -341,7 +340,6 @@ function ValidateCreateAccount() {
           document.getElementById("password").value = password.value;
           loginValidation();
         } else {
-          console.log(result);
         }
       };
       CreateAccount.send();

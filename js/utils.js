@@ -60,7 +60,6 @@ String.prototype.convertDate = function () {
   
   function hr_minToMin(l) {
     let time = l.split(":"); // split HH:MM into [HH,MM]
-    console.log(l);
     let hours = Number(time[0]); // convert "HH" to hours
     let minutes = Number(time[1]); //convert "MM" to minutes
     l = hours * 60 + minutes; //convert the hours into minutes and and the minutes
@@ -85,7 +84,6 @@ String.prototype.convertDate = function () {
         if (!(el == "\n" && allowNewLine)) {
           striped.push(el);
         }
-        console.log(striped);
       }
     });
     //if any characters a not allowed return them otherwise return true
@@ -117,7 +115,6 @@ String.prototype.convertDate = function () {
       this.pivot(list); // start sequence
     }
     pivot(list) {
-      console.log(list);
       // if their is items to sort
       if (list.length > 1) {
         let lower = []; // where all values lower of the pivot will go
@@ -156,10 +153,9 @@ String.prototype.convertDate = function () {
         modal.hide();
       } catch (error) {
         //this will happen when a modal isn't open already
-        console.log(error);
+      
       }
   
-      console.log(this.id);
       this.element.innerHTML = ""; //Clearing the modal of previous elements
       this.element.outerHTML = "<div id='" + id + "'></div>";
       this.element = document.getElementById(id);
@@ -222,7 +218,6 @@ String.prototype.convertDate = function () {
       CURRENTPOPUPOBJECT = this
       //allowing for it to be opend
       bootstrap.Modal.getInstance(this.element).show();
-      console.log(bootstrap.Modal.getInstance(this.element));
       this.open = true
     }
     hide() {
@@ -501,7 +496,6 @@ String.prototype.convertDate = function () {
       } else {
         this.status = false;
         this.element = document.querySelector("#wrapper");
-        console.log(this);
       }
     }
     clear() {

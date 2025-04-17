@@ -11,7 +11,6 @@ class AjaxTemplate {
  
         // incase the ajaxSuccess function isnt spesified
     ajaxSuccess(data) {
-            console.log("Recived Ajax")
       
         }
         // incase the ajazError function isnt spesified
@@ -20,8 +19,7 @@ class AjaxTemplate {
     }
         // this is where the methid will be used to send the data 
     send() {
-        console.log("attempting to send the ajax request")
-        return $.ajax({
+        let sendParams = {
             async: this.ajax,
             error: this.ajaxError,
             url: this.href,
@@ -29,7 +27,13 @@ class AjaxTemplate {
             method: this.type,
             success: this.ajaxSuccess,
             dataType: this.dataType
-        })
+        }
+        let sendData = $.ajax(sendParams)
+        if(typeof listOfAjaxRequests === 'object'){
+            listOfAjaxRequests.push([sendParams,sendData])
+        }
+
+        return sendData
 
     }
 }

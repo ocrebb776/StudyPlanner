@@ -106,7 +106,6 @@ class Study extends Screen {
       ],
       function () {
         STUDY.startStudying(this.formData);
-        console.log(this.formData);
         this.hide();
       },
       "START"
@@ -135,7 +134,6 @@ class Study extends Screen {
     this.timer.startTimer(this.timeSpent, function () {
       this.closedByUser = false;
       this.endStudy();
-      console.log("Time is up");
     }.bind(this));
     let time = this.timer.getTime();
     this.timeDisplay = document.createElement("div");
@@ -357,7 +355,6 @@ startCalmScreen(){
       function () {
         // Handle form submission
         let formData = this.formData;
-        console.log(formData);
         this.hide();
       },
       "Mark as Visited"
@@ -381,7 +378,6 @@ startCalmScreen(){
     this.element.append(screen);
   }
   updateNotes() {
-    console.log("Notes updated");
   }
 }
 

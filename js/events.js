@@ -99,7 +99,6 @@ function createNewEventForm(
   
         let eventData = request.send().responseText; // send the request and get the response
         eventData = JSON.parse(eventData); //convert the response into an object
-        console.log(eventData); // for debugging purposes
         if (eventData.hasOwnProperty(data.Date)) {
           // if events exists on the entered date
           let list = eventData[data.Date];
@@ -145,7 +144,6 @@ function createNewEventForm(
             let txt = "";
             //for each clash create an error message
             allClashes.forEach((el) => {
-              console.log(el[1]);
               txt += "\nclashes with " + el[0];
               if (el[1][0]) {
                 txt += "\nend of this event starts before the next one";
@@ -171,7 +169,6 @@ function createNewEventForm(
           //tell the user that there is an issue
           alert("The start time must be before the end time");
         } else {
-          console.log(data.StartTime.toMins(), data.EndTime.toMins());
         }
   
         if (valid) {
@@ -200,7 +197,6 @@ function createNewEventForm(
           homeScreen.show(); // to refresh the homepage
         }
   
-        console.log(this.formData);
       },
       endText
     );
@@ -208,7 +204,6 @@ function createNewEventForm(
     form.show();
   }
   function manageEvents(modal = new Popup()) {
-    console.log(modal);
     modal.title("");
     modal.body("");
     modal.footer("");
@@ -227,7 +222,6 @@ function createNewEventForm(
     for (const key in events) {
       events[key].forEach((el) => {
         let dateString = el.date + "T" + el.startTime;
-        console.log(dateString);
         el.epDate = new Date(dateString);
         allDays.push(el);
       });
@@ -264,11 +258,9 @@ function createNewEventForm(
   }
 
   function viewEvent(id, callBack = new Popup(), closeFtn = false) {
-    console.log(typeof id)
     if(id == undefined ) {
       return false
     }
-    console.log(callBack);
     //get information about the request
     let eventInfo = getEventInfo(id);
     //create the info
