@@ -1,9 +1,13 @@
 <?php
 // to allow for the sql requests necessary for this 
 require "../../SQL.php";
+
+require "../../whitelist.php";
 if ($_POST) {
     //creating the connection
     $SQLconnection = new MySQLRequest();
+    $_POST = whitelist($_POST,$SQLconnection->conn);
+    
     $SQLconnection->oneResult = true;
     //checking the account credentials
     $output = $SQLconnection->sql("SELECT * FROM users WHERE Pass='{$_POST["password"]}' && ID='{$_POST["ID"]}'");

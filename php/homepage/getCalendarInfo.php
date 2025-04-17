@@ -1,10 +1,14 @@
 <?php
 // to allow for the sql requests necessary for this 
 require "../SQL.php";
+require "../whitelist.php";
+
 if ($_POST) {
 
     //start the connection 
     $SQLconnection = new MySQLRequest();
+    $_POST = whitelist($_POST,$SQLconnection->conn);
+
     //expect only one rsult 
     $SQLconnection->oneResult = true;
     // validate the login 

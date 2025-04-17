@@ -8,7 +8,7 @@ class MySQLRequest
     public $dbname;
     public $oneResult;
     // $Cconn would need to be a private attribute as it shouldn't be Changed
-    private $conn;
+    public $conn;
     function __construct($oneResult = false)
     { // if  no value is given then 
         // defining the variables

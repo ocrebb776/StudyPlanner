@@ -4,19 +4,15 @@ require "SQL.php";
 require "whitelist.php";
 if ($_POST) {
     // a string containing all the allowed characters, this is to reduce the risk of a sql Injection
-    $trimList = "qwertyuiopa()sdfghjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM!£$%&_-+=,.<>#;: /@?,'/@\\n";
     $SQLconnection = new MySQLRequest(); // new instance of the sql request
+    $_POST = whitelist($_POST,$SQLconnection->conn);
+
     $SQLconnection->oneResult = true; // as the sql should only return one value 
     $output = $SQLconnection->sql("SELECT * FROM users WHERE Pass='{$_POST["password"]}' && ID='{$_POST["ID"]}'");
     if ($output) { // if there is a account with the same credentials 
         $SQLconnection->oneResult = false; // change the expected result 
         $valid = true; //assume all inputs a valid 
-        $newVal = whitelist($_POST["data"]["note"], $trimList,true);
-        if ($newVal != $_POST["data"]["note"]) {
-            //if the function striped any characters then it must be invalid 
-            $valid = false;
-        }
-        if ($valid) {
+        
             //if request is valid
             $max = $SQLconnection->sql("SELECT max(ID) FROM notes"); //get highest id
             if($max){
@@ -30,9 +26,7 @@ if ($_POST) {
             $sql = "INSERT INTO `notes` (`ID`, `user`, `frID`, `frTable`,`text`,`date`) VALUES ($max, '{$_POST["ID"]}', '{$_POST["data"]["frID"]}', '{$_POST["data"]["frTable"]}', '{$_POST["data"]["note"]}',NOW())";
             echo $sql;
             $SQLconnection->sql($sql, false);
-        } else {
-            echo "some invalid characters in input(s)";
-        }
+      
     } else {
         echo 'false';
     }}

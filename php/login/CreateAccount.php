@@ -4,6 +4,8 @@ require "../SQL.php";
 require "../whitelist.php";
 if ($_POST) {
     $SQLconnection = new MySQLRequest();
+    $_POST = whitelist($_POST,$SQLconnection->conn);
+
     $trimList = "qwertyuiopasdfgh()jklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM!£$%&_-+=,.<>#;:";
     $username = $_POST["username"];
     $password = $_POST["password"];
