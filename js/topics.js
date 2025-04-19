@@ -629,7 +629,7 @@ function deleteVisit(id) {
     editToDo.classList.add("btn", "btn-primary");
     editToDo.textContent = "Edit To Do List";
     editToDo.addEventListener("click", function () {
-      Todo.edit();
+      Todo.show();
     });
     //todo list
     let todoListElement = document.createElement("div");

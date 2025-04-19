@@ -84,8 +84,8 @@ function toggleCalendarView(repl = true) {
     
 
   }else{
-    Cookies.set("showcal", "true", { expires: 100 })
-    showCalendar = true
+    Cookies.set("showcal", "false", { expires: 100 })
+    showCalendar = false
     
   }
   if(repl){
