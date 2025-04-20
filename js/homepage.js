@@ -182,7 +182,6 @@ class HomeScreen extends Screen {
   
       //HomeScreen Calendar Date Attribute, to be used to select a different date
       this.selectedDate = null;
-  Todo.show()
 
     }
   }

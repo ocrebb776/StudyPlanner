@@ -632,12 +632,11 @@ function deleteVisit(id) {
       Todo.show();
     });
     //todo list
-    let todoListElement = document.createElement("div");
-    let stuffToDo = Todo.getToDo();
+    let stuffToDo = Todo.show(false)
   
     //setting the modal Titles , body and footer
     modal.title("Study Page");
-    modal.body(dateDisplay);
+    modal.body(dateDisplay,stuffToDo);
     let closeBTN = modal.closeBtn();
     modal.footer(editToDo, studyNowButton, " Fun Studying! ", closeBTN);
     modal.show();

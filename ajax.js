@@ -29,7 +29,7 @@ class AjaxTemplate {
             dataType: this.dataType
         }
         let sendData = $.ajax(sendParams)
-        if(typeof listOfAjaxRequests === 'object'){
+        if(window.hasOwnProperty('listOfAjaxRequests')){
             listOfAjaxRequests.push([sendParams,sendData])
         }
 

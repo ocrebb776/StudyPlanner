@@ -2,6 +2,24 @@
     abstact class screen
 
     */
+   
+
+
+    let request = new AjaxTemplate(true)
+    request.href = "php/getVersion.php"
+    let LATEST_VERSION 
+    let CURRENT_VERSION = '0.1.2'
+
+    request.ajaxSuccess = function(data){
+      LATEST_VERSION = data
+      if(LATEST_VERSION !== CURRENT_VERSION){
+        console.log('wrong version detected')
+        setTimeout(()=>location.reload(true),5000)
+        
+      }
+    }
+    request.send()
+    
 
 //all of the global variables
 let TodayISO_Obj = new Date();

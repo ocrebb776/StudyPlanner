@@ -1,31 +1,34 @@
 const Todo = {
-  show() {
-    let modal = new Popup();
+  show(disp =true) {
 
-    this.getList();
-    modal.title("To-Do List");
 
     let wrapper = document.createElement("div");
-    this.getTodoDISP().forEach((el) => {
+    this.getTodoDISP(disp).forEach((el) => {
       wrapper.append(el);
     });
 
-    modal.body(wrapper);
     let addBtn = createButton('+','primary',this.addTodo.bind(this))
 
+    if(disp){
+    let modal = new Popup();
+    modal.title("To-Do List");
+    modal.body(wrapper);
     modal.footer(addBtn,modal.closeBtn());
     modal.show();
+  }else{
+    return wrapper
+  }
   },
-  getTodoDISP() {
+  getTodoDISP(disp=true) {
     let list = this.getToDo();
 
     let converted = list.map((el) => {
-      return this.convertTodoToHTML(el);
+      return this.convertTodoToHTML(el,disp);
     });
 
     return converted;
   },
-  convertTodoToHTML(data) {
+  convertTodoToHTML(data,disp=true) {
     let todo = document.createElement("div");
     todo.classList.add("card",'p-2');
     let checkButtonWrapper = document.createElement("div");
@@ -44,14 +47,41 @@ const Todo = {
     }
 
     let label = document.createElement("label");
-    label.classList.add('col-8','form-check-label');
+    label.classList.add('col-6','form-check-label');
     label.textContent = data.text;
     label.setAttribute('contenteditable','true')
     let triggerf = (tdata)=>{this.triggerUpdate(tdata,data)}
     label.addEventListener('input',triggerf.bind(this))
 
+    let due = document.createElement("input")
+    due.classList.add('col-4')
+    due.value = (data.due.getTime() < 100) ? "" : data.oldDue.replace(" ","T")
+    due.setAttribute('placeholder','Due Date')
+    due.setAttribute('type','datetime-local')
+    due.addEventListener('input',(tdata)=>{
+      this.updateDueDate(data.ID,tdata.target.value)
+      tdata.target.value
+      let now = new Date()
+      let Ndue = new Date(tdata.target.value)
+    if(Ndue.getTime() < now.getTime()){
+      tdata.target.style.borderColor = 'red'
+    }else{{
+      tdata.target.style.borderColor = ''
+    }}
+    })
+    let now = new Date()
+    if(data.oldDue != null){
+    if(data.due.getTime() < now.getTime()){
+      due.style.borderColor = 'red'
+    }
+  }
+    
+
     let buttonList = document.createElement("div");
-    buttonList.classList.add("col-3");
+    buttonList.classList.add("col-1");
+
+
+
 
 
 
@@ -65,10 +95,12 @@ const Todo = {
 
 
 
+    if(disp){
 
     buttonList.append( deleteBtn);
+  }
     IndicheckButtonWrapper.append(checkButton)
-    checkButtonWrapper.append(IndicheckButtonWrapper ,label,buttonList);
+    checkButtonWrapper.append(IndicheckButtonWrapper ,label,due,buttonList);
 
     todo.append(checkButtonWrapper);
 
@@ -82,6 +114,7 @@ const Todo = {
       el.ID = parseInt(el.ID);
       el.completed = el.completed == "1";
       el.created = new Date(el.created);
+      el.oldDue = el.due
       el.due = new Date(el.due);
 
       return el;
@@ -94,8 +127,20 @@ const Todo = {
     let list = this.getList()
 
     list = list.map((el) => process(el));
-
+    list.sort(function(a, b) { 
+      let diff = a.completed - b.completed
+      if(diff==0){
+        diff = a.due.getTime() - b.due.getTime(
+          
+        )
+        console.log(diff)
+      }
+      return diff;
+  })
+  console.log(list)
         return list
+
+
     }
   },
   getList(id = false) {
@@ -107,14 +152,14 @@ const Todo = {
   },
   triggerUpdate(triggerData,todoData){
 
-    let newText = triggerData.srcElement.textContent
+    let newText = triggerData.target.textContent
 
     let id = todoData.ID
 
     if(this.trackingInputs.hasOwnProperty(id)){
         clearTimeout(this.trackingInputs[id])
     }
-        this.trackingInputs[id] = setTimeout(()=>{this.update(id,newText)},1500)
+        this.trackingInputs[id] = setTimeout(()=>{this.update(id,newText)},1000)
     
 
 
@@ -131,14 +176,14 @@ const Todo = {
     console.log(id,info)
     let conf = confirm(`Are you sure you want to delete '${info.text}'`)
     if(conf){
-        let request = new AjaxTemplate(true)
+        let request = new AjaxTemplate(false)
         request.href = "php/homepage/todo/deleteItem.php"
         request.data = {ID:StoredID,password :StoredPassword,id:id}
         request.send()
     }
   },
   addTodo(){
-    let request = new AjaxTemplate(true)
+    let request = new AjaxTemplate(false)
     request.href = "php/homepage/todo/addItem.php"
     request.data = {ID:StoredID,password :StoredPassword}
     request.send()
@@ -148,6 +193,13 @@ const Todo = {
     let request = new AjaxTemplate(true)
     request.href = "php/homepage/todo/markAsDone.php"
     request.data = {ID:StoredID,password :StoredPassword,id:id}
+    request.send()
+  },
+  updateDueDate(id,newDate){
+    newDate = newDate.replace('T',' ')
+    let request = new AjaxTemplate(true)
+    request.href = "php/homepage/todo/updateTodoDate.php"
+    request.data = {ID:StoredID,password :StoredPassword,id:id,newDate:newDate}
     request.send()
   }
 };
