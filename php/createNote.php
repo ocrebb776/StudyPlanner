@@ -1,33 +1,61 @@
 <?php
-// to allow for the sql requests neccesary for this 
-require "SQL.php";
-require "whitelist.php";
-if ($_POST) {
-    // a string containing all the allowed characters, this is to reduce the risk of a sql Injection
-    $SQLconnection = new MySQLRequest(); // new instance of the sql request
-    $_POST = whitelist($_POST,$SQLconnection->conn);
+/**
+ * Create Note Handler
+ * Handles the creation of new notes in the database with proper authentication and sanitization
+ * 
+ * Required POST parameters:
+ * - ID: User ID
+ * - password: User password
+ * - data: Object containing note details (frID, frTable, note)
+ */
 
-    $SQLconnection->oneResult = true; // as the sql should only return one value 
+// Include required database and utility functions
+require "SQL.php";
+require "utils.php";
+
+// Only process POST requests
+if ($_POST) {
+    // Create database connection
+    $SQLconnection = new MySQLRequest();
+    
+    // Sanitize all POST data to prevent SQL injection
+    $_POST = whitelist($_POST, $SQLconnection->conn);
+
+    // Configure query to return single result for authentication
+    $SQLconnection->oneResult = true;
+    
+    // Verify user credentials
     $output = $SQLconnection->sql("SELECT * FROM users WHERE ID='{$_POST["ID"]}'");
-    if($output && (password_verify($_POST['password'],$output['Pass']))) { // if there is a account with the same credentials 
-        $SQLconnection->oneResult = false; // change the expected result 
-        $valid = true; //assume all inputs a valid 
+    
+    // Check if user exists and password matches
+    if($output && (password_verify($_POST['password'], $output['Pass']))) {
+        // Switch to multi-result mode for subsequent queries
+        $SQLconnection->oneResult = false;
         
-            //if request is valid
-            $max = $SQLconnection->sql("SELECT max(ID) FROM notes"); //get highest id
-            if($max){
-                //if there is a highest id then the new id will be one higher 
-                $max = $max[0]["max(ID)"] + 1;
-            }else {
-                //if there is no events then the id;s should start at zero 
-                $max = 0;
-            }
-            // sql request to create the record in the database 
-            $sql = "INSERT INTO `notes` (`ID`, `user`, `frID`, `frTable`,`text`,`date`) VALUES ($max, '{$_POST["ID"]}', '{$_POST["data"]["frID"]}', '{$_POST["data"]["frTable"]}', '{$_POST["data"]["note"]}',NOW())";
-            echo $sql;
-            $SQLconnection->sql($sql, false);
-      
+        // Get the highest existing note ID
+        $max = $SQLconnection->sql("SELECT max(ID) FROM notes");
+        
+        // Determine new note ID
+        if($max) {
+            // Increment highest existing ID
+            $max = $max[0]["max(ID)"] + 1;
+        } else {
+            // Start from 0 if no existing notes
+            $max = 0;
+        }
+        
+        // Construct and execute insert query
+        // frID: Foreign key ID (related item)
+        // frTable: Foreign key table (related item type)
+        $sql = "INSERT INTO `notes` (`ID`, `user`, `frID`, `frTable`, `text`, `date`) 
+                VALUES ($max, '{$_POST["ID"]}', '{$_POST["data"]["frID"]}', 
+                '{$_POST["data"]["frTable"]}', '{$_POST["data"]["note"]}', NOW())";
+        
+        echo $sql;  // Echo query for debugging
+        $SQLconnection->sql($sql, false);
     } else {
+        // Authentication failed
         echo 'false';
-    }}
+    }
+}
 

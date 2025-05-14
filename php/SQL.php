@@ -1,55 +1,95 @@
 <?php
+/**
+ * MySQLRequest Class
+ * Handles database connections and query execution for the Study Planner application
+ * Provides a simplified interface for MySQL operations with automatic connection management
+ */
 class MySQLRequest
 {
-    // definine all the public attributes
+    /** @var string Database server hostname and port */
     public $servername;
+    
+    /** @var string Database username */
     public $username;
+    
+    /** @var string Database password */
     public $password;
+    
+    /** @var string Name of the database */
     public $dbname;
+    
+    /** @var boolean Whether to return single results directly */
     public $oneResult;
-    // $Cconn would need to be a private attribute as it shouldn't be Changed
+    
+    /** @var mysqli Active database connection */
     public $conn;
+
+    /**
+     * Constructor - Initializes database connection
+     * 
+     * @param boolean $oneResult Whether to return single results directly (default: false)
+     */
     function __construct($oneResult = false)
-    { // if  no value is given then 
-        // defining the variables
+    {
+        // Set database connection parameters
         $this->servername = "localhost:3306";
-        $this->username = "";
-        $this->password = "";
+        $this->username = "";  // Database username should be configured
+        $this->password = "";  // Database password should be configured
         $this->dbname = "studyplanner";
         $this->oneResult = $oneResult;
-        // Create Connection to mysql server
+
+        // Establish connection to MySQL server
         $this->conn = new mysqli($this->servername, $this->username, $this->password, $this->dbname);
     }
+
+    /**
+     * Executes an SQL query and processes the results
+     * 
+     * @param string $sql The SQL query to execute
+     * @param boolean $exp Whether to expect and process results (default: true)
+     * @return mixed Array of results, single result object, or false on failure/no results
+     */
     function sql($sql, $exp = true)
     {
-        //Executing request based of sql parameters
+        // Execute the SQL query
         $result = $this->conn->query($sql);
-        // create a blank list variable for all the columns to be added
+        
+        // Initialize output array
         $output = [];
+
         if ($exp) {
+            // Process query results if any exist
             if ($result->num_rows > 0) {
-                //for each row of data append it to the end of a list
+                // Fetch all rows and store in output array
                 while ($row = $result->fetch_assoc()) {
                     $output[] = $row;
                 }
+
+                // Handle single result mode
                 if (count($output) == 1 && $this->oneResult) {
-                    // if their is only one result and the program is only expecting one result it will returnt the one result on its own rather than in a class
+                    // Return single result directly if oneResult is true
                     return $output[0];
                 } else if ($this->oneResult) {
-                    // if the program is expecting one result and many is given it will return false
+                    // Return false if oneResult is true but multiple results found
                     return false;
                 }
-                // if their is a result return the result
+
+                // Return all results
                 return $output;
             } else {
-                // if their is no result of the sql return False
+                // No results found
                 return false;
             }
         }
     }
+
+    /**
+     * Destructor - Closes database connection
+     * Automatically called when object is destroyed
+     */
     function __destruct()
     {
-        //close the connection when the last reference is made
+        // Close the database connection
         $this->conn->close();
     }
 }

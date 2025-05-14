@@ -3,7 +3,7 @@
 <?php
 // to allow for the sql requests necessary for this 
 require "../../SQL.php";
-require "../../whitelist.php";
+require "../../utils.php";
 if ($_POST) {
 
     $SQLconnection = new MySQLRequest(); // new instance of the sql request

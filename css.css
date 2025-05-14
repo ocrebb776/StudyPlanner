@@ -1,39 +1,54 @@
+/*
+ * Study Planner Application Styles
+ * Contains custom styling for modals, scrollbars, and theme-specific elements
+ */
 
-:root{
-  --bs-modal-width:90vw;
+/* Global modal width settings */
+:root {
+    --bs-modal-width: 90vw;  /* Default modal width for root */
 }
-.modal{
-  --bs-modal-width:70vw;
+
+.modal {
+    --bs-modal-width: 70vw;  /* Specific modal width override */
 }
 
+/*
+ * Custom Scrollbar Styling
+ * Source: https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_custom_scrollbar
+ */
 
-/* scrollbar styling from https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_custom_scrollbar
-/* width */
+/* Scrollbar width */
 ::-webkit-scrollbar {
     width: 10px;
-  }
-  
-  /* Track */
-  ::-webkit-scrollbar-track {
-    background: #00000007; 
-  }
-   
-  /* Handle */
-  ::-webkit-scrollbar-thumb {
-    background: #88888891; 
-    border-radius: 100px;
-  }
-  
-  /* Handle on hover */
-  ::-webkit-scrollbar-thumb:hover {
-    background: #555; 
-  }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
 }
-:root, [data-bs-theme=light],[data-bs-theme=dark] {
-  --bs-font-sans-serif:-apple-system, BlinkMacSystemFont, sans-serif;
+
+/* Scrollbar track (background) */
+::-webkit-scrollbar-track {
+    background: #00000007;  /* Very light gray, almost transparent */
 }
-.bg-purple{
-  background-color: rgb(172, 52, 206);
+
+/* Scrollbar handle/thumb */
+::-webkit-scrollbar-thumb {
+    background: #88888891;  /* Semi-transparent gray */
+    border-radius: 100px;   /* Rounded corners */
+}
+
+/* Scrollbar handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555;  /* Darker gray on hover */
+}
+
+/* Typography settings */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;  /* System font stack */
+}
+
+/* Theme-specific font settings */
+:root, [data-bs-theme=light], [data-bs-theme=dark] {
+    --bs-font-sans-serif: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Custom background colors */
+.bg-purple {
+    background-color: rgb(172, 52, 206);  /* Custom purple background */
 }

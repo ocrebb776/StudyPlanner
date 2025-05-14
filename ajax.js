@@ -1,24 +1,48 @@
+/**
+ * AjaxTemplate - A class for handling AJAX requests in a standardized way
+ * This class provides a template for making AJAX calls with predefined default settings
+ * and customizable success/error handlers
+ */
 class AjaxTemplate {
+    /**
+     * Creates a new AjaxTemplate instance
+     * @param {boolean} ajax - Whether the request should be asynchronous
+     */
     constructor(ajax) {
-        // setting the default settings so that they dont need to be spesifed each time the Class is used
-        this.href = ""
-        this.ajax = ajax
-            // by making adding in data it will allow the php files to tell if their is a POST or GET requesr, the bes
-        this.data = { "1": 1 }
-        this.type = "POST"
-        this.dataType = "text"
+        // Default configuration for AJAX requests
+        this.href = ""        // The URL endpoint for the request
+        this.ajax = ajax      // Async flag
+        this.data = { "1": 1 }  // Default data payload to help PHP detect request method
+        this.type = "POST"    // Default request method
+        this.dataType = "text"  // Default response data type
     }
  
-        // incase the ajaxSuccess function isnt spesified
+    /**
+     * Default success callback for AJAX requests
+     * Can be overridden when instantiating the class
+     * @param {any} data - The response data from the server
+     */
     ajaxSuccess(data) {
-      
-        }
-        // incase the ajazError function isnt spesified
-    ajaxError(xhr, status, error) {
-        throw new Error(error,status)
+        // Default implementation is empty
     }
-        // this is where the methid will be used to send the data 
+
+    /**
+     * Default error callback for AJAX requests
+     * @param {Object} xhr - The XMLHttpRequest object
+     * @param {string} status - The error status
+     * @param {string} error - The error message
+     * @throws {Error} Throws an error with the status and message
+     */
+    ajaxError(xhr, status, error) {
+        throw new Error(error, status)
+    }
+
+    /**
+     * Sends the AJAX request with the configured parameters
+     * @returns {Promise} jQuery AJAX Promise object
+     */
     send() {
+        // Construct the request parameters
         let sendParams = {
             async: this.ajax,
             error: this.ajaxError,
@@ -28,12 +52,16 @@ class AjaxTemplate {
             success: this.ajaxSuccess,
             dataType: this.dataType
         }
+        
+        // Make the AJAX request using jQuery
         let sendData = $.ajax(sendParams)
-        if(window.hasOwnProperty('listOfAjaxRequests')){
-            listOfAjaxRequests.push([sendParams,sendData])
-        }
-
+        
+        // Store the request parameters for tracking/debugging
+        listOfAjaxRequests.push(sendParams)
+        
         return sendData
-
     }
 }
+
+// Array to store all AJAX requests made through this template
+let listOfAjaxRequests = []

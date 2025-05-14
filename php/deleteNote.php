@@ -1,23 +1,44 @@
 <?php
-// to allow for the sql requests necessary for this 
+/**
+ * Delete Note Handler
+ * Handles the deletion of notes from the database with proper authentication and sanitization
+ * 
+ * Required POST parameters:
+ * - ID: User ID
+ * - password: User password
+ * - id: Note ID to delete
+ */
+
+// Include required database and utility functions
 require "SQL.php";
+require "utils.php";
 
-require "whitelist.php";
+// Only process POST requests
 if ($_POST) {
-    // a string containing all the allowed characters, this is to reduce the risk of a sql Injection
+    // Create database connection
+    $SQLconnection = new MySQLRequest();
+    
+    // Sanitize all POST data to prevent SQL injection
+    $_POST = whitelist($_POST, $SQLconnection->conn);
 
-    $SQLconnection = new MySQLRequest(); // new instance of the sql request
-    $_POST = whitelist($_POST,$SQLconnection->conn);
-
-    $SQLconnection->oneResult = true; // as the sql should only return one value 
+    // Configure query to return single result for authentication
+    $SQLconnection->oneResult = true;
+    
+    // Verify user credentials
     $output = $SQLconnection->sql("SELECT * FROM users WHERE ID='{$_POST["ID"]}'");
-    if($output && (password_verify($_POST['password'],$output['Pass']))) { // if there is a account with the same credentials 
-        
-        // sql request to remove empty the record but the id
-        // the reason why it does not remove the record is so that if it is the most recent event another event will take its place
-        // by removing the user tag it wont show up anymore, and all the data is cleared 
-        $SQLconnection->sql("DELETE FROM notes WHERE `notes`.`ID` = {$_POST["id"]} && `notes`.`user`='{$_POST["ID"]}'", false);
+    
+    // Check if user exists and password matches
+    if($output && (password_verify($_POST['password'], $output['Pass']))) {
+        // Delete note, ensuring it belongs to the authenticated user
+        // This prevents unauthorized deletion of notes by other users
+        $SQLconnection->sql(
+            "DELETE FROM notes 
+             WHERE `notes`.`ID` = {$_POST["id"]} 
+             AND `notes`.`user` = '{$_POST["ID"]}'", 
+            false
+        );
     }
 } else {
+    // Invalid request method
     echo 'false';
 }
