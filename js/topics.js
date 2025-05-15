@@ -422,36 +422,44 @@ function deleteVisit(id) {
  * @returns {Object} Study time totals by year, month, and week
  */
 function getStudyTotals(data) {
-  let totalThisYear = 0;
-  let totalThisMonth = 0;
-  let totalThisWeek = 0;
-  let today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  data.forEach((el) => {
-    let date = new Date(el.date);
-    date.setHours(0, 0, 0, 0);
-    let time = Number(el.time);
-
-    // Calculate days between dates
-    let daysSince = Math.floor((today - date) / (1000 * 60 * 60 * 24));
-
-    if (daysSince < 365) {
-      totalThisYear += time;
-      if (daysSince < 30) {
-        totalThisMonth += time;
-        if (daysSince < 7) {
-          totalThisWeek += time;
-        }
+   //initializing the default counting variables
+    let totalThisYear = 0;
+    let totalPastWeek = 0;
+    let totalThisMonth = 0;
+    let totalToday = 0;
+    //setting the date to compare to the current day at midnight
+    let today = new Date();
+    today.setHours(0, 0, 0, 0);
+  
+    //for each date counting down
+    for (x = data.length - 1; x >= 0; x--) {
+      //if on the same year
+      let sameYear = today.getFullYear() == data[x].date.getFullYear();
+      //use temp date to not mutilate the today Variable
+      let tempDate = new Date(today);
+      //if on the same day
+      if (data[x].date.isDateOnTheSameDayAs(today)) {
+        totalToday += data[x].time;
+      }
+      //if in the past week
+      if (tempDate.setDate(tempDate.getDate() - 6) <= data[x].date) {
+        totalPastWeek += data[x].time;
+      }
+      //if in the same month in the same year
+      if (today.getMonth() == data[x].date.getMonth() && sameYear) {
+        totalThisMonth += data[x].time;
+      }
+      //if in the same year
+      if (sameYear) {
+        totalThisYear += data[x].time;
       }
     }
-  });
-
-  return {
-    year: totalThisYear.convertToReadableFormat(),
-    month: totalThisMonth.convertToReadableFormat(),
-    week: totalThisWeek.convertToReadableFormat(),
-  };
+    return {
+      year: totalThisYear,
+      month: totalThisMonth,
+      week: totalPastWeek,
+      today: totalToday,
+    };
 }
 
 /**
@@ -459,25 +467,55 @@ function getStudyTotals(data) {
  * Shows study time totals and visit history
  */
 function studyPage() {
-  const modal = new Popup();
-  modal.title("Study Statistics");
-
-  let data = getVisit();
-  let totals = getStudyTotals(data);
-
-  let totalsList = createInfoClickBtn({
-    "This Week": totals.week,
-    "This Month": totals.month,
-    "This Year": totals.year,
-  });
-
-  let visitList = document.createElement("div");
-  data.forEach((el) => {
-    visitList.append(convertNoteToHTML(el));
-  });
-
-  modal.body(totalsList, visitList);
-  modal.footer(modal.closeBtn());
-  modal.show();
-}
+ const modal = new Popup();
   
+    // StudyStatistics
+    let timeByDate = timeStudying();
+  
+    let totals = getStudyTotals(timeByDate);
+    console.log(totals)
+  
+    //creating a div to display the Totals
+    let dateDisplay = document.createElement("div");
+  
+    //using basic HTML to display the totals
+    dateDisplay.innerHTML = `
+    <b>Study Totals</b>
+    <br>
+    Total Today: ${totals.today.convertToReadableFormat()}
+    <br>
+    Total Over The Past Week: ${totals.week.convertToReadableFormat()}
+    <br>
+    Total This Month: ${totals.month.convertToReadableFormat()}
+    <br>
+    Total This Year: ${totals.year.convertToReadableFormat()}
+    `;
+  
+    //study Features PAge
+    let studyNowButton = document.createElement("button");
+    studyNowButton.classList.add("btn", "btn-primary");
+    studyNowButton.textContent = "STUDY NOW";
+    studyNowButton.addEventListener("click", function () {
+      startStudyMode();
+      modal.hide();
+    });
+  
+    //todo features
+  
+    //edit button
+    let editToDo = document.createElement("button");
+    editToDo.classList.add("btn", "btn-primary");
+    editToDo.textContent = "Edit To Do List";
+    editToDo.addEventListener("click", function () {
+      Todo.show();
+    });
+    //todo list
+    let stuffToDo = Todo.show(false)
+  
+    //setting the modal Titles , body and footer
+    modal.title("Study Page");
+    modal.body(dateDisplay,stuffToDo);
+    let closeBTN = modal.closeBtn();
+    modal.footer(editToDo, studyNowButton, " Fun Studying! ", closeBTN);
+    modal.show();
+  }

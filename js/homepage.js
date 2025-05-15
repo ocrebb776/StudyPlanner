@@ -177,6 +177,7 @@ class HomeScreen extends Screen {
     // Update study time display
     this.totalTimeSpent = document.getElementById("totalTimeSpent");
     let totals = getStudyTotals(timeStudying());
+    console.log(totals.week)
     this.totalTimeSpent.textContent = `Time spent over the past Week:${totals.week.convertToReadableFormat()}`;
 
     // Initialize search functionality
@@ -216,6 +217,7 @@ class TopicAndSubjectSection extends Screen {
     this.subjectButton = createButton("Subjects", "secondary");
     this.subjectButtonWr.classList.add("col");
     this.subjectButton.classList.add("w-100");
+    this.subjectButton.addEventListener('click',()=>viewSubjects())
     this.subjectButtonWr.appendChild(this.subjectButton);
 
     // Create Topics Button
@@ -223,6 +225,7 @@ class TopicAndSubjectSection extends Screen {
     this.TopicButton = createButton("Topics", "secondary");
     this.TopicButtonWr.classList.add("col");
     this.TopicButton.classList.add("w-100");
+    this.TopicButton.addEventListener('click',()=>{viewTopics()})
     this.TopicButtonWr.appendChild(this.TopicButton);
 
     // Assemble interface

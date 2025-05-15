@@ -198,34 +198,38 @@ const Todo = {
   },
 
   /**
-   * Deletes a todo item after confirmation
-   * @param {number} id - ID of item to delete
+   * Deletes a todo item
+   * @param {number} id - ID of todo item to delete
    */
   deleteTodo(id) {
-    let info = this.getToDo(id);
-    let conf = confirm(`Are you sure you want to delete '${info.text}'`);
-    if (conf) {
-      let request = new AjaxTemplate(false);
-      request.href = "php/homepage/todo/deleteItem.php";
-      request.data = { ID: StoredID, password: StoredPassword, id: id };
-      request.send();
-    }
+    let request = new AjaxTemplate(true);
+    request.href = "php/homepage/todo/deleteItem.php";
+    request.data = { ID: StoredID, password: StoredPassword, id: id };
+    request.send();
   },
 
   /**
-   * Creates a new todo item
+   * Opens form to add new todo item
    */
   addTodo() {
-    let request = new AjaxTemplate(false);
-    request.href = "php/homepage/todo/addItem.php";
-    request.data = { ID: StoredID, password: StoredPassword };
-    request.send();
-    this.show();
+    let form = new FormPopUp(
+      "Add Todo",
+      [{ name: "text", displayName: "Todo", type: "text", placeholder: "-" }],
+      function () {
+        let request = new AjaxTemplate(true);
+        request.href = "php/homepage/todo/addItem.php";
+        request.data = { ID: StoredID, password: StoredPassword, text: this.formData.text };
+        request.send();
+        this.hide();
+        Todo.show();
+      }
+    );
+    form.show();
   },
 
   /**
-   * Toggles completion status of a todo item
-   * @param {number} id - ID of item to toggle
+   * Toggles completion status of todo item
+   * @param {number} id - Todo item ID
    */
   complete(id) {
     let request = new AjaxTemplate(true);
@@ -235,12 +239,11 @@ const Todo = {
   },
 
   /**
-   * Updates the due date of a todo item
-   * @param {number} id - ID of item to update
-   * @param {string} newDate - New due date in datetime format
+   * Updates due date of todo item
+   * @param {number} id - Todo item ID
+   * @param {string} newDate - New due date
    */
   updateDueDate(id, newDate) {
-    newDate = newDate.replace('T', ' ');
     let request = new AjaxTemplate(true);
     request.href = "php/homepage/todo/updateTodoDate.php";
     request.data = { ID: StoredID, password: StoredPassword, id: id, newDate: newDate };

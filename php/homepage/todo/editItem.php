@@ -1,5 +1,3 @@
-
-
 <?php
 // to allow for the sql requests necessary for this 
 require "../../SQL.php";
