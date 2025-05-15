@@ -34,8 +34,9 @@ if ($_POST) {
                  '{$_POST["data"]["type"]}',{$_POST["data"]["time"]})
             ";
             $SQLconnection->sql($sql, false);
-       
+       echo'true';
     } else {
         echo 'false';
     }
 }
+?>

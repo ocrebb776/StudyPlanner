@@ -17,8 +17,17 @@ class MySQLRequest
         $this->password = "";
         $this->dbname = "studyplanner";
         $this->oneResult = $oneResult;
+        
+        // Set PHP timezone to British time
+        date_default_timezone_set('Europe/London');
+        
         // Create Connection to mysql server
         $this->conn = new mysqli($this->servername, $this->username, $this->password, $this->dbname);
+        
+        // Set MySQL session timezone to match British time
+        // Use offset instead of named timezone
+        $offset = date('P'); // Gets timezone offset in +HH:MM format
+        $this->conn->query("SET time_zone = '$offset'");
     }
     function sql($sql, $exp = true)
     {

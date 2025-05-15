@@ -474,15 +474,26 @@ function timeStudying() {
   data = JSON.parse(data);
   //iterating through each event
   data.forEach((x) => {
-    //Converting the date and time into A date obj and a integer
-    x.date = new Date(x.date);
+    // Create a Date object from the timestamp, preserving the exact time
+    let originalDate = new Date(x.date);
+    
+    // Get the local date components without changing the time
+    let year = originalDate.getFullYear();
+    let month = originalDate.getMonth();
+    let day = originalDate.getDate();
+    
+    // Create start and end of day timestamps in local time
+    let startOfDay = new Date(year, month, day, 0, 0, 0);
+    let endOfDay = new Date(year, month, day, 23, 59, 59, 999);
+    
+    // Assign the start of day timestamp but keep original for comparison
+    x.date = startOfDay;
     x.time = Number(x.time);
-    //setting the Time to be midnight
-    x.date.setHours(0, 0, 0, 0);
 
     if (timeByDay.length > 0) {
-      // if there is already an element in there then if it is on the same day then add the times
-      if (timeByDay[timeByDay.length - 1].date.isDateOnTheSameDayAs(x.date)) {
+      // Compare using the same day check, now more accurate with timezone handling
+      if (originalDate >= startOfDay && originalDate <= endOfDay &&
+          timeByDay[timeByDay.length - 1].date.getTime() === startOfDay.getTime()) {
         timeByDay[timeByDay.length - 1].time += x.time;
       } else {
         //if not then start a new item

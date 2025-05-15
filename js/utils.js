@@ -528,7 +528,7 @@ String.prototype.convertDate = function () {
  * @param {Object} data - The data to send with the request
  * @returns {Promise<Object>} A promise that resolves with the JSON response or rejects with an error
  */
-function jsonRequest(url, data ={}) {
+function jsonRequest(url, data ={},async = false) {
   // Input validation
   if (!url || typeof url !== 'string') {
     throw new Error('URL must be a non-empty string');
@@ -543,7 +543,7 @@ function jsonRequest(url, data ={}) {
 
   try {
     // Create request object
-    let request = new AjaxTemplate(false);
+    let request = new AjaxTemplate(async);
     request.href = url;
     request.data = {
       ...data,
