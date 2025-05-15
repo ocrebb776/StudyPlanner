@@ -1,7 +1,7 @@
 <?php
 // to allow for the sql requests neccesary for this 
 require "../../SQL.php";
-require "../../utils.php";
+require "../../whitelist.php";
 if ($_POST) {
  
     $SQLconnection = new MySQLRequest(); // new instance of the sql request

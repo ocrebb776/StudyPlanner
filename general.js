@@ -4,7 +4,6 @@
     */
    
 
-let ListOfAjaxRequests = []
 
     let request = new AjaxTemplate(true)
     request.href = "php/getVersion.php"
@@ -34,6 +33,7 @@ let search
 let CURRENTPOPUPOBJECT
 let form
 let noteForm;
+let listOfAjaxRequests = []
 let showCalendar = true
 // wait until the page has loaded to add items such as event listeners
 window.onload = function () {

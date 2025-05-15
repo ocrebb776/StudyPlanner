@@ -1,7 +1,7 @@
 <?php
 // to allow for the sql requests necessary for this 
 require "../SQL.php";
-require "../utils.php";
+require "../whitelist.php";
 
 //if the file has been called with a POST request
 if ($_POST) {

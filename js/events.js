@@ -1,18 +1,3 @@
-/**
- * Study Planner Events Module
- * This module handles the creation, viewing, editing, and deletion of calendar events.
- * It provides functionality for managing study sessions and other calendar-based activities.
- */
-
-/**
- * Creates or edits a calendar event using a popup form
- * Handles validation for time conflicts and input data
- * @param {Object} inputData - Initial event data (name, times, type, date)
- * @param {string} startText - Title text for the popup form
- * @param {string} endText - Text for the submit button
- * @param {boolean} newEvent - Whether this is a new event (true) or edit (false)
- * @param {number|boolean} id - Event ID when editing, false for new events
- */
 function createNewEventForm(
     inputData = { name: "", startTime: "", endTime: "", Type: "study", date: "" },
     startText = "New Event",
@@ -218,10 +203,6 @@ function createNewEventForm(
   
     form.show();
   }
-  /**
-   * Displays a list of all events sorted by date
-   * @param {Object} modal - Optional existing modal to reuse
-   */
   function manageEvents(modal = new Popup()) {
     modal.title("");
     modal.body("");
@@ -276,12 +257,6 @@ function createNewEventForm(
     modal.show();
   }
 
-  /**
-   * Displays detailed view of an event
-   * @param {number} id - ID of the event to view
-   * @param {Object} callBack - Modal to return to after closing
-   * @param {Function} closeFtn - Optional callback when closing the popup
-   */
   function viewEvent(id, callBack = new Popup(), closeFtn = false) {
     if(id == undefined ) {
       return false
@@ -369,12 +344,21 @@ function createNewEventForm(
     callBack.footer(deleteBtn, addNoteBtn, closeBtn);
   }
   
-
+  function getEventInfo(id) {
+    //send new request
+    let request = new AjaxTemplate(false);
+    request.href = "php/homepage/getEventInfo.php";
+    //login credentials and the eventID
+    request.data = {
+      ID: StoredID,
+      password: StoredPassword,
+      eventID: id,
+    };
+    request.dataType = "json";
+    //return the JSON part of the response
+    return request.send().responseJSON;
+  }
   
-  /**
-   * Deletes an event and its associated data
-   * @param {number} id - ID of the event to delete
-   */
   function deleteEvent(id) {
     let request = new AjaxTemplate(false);
     request.href = "php/homepage/deleteEvent.php";
@@ -390,14 +374,20 @@ function createNewEventForm(
     homeScreen.show();
   }
   
-  /**
-   * Opens the edit form for an event
-   * @param {number} id - ID of the event to edit
-   */
   function editEvent(id) {
     let info = getEventInfo(id);
   
     createNewEventForm(info, "Edit Event", (endText = "Save Changes"), false, id);
   }
-
-
+  function getAllEvents() {
+    let request = new AjaxTemplate(false); // create an synchronous  ajax request
+    request.href = "php/homepage/getAllEvents.php"; // point the address to getAllEvents.php
+    request.data = {
+      // login details necessary for the php file
+      ID: StoredID,
+      password: StoredPassword,
+    };
+    request.dataType = "json";
+    //sending the events
+    return request.send().responseJSON;
+  }

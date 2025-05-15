@@ -1,7 +1,7 @@
 <?php
 // to allow for the sql requests necessary for this 
 require "../SQL.php";
-require "../utils.php";
+require "../whitelist.php";
 
 if ($_POST) {
     // a string containing all the allowed characters, this is to reduce the risk of a sql Injection

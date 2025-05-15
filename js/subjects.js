@@ -1,19 +1,3 @@
-/**
- * Study Planner Subjects Module
- * This module handles the creation, viewing, editing, and deletion of subjects
- * in the study planner application. It provides functionality for managing
- * subject data and associated notes.
- */
-
-/**
- * Creates or edits a subject using a popup form
- * @param {string} name - Initial subject name (empty for new subjects)
- * @param {string} startText - Title text for the popup form
- * @param {string} endText - Text for the submit button
- * @param {boolean} newSubject - Whether this is a new subject (true) or edit (false)
- * @param {number|boolean} id - Subject ID when editing, false for new subjects
- * @param {Function} pageRefresh - Callback to refresh the page after save
- */
 function createSubjectForm(
     name = "",
     startText = "New Subject",
@@ -84,12 +68,35 @@ function createSubjectForm(
     );
     subjectForm.show();
   }
-
   
-  /**
-   * Displays a popup with a list of all subjects
-   * Each subject can be clicked to view its details
-   */
+  function getSubject(id = false) {
+  
+    //send new request
+    let request = new AjaxTemplate(false);
+    request.href = "php/homepage/subjects/getSubjects.php";
+    request.data = {
+      ID: StoredID,
+      password: StoredPassword,
+      id: id,
+    };
+    //setting the dataType to JSON
+    request.dataType = "json";
+    //send the request
+    let send = request.send();
+    //convert the response into a JSON object
+    send = send.responseJSON;
+    //convert the total time into a readable format
+    for (let x = 0; x < send.length; x++) {
+      send[x].totalTime = Number(send[x].totalTime).convertToReadableFormat();
+    }
+    //return the response
+    if (id === false) {
+      return send;
+    } else {
+      return send[0];
+    }
+  }
+  
   function viewSubjects() {
     //get subject data
     let data = getSubject();
@@ -132,12 +139,6 @@ function createSubjectForm(
     //show the modal
     modal.show();
   }
-  /**
-   * Displays detailed view of a subject including its notes and topics
-   * @param {Object|number|string} id - Subject ID or subject data object
-   * @param {Function} closeFtn - Optional callback when closing the popup
-   * @param {Object} modal - Optional existing modal to reuse
-   */
   function viewSubject(id, closeFtn = false, modal = new Popup()) {
     let data
     if(typeof id == "number" || typeof id == "string"){
@@ -235,10 +236,6 @@ let TopicList = viewTopics(data.ID,false,viewSubject)
     modal.footer(editBTN,addNoteBtn, deleteBtn, closeBtn);
     modal.show();
   }
-  /**
-   * Deletes a subject and its associated data
-   * @param {number} id - ID of the subject to delete
-   */
   function deleteSubject(id) {
     let request = new AjaxTemplate(true);
     request.href = "php/homepage/subjects/deleteSubject.php";
@@ -254,10 +251,6 @@ let TopicList = viewTopics(data.ID,false,viewSubject)
     homeScreen.show();
   }
   
-  /**
-   * Opens the edit form for a subject
-   * @param {number} id - ID of the subject to edit
-   */
   function editSubject(id) {
     //get the info on the subject
     let info = getSubject(id);
