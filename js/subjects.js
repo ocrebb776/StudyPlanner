@@ -35,27 +35,19 @@ function createSubjectForm(
           alert(txt);
         }
         if (valid && name !== "") {
-          //start request
-          let request = new AjaxTemplate(true);
           //creating data about the request
-          let data = {};
-          data.name = name;
+          let data = {
+            name: name
+          };
+          
           //send the request to different files depending of if it is a new subject or an older subject
-          if (newSubject) {
-            request.href = "php/homepage/subjects/createSubject.php";
-          } else {
-            request.href = "php/homepage/subjects/editSubject.php";
-            //the id is used to find the subject in the database
+          let endpoint = newSubject ? "php/homepage/subjects/createSubject.php" : "php/homepage/subjects/editSubject.php";
+          if (!newSubject) {
             data.id = id;
           }
-          request.data = {
-            // login details necessary for the php file
-            ID: StoredID,
-            password: StoredPassword,
-            data: data,
-          };
-          //send request
-          request.send();
+          
+          jsonRequest(endpoint, { data: data });
+          
           //hideMobile
           this.hide();
           if (pageRefresh) {
@@ -70,30 +62,18 @@ function createSubjectForm(
   }
   
   function getSubject(id = false) {
-  
-    //send new request
-    let request = new AjaxTemplate(false);
-    request.href = "php/homepage/subjects/getSubjects.php";
-    request.data = {
-      ID: StoredID,
-      password: StoredPassword,
-      id: id,
-    };
-    //setting the dataType to JSON
-    request.dataType = "json";
-    //send the request
-    let send = request.send();
-    //convert the response into a JSON object
-    send = send.responseJSON;
+    let response = jsonRequest("php/homepage/subjects/getSubjects.php", { id: id });
+    
     //convert the total time into a readable format
-    for (let x = 0; x < send.length; x++) {
-      send[x].totalTime = Number(send[x].totalTime).convertToReadableFormat();
+    for (let x = 0; x < response.length; x++) {
+      response[x].totalTime = Number(response[x].totalTime).convertToReadableFormat();
     }
+    
     //return the response
     if (id === false) {
-      return send;
+      return response;
     } else {
-      return send[0];
+      return response[0];
     }
   }
   
@@ -237,16 +217,7 @@ let TopicList = viewTopics(data.ID,false,viewSubject)
     modal.show();
   }
   function deleteSubject(id) {
-    let request = new AjaxTemplate(true);
-    request.href = "php/homepage/subjects/deleteSubject.php";
-    //login credentials and the subjectID
-    request.data = {
-      ID: StoredID,
-      password: StoredPassword,
-      subjectID: id,
-    };
-    request.send();
-  
+    jsonRequest("php/homepage/subjects/deleteSubject.php", { subjectID: id });
     //refresh the homepage to update everything
     homeScreen.show();
   }

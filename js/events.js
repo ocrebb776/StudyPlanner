@@ -89,16 +89,10 @@ function createNewEventForm(
         if (txt !== "") {
           alert(txt);
         }
-        let request = new AjaxTemplate(false); // create an synchronous  ajax request
-        request.href = "php/homepage/getAllEvents.php"; // point the address to getAllEvents.php
-        request.data = {
-          // login details necessary for the php file
-          ID: StoredID,
-          password: StoredPassword,
-        };
-  
-        let eventData = request.send().responseText; // send the request and get the response
-        eventData = JSON.parse(eventData); //convert the response into an object
+        
+        // Get all events to check for conflicts
+        let eventData = getAllEvents()
+        
         if (eventData.hasOwnProperty(data.Date)) {
           // if events exists on the entered date
           let list = eventData[data.Date];
@@ -173,26 +167,14 @@ function createNewEventForm(
   
         if (valid) {
           // if the user wants to proceed
-          //create a new syncronus request
-          let repeatInfo;
-  
-          let request = new AjaxTemplate(false);
-          //send the request to different files depending of if it is a new event or an older event
-          if (newEvent) {
-            request.href = "php/homepage/createCalendarEvent.php";
-          } else {
-            request.href = "php/homepage/editCalendarEvent.php";
-            //the id can be used for reference
+          let endpoint = newEvent ? "php/homepage/createCalendarEvent.php" : "php/homepage/editCalendarEvent.php";
+          
+          if (!newEvent) {
             data.id = id;
           }
-  
-          request.data = {
-            // login details necessary for the php file
-            ID: StoredID,
-            password: StoredPassword,
-            data: data,
-          };
-          request.send();
+          
+          jsonRequest(endpoint, { data: data });
+          
           this.hide(); // close the form
           homeScreen.show(); // to refresh the homepage
         }
@@ -345,32 +327,11 @@ function createNewEventForm(
   }
   
   function getEventInfo(id) {
-    //send new request
-    let request = new AjaxTemplate(false);
-    request.href = "php/homepage/getEventInfo.php";
-    //login credentials and the eventID
-    request.data = {
-      ID: StoredID,
-      password: StoredPassword,
-      eventID: id,
-    };
-    request.dataType = "json";
-    //return the JSON part of the response
-    return request.send().responseJSON;
+    return jsonRequest("php/homepage/getEventInfo.php", { eventID: id });
   }
   
   function deleteEvent(id) {
-    let request = new AjaxTemplate(false);
-    request.href = "php/homepage/deleteEvent.php";
-    //login credentials and the eventID
-    request.data = {
-      ID: StoredID,
-      password: StoredPassword,
-      eventID: id,
-    };
-    request.send();
-  
-    //refresh the homepage to update everything
+    jsonRequest("php/homepage/deleteEvent.php", { eventID: id });
     homeScreen.show();
   }
   
@@ -380,14 +341,7 @@ function createNewEventForm(
     createNewEventForm(info, "Edit Event", (endText = "Save Changes"), false, id);
   }
   function getAllEvents() {
-    let request = new AjaxTemplate(false); // create an synchronous  ajax request
-    request.href = "php/homepage/getAllEvents.php"; // point the address to getAllEvents.php
-    request.data = {
-      // login details necessary for the php file
-      ID: StoredID,
-      password: StoredPassword,
-    };
-    request.dataType = "json";
-    //sending the events
-    return request.send().responseJSON;
+    return jsonRequest("php/homepage/getAllEvents.php");
   }
+
+

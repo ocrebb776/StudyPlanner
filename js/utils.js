@@ -522,3 +522,52 @@ String.prototype.convertDate = function () {
   }
 
 
+/**
+ * Makes a JSON AJAX request with validation and error handling
+ * @param {string} url - The URL to send the request to
+ * @param {Object} data - The data to send with the request
+ * @returns {Promise<Object>} A promise that resolves with the JSON response or rejects with an error
+ */
+function jsonRequest(url, data ={}) {
+  // Input validation
+  if (!url || typeof url !== 'string') {
+    throw new Error('URL must be a non-empty string');
+  }
+
+
+
+  // Validate required auth parameters exist in global scope
+  if (typeof StoredID === 'undefined' || typeof StoredPassword === 'undefined' ) {
+    throw new Error('Missing required authentication parameters');
+  }
+
+  try {
+    // Create request object
+    let request = new AjaxTemplate(false);
+    request.href = url;
+    request.data = {
+      ...data,
+      ID: StoredID,
+      password: StoredPassword
+    };
+    request.dataType = "json";
+
+    // Send request and get response
+    let response = request.send();
+
+    // Validate response
+    if (!response || !response.responseJSON) {
+      throw new Error('Invalid response received from server');
+    }
+
+    // Return parsed JSON
+    return response.responseJSON;
+
+  } catch (error) {
+    // Log error for debugging
+    console.error('JSON Request failed:', error);
+
+    // Re-throw error with context
+    throw new Error(`Failed to make JSON request to ${url}: ${error.message}`);
+  }
+}

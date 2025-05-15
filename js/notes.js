@@ -1,33 +1,19 @@
-
 function getNotes(id, table) {
-    //new synchronous ajax request
-    let request = new AjaxTemplate(false);
-    request.href = "php/getNotes.php";
-  
-    // creating the request data
-    request.data = {
-      ID: StoredID,
-      password: StoredPassword,
-      id: id,
-      table: table,
-    };
-    //data type
-    request.dataType = "json";
-    //send request
-    let send = request.send();
-  
-    //return the data
-    return send.responseJSON;
-  }
-  function convertNoteToHTML(data, pageRefresh) {
-    //creating the container
-    let container = document.createElement("div");
-    // bootstrap classes
-    container.classList.add("row", "g-1", "m-2");
-    //card containing the text
-    let card = document.createElement("textarea");
-    //bootstrap classes
-    card.classList.add("card", "p-2", "col-8");
+  return jsonRequest("php/getNotes.php", {
+    id: id,
+    table: table
+  });
+}
+
+function convertNoteToHTML(data, pageRefresh) {
+  //creating the container
+  let container = document.createElement("div");
+  // bootstrap classes
+  container.classList.add("row", "g-1", "m-2");
+  //card containing the text
+  let card = document.createElement("textarea");
+  //bootstrap classes
+  card.classList.add("card", "p-2", "col-8");
 
     let minRows = (data.text.split('\n').length+2)
     card.style.minHeight = `${minRows}em`

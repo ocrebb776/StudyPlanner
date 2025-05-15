@@ -8,7 +8,7 @@
     let request = new AjaxTemplate(true)
     request.href = "php/getVersion.php"
     let LATEST_VERSION 
-    let CURRENT_VERSION = '0.1.2'
+    let CURRENT_VERSION = '0.1.3'
 
     request.ajaxSuccess = function(data){
       LATEST_VERSION = data
@@ -33,7 +33,6 @@ let search
 let CURRENTPOPUPOBJECT
 let form
 let noteForm;
-let listOfAjaxRequests = []
 let showCalendar = true
 // wait until the page has loaded to add items such as event listeners
 window.onload = function () {

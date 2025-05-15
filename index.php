@@ -19,6 +19,7 @@
   <script src="js/subjects.js"></script>
   <script src="js/todo.js"></script>
   <script src="js/topics.js"></script>
+  <script src="js/friends.js"></script>
   <link rel="stylesheet" href="css.css">
   <link rel="manifest" href="manifest.json">
   <script src="https://cdn.jsdelivr.net/npm/linkifyjs@3.0.3/dist/linkify.min.js"></script>

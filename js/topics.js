@@ -65,41 +65,30 @@ function createTopic(
         alert(txt);
       }
       if (valid && name !== "" && subject != "") {
-        //start request
-        let request = new AjaxTemplate(false);
-        //creating data about the request
-        let data = {};
-        data.name = name;
-        data.subjectID = subject;
         //send the request to different files depending of if it is a new Topic or an older Topic
-        if (newTopic) {
-          request.href = "php/homepage/topics/createTopic.php";
-        } else {
-          request.href = "php/homepage/topics/editTopic.php";
-          //the id is used to find the Topic in the database
+        let data = {
+          name: name,
+          subjectID: subject
+        };
+        
+        let endpoint = newTopic ? "php/homepage/topics/createTopic.php" : "php/homepage/topics/editTopic.php";
+        if (!newTopic) {
           data.id = id;
         }
-        request.data = {
-          // login details necessary for the php file
-          ID: StoredID,
-          password: StoredPassword,
-          data: data,
-        };
-        //send request
-        let r = request.send();
+        
+        let r = jsonRequest(endpoint, { data: data });
+        
         //hideMobile
         this.hide();
         if (pageRefresh) {
-       
           //if there is a page to go back to go to it
           pageRefresh({ID:id});
-        }else{
+        } else {
           if(!isNaN(r.responseText)){
- 
             viewTopic({ID:parseInt(r.responseText)})
           }
         }
-        }
+      }
 
       //hide the form after submitting
       //this.hide();
@@ -282,18 +271,9 @@ function viewTopic(data, closeFtn = false, subjectID=false) {
   modal.show();
 }
 function deleteTopic(id) {
-  let request = new AjaxTemplate(true);
-  request.href = "php/homepage/topics/deleteTopic.php";
-  //login credentials and the topicID
-  request.data = {
-    ID: StoredID,
-    password: StoredPassword,
-    topicID: id,
-  };
-  request.send();
-
-  //refresh the homepage to update everything
+  return jsonRequest("php/homepage/topics/deleteTopic.php", { id: id },true);
   homeScreen.show();
+  
 }
 
 function editTopic(id) {
@@ -311,16 +291,9 @@ function editTopic(id) {
   );
 }
 function getTopic(id = false) {
-  let request = new AjaxTemplate(false);
-  request.href = "php/homepage/topics/getTopic.php";
-  request.data = {
-    ID: StoredID,
-    password: StoredPassword,
-    id: id,
-  };
-  request.dataType = "json";
 
-  let send = request.send().responseJSON;
+
+  let send = jsonRequest("php/homepage/topics/getTopic.php",{id: id});
   //for each subject
   for (let i = 0; i < send.length; i++) {
     // if the subjectName is null
@@ -441,7 +414,7 @@ function visit(topicID, visitID = false, onHome = true) {
       data.time = Math.round(data.time * 60);
       data.diffrating = Math.round(data.diffrating);
 
-      let request = new AjaxTemplate(false);
+      let request = {}
 
       if (visitID == false) {
         request.href = "php/homepage/topics/markTopicAsVisited.php";
@@ -451,13 +424,11 @@ function visit(topicID, visitID = false, onHome = true) {
       if (valid) {
         data.topicID = topicID;
         request.data = {
-          // login details necessary for the php file
-          ID: StoredID,
-          password: StoredPassword,
+
           data: data,
           visitID: visitID,
         };
-        request.send();
+        jsonRequest(request.href,request.data);
         this.hide(); // close the form
 
         if (onHome) {
@@ -471,21 +442,8 @@ function visit(topicID, visitID = false, onHome = true) {
   form.show();
 }
 function getVisit(id = false, ref = "ID") {
-  //creat a new ajax request
-  let request = new AjaxTemplate(false);
-  //set the href of the php file
-  request.href = "php/homepage/topics/getVisit.php";
-  //set the request payload
-  request.data = {
-    ID: StoredID,
-    password: StoredPassword,
-    id: id,
-    ref: ref,
-  };
-  //set the response type to be data
-  request.dataType = "json";
-  //send the request
-  let send = request.send().responseJSON;
+
+  let send = jsonRequest("php/homepage/topics/getVisit.php",{id: id,ref: ref});
 
   //if the request was for one item then
   if (id === false) {
@@ -495,150 +453,141 @@ function getVisit(id = false, ref = "ID") {
   }
 }
 
-
 function deleteVisit(id) {
-    let request = new AjaxTemplate(true);
-    request.href = "php/homepage/topics/deleteVisit.php";
-    //login credentials and the topicID
-    request.data = {
-      ID: StoredID,
-      password: StoredPassword,
-      visitID: id,
-    };
-    request.send();
-  }
+  return jsonRequest("php/homepage/topics/deleteVisit.php", { visitID: id });
+}
   
-  function timeStudying() {
-    let request = new AjaxTemplate(false);
-    request.href = "php/study/getTotalStudyTime.php";
-    request.data = {
-      // login details necessary for the php file
-      ID: StoredID,
-      password: StoredPassword,
-    };
-    request.dataType = "json";
-    //getting the json Response
-    let data = request.send().responseText;
-    //getting the time spent by day
-    let timeByDay = [];
-    //converting the date into a Object
-    data = JSON.parse(data);
-    //iterating through each event
-    data.forEach((x) => {
-      //Converting the date and time into A date obj and a integer
-      x.date = new Date(x.date);
-      x.time = Number(x.time);
-      //setting the Time to be midnight
-      x.date.setHours(0, 0, 0, 0);
-  
-      if (timeByDay.length > 0) {
-        // if there is already an element in there then if it is on the same day then add the times
-        if (timeByDay[timeByDay.length - 1].date.isDateOnTheSameDayAs(x.date)) {
-          timeByDay[timeByDay.length - 1].time += x.time;
-        } else {
-          //if not then start a new item
-          timeByDay.push(x);
-        }
+function timeStudying() {
+  let request = new AjaxTemplate(false);
+  request.href = "php/study/getTotalStudyTime.php";
+  request.data = {
+    // login details necessary for the php file
+    ID: StoredID,
+    password: StoredPassword,
+  };
+  request.dataType = "json";
+  //getting the json Response
+  let data = request.send().responseText;
+  //getting the time spent by day
+  let timeByDay = [];
+  //converting the date into a Object
+  data = JSON.parse(data);
+  //iterating through each event
+  data.forEach((x) => {
+    //Converting the date and time into A date obj and a integer
+    x.date = new Date(x.date);
+    x.time = Number(x.time);
+    //setting the Time to be midnight
+    x.date.setHours(0, 0, 0, 0);
+
+    if (timeByDay.length > 0) {
+      // if there is already an element in there then if it is on the same day then add the times
+      if (timeByDay[timeByDay.length - 1].date.isDateOnTheSameDayAs(x.date)) {
+        timeByDay[timeByDay.length - 1].time += x.time;
       } else {
-        //add the first item
+        //if not then start a new item
         timeByDay.push(x);
       }
-    });
-    //return the results
-    return timeByDay;
-  }
-  
-  function getStudyTotals(data) {
-    //initializing the default counting variables
-    let totalThisYear = 0;
-    let totalPastWeek = 0;
-    let totalThisMonth = 0;
-    let totalToday = 0;
-    //setting the date to compare to the current day at midnight
-    let today = new Date();
-    today.setHours(0, 0, 0, 0);
-  
-    //for each date counting down
-    for (x = data.length - 1; x >= 0; x--) {
-      //if on the same year
-      let sameYear = today.getFullYear() == data[x].date.getFullYear();
-      //use temp date to not mutilate the today Variable
-      let tempDate = new Date(today);
-      //if on the same day
-      if (data[x].date.isDateOnTheSameDayAs(today)) {
-        totalToday += data[x].time;
-      }
-      //if in the past week
-      if (tempDate.setDate(tempDate.getDate() - 6) <= data[x].date) {
-        totalPastWeek += data[x].time;
-      }
-      //if in the same month in the same year
-      if (today.getMonth() == data[x].date.getMonth() && sameYear) {
-        totalThisMonth += data[x].time;
-      }
-      //if in the same year
-      if (sameYear) {
-        totalThisYear += data[x].time;
-      }
+    } else {
+      //add the first item
+      timeByDay.push(x);
     }
-    return {
-      year: totalThisYear,
-      month: totalThisMonth,
-      week: totalPastWeek,
-      today: totalToday,
-    };
+  });
+  //return the results
+  return timeByDay;
+}
+
+function getStudyTotals(data) {
+  //initializing the default counting variables
+  let totalThisYear = 0;
+  let totalPastWeek = 0;
+  let totalThisMonth = 0;
+  let totalToday = 0;
+  //setting the date to compare to the current day at midnight
+  let today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  //for each date counting down
+  for (x = data.length - 1; x >= 0; x--) {
+    //if on the same year
+    let sameYear = today.getFullYear() == data[x].date.getFullYear();
+    //use temp date to not mutilate the today Variable
+    let tempDate = new Date(today);
+    //if on the same day
+    if (data[x].date.isDateOnTheSameDayAs(today)) {
+      totalToday += data[x].time;
+    }
+    //if in the past week
+    if (tempDate.setDate(tempDate.getDate() - 6) <= data[x].date) {
+      totalPastWeek += data[x].time;
+    }
+    //if in the same month in the same year
+    if (today.getMonth() == data[x].date.getMonth() && sameYear) {
+      totalThisMonth += data[x].time;
+    }
+    //if in the same year
+    if (sameYear) {
+      totalThisYear += data[x].time;
+    }
   }
-  
-  function studyPage() {
-    const modal = new Popup();
-  
-    // StudyStatistics
-    let timeByDate = timeStudying();
-  
-    let totals = getStudyTotals(timeByDate);
-  
-    //creating a div to display the Totals
-    let dateDisplay = document.createElement("div");
-  
-    //using basic HTML to display the totals
-    dateDisplay.innerHTML = `
-    <b>Study Totals</b>
-    <br>
-    Total Today: ${totals.today.convertToReadableFormat()}
-    <br>
-    Total Over The Past Week: ${totals.week.convertToReadableFormat()}
-    <br>
-    Total This Month: ${totals.month.convertToReadableFormat()}
-    <br>
-    Total This Year: ${totals.year.convertToReadableFormat()}
-    `;
-  
-    //study Features PAge
-    let studyNowButton = document.createElement("button");
-    studyNowButton.classList.add("btn", "btn-primary");
-    studyNowButton.textContent = "STUDY NOW";
-    studyNowButton.addEventListener("click", function () {
-      startStudyMode();
-      modal.hide();
-    });
-  
-    //todo features
-  
-    //edit button
-    let editToDo = document.createElement("button");
-    editToDo.classList.add("btn", "btn-primary");
-    editToDo.textContent = "Edit To Do List";
-    editToDo.addEventListener("click", function () {
-      Todo.show();
-    });
-    //todo list
-    let stuffToDo = Todo.show(false)
-  
-    //setting the modal Titles , body and footer
-    modal.title("Study Page");
-    modal.body(dateDisplay,stuffToDo);
-    let closeBTN = modal.closeBtn();
-    modal.footer(editToDo, studyNowButton, " Fun Studying! ", closeBTN);
-    modal.show();
-  }
+  return {
+    year: totalThisYear,
+    month: totalThisMonth,
+    week: totalPastWeek,
+    today: totalToday,
+  };
+}
+
+function studyPage() {
+  const modal = new Popup();
+
+  // StudyStatistics
+  let timeByDate = timeStudying();
+
+  let totals = getStudyTotals(timeByDate);
+
+  //creating a div to display the Totals
+  let dateDisplay = document.createElement("div");
+
+  //using basic HTML to display the totals
+  dateDisplay.innerHTML = `
+  <b>Study Totals</b>
+  <br>
+  Total Today: ${totals.today.convertToReadableFormat()}
+  <br>
+  Total Over The Past Week: ${totals.week.convertToReadableFormat()}
+  <br>
+  Total This Month: ${totals.month.convertToReadableFormat()}
+  <br>
+  Total This Year: ${totals.year.convertToReadableFormat()}
+  `;
+
+  //study Features PAge
+  let studyNowButton = document.createElement("button");
+  studyNowButton.classList.add("btn", "btn-primary");
+  studyNowButton.textContent = "STUDY NOW";
+  studyNowButton.addEventListener("click", function () {
+    startStudyMode();
+    modal.hide();
+  });
+
+  //todo features
+
+  //edit button
+  let editToDo = document.createElement("button");
+  editToDo.classList.add("btn", "btn-primary");
+  editToDo.textContent = "Edit To Do List";
+  editToDo.addEventListener("click", function () {
+    Todo.show();
+  });
+  //todo list
+  let stuffToDo = Todo.show(false)
+
+  //setting the modal Titles , body and footer
+  modal.title("Study Page");
+  modal.body(dateDisplay,stuffToDo);
+  let closeBTN = modal.closeBtn();
+  modal.footer(editToDo, studyNowButton, " Fun Studying! ", closeBTN);
+  modal.show();
+}
   

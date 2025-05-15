@@ -156,15 +156,19 @@ class HomeScreen extends Screen {
   
 
 
+
       //itme to display total time spent
-      let totalTimeSpent = document.createElement("div");
-      totalTimeSpent.classList.add("container", "p-2");
+      let totalTimeSpentContainer = document.createElement("div");
+      totalTimeSpentContainer.classList.add("container", "p-2");
+      let totalTimeSpent = document.createElement('span')
       totalTimeSpent.setAttribute("id", "totalTimeSpent");
-  
+
+      let leaderBoard = createButton('Leaderboard','primary',()=>viewLeaderBoard())
+      totalTimeSpentContainer.append(leaderBoard,totalTimeSpent)
      
       
       this.element.append(
-        totalTimeSpent,
+        totalTimeSpentContainer,
         this.buttonListContainer,
         this.topicAndSubjectSectionWrapper
       );

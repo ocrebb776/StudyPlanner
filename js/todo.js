@@ -144,11 +144,7 @@ const Todo = {
     }
   },
   getList(id = false) {
-    let request = new AjaxTemplate(false);
-    request.href = "php/homepage/todo/getItem.php";
-    request.data = { ID: StoredID, password: StoredPassword, id: id };
-    request.dataType = "json";
-    return request.send().responseJSON;
+    return jsonRequest("php/homepage/todo/getItem.php", { id: id });
   },
   triggerUpdate(triggerData,todoData){
 
@@ -166,40 +162,31 @@ const Todo = {
   },
   trackingInputs: {},
   update(id,newText){
-    let request = new AjaxTemplate(true)
-    request.href = "php/homepage/todo/editItem.php"
-    request.data = {ID:StoredID,password :StoredPassword,id:id,text:newText}
-    request.send()
+    return jsonRequest("php/homepage/todo/editItem.php", {
+      id: id,
+      text: newText
+    },true);
   },
   deleteTodo(id){
     let info = this.getToDo(id)
     console.log(id,info)
     let conf = confirm(`Are you sure you want to delete '${info.text}'`)
     if(conf){
-        let request = new AjaxTemplate(false)
-        request.href = "php/homepage/todo/deleteItem.php"
-        request.data = {ID:StoredID,password :StoredPassword,id:id}
-        request.send()
+      return jsonRequest("php/homepage/todo/deleteItem.php", { id: id });
     }
   },
   addTodo(){
-    let request = new AjaxTemplate(false)
-    request.href = "php/homepage/todo/addItem.php"
-    request.data = {ID:StoredID,password :StoredPassword}
-    request.send()
-    this.show()
+    jsonRequest("php/homepage/todo/addItem.php");
+    this.show();
   },
   complete(id){
-    let request = new AjaxTemplate(true)
-    request.href = "php/homepage/todo/markAsDone.php"
-    request.data = {ID:StoredID,password :StoredPassword,id:id}
-    request.send()
+    return jsonRequest("php/homepage/todo/markAsDone.php", { id: id });
   },
   updateDueDate(id,newDate){
     newDate = newDate.replace('T',' ')
-    let request = new AjaxTemplate(true)
-    request.href = "php/homepage/todo/updateTodoDate.php"
-    request.data = {ID:StoredID,password :StoredPassword,id:id,newDate:newDate}
-    request.send()
+    return jsonRequest("php/homepage/todo/updateTodoDate.php", {
+      id: id,
+      newDate: newDate
+    });
   }
 };
