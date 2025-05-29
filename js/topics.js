@@ -3,7 +3,7 @@ let weightings = {
   diffRating: 0.8,
   mood: 0.3,
 };
-function createTopic( 
+function createTopic(
   name = "",
   subject = "",
   startText = "New Topic",
@@ -68,24 +68,26 @@ function createTopic(
         //send the request to different files depending of if it is a new Topic or an older Topic
         let data = {
           name: name,
-          subjectID: subject
+          subjectID: subject,
         };
-        
-        let endpoint = newTopic ? "php/homepage/topics/createTopic.php" : "php/homepage/topics/editTopic.php";
+
+        let endpoint = newTopic
+          ? "php/homepage/topics/createTopic.php"
+          : "php/homepage/topics/editTopic.php";
         if (!newTopic) {
           data.id = id;
         }
-        
+
         let r = jsonRequest(endpoint, { data: data });
-        
+
         //hideMobile
         this.hide();
         if (pageRefresh) {
           //if there is a page to go back to go to it
-          pageRefresh({ID:id});
+          pageRefresh({ ID: id });
         } else {
-          if(!isNaN(r.responseText)){
-            viewTopic({ID:parseInt(r.responseText)})
+          if (!isNaN(r.responseText)) {
+            viewTopic({ ID: parseInt(r.responseText) });
           }
         }
       }
@@ -93,8 +95,6 @@ function createTopic(
       //hide the form after submitting
       //this.hide();
       homeScreen.show();
-      
-     
     },
     endText
   );
@@ -103,13 +103,17 @@ function createTopic(
   topicForm.show();
 }
 
-function viewTopics(subjectID = false,disp=true,forceCallback = viewTopics) {
+function viewTopics(
+  subjectID = false,
+  disp = true,
+  forceCallback = viewTopics
+) {
   //if there is a subjectID then then the functions should filter for only that subject
   let subjectSpec = !(subjectID == false);
   //get topic data
   let data = getTopic();
   //create popup
- 
+
   //this is so that the user can clikc on the background to close the modal
   //modal.element.setAttribute("data-bs-backdrop", "true");
   //element to store the list of topics
@@ -130,7 +134,7 @@ function viewTopics(subjectID = false,disp=true,forceCallback = viewTopics) {
       btn.prepend(title);
       //add an event listener for the button
       btn.addEventListener("click", function () {
-        viewTopic(el, forceCallback,subjectID);
+        viewTopic(el, forceCallback, subjectID);
       });
       //add the button to the topic list
       TopicList.append(btn);
@@ -144,29 +148,29 @@ function viewTopics(subjectID = false,disp=true,forceCallback = viewTopics) {
     createTopic();
   });
 
-  if(disp){
-  let modal = new Popup();
+  if (disp) {
+    let modal = new Popup();
 
-  //add the close button to the footer
-  let modalCloseBtn = modal.closeBtn();
-  modal.body(TopicList);
+    //add the close button to the footer
+    let modalCloseBtn = modal.closeBtn();
+    modal.body(TopicList);
 
-  //define the title
-  modal.title("View Topics");
-  if (subjectSpec) {
-    //get the information about the subject
-    let subject = getSubject(subjectID);
-    //change the title to show the name of the subject
-    modal.title(`View Topics for ${subject.name}`);
-  }
-  modal.footer(createTopicButton, modalCloseBtn);
-  //show the modal
-  modal.show();}else{
-    return TopicList
+    //define the title
+    modal.title("View Topics");
+    if (subjectSpec) {
+      //get the information about the subject
+      let subject = getSubject(subjectID);
+      //change the title to show the name of the subject
+      modal.title(`View Topics for ${subject.name}`);
+    }
+    modal.footer(createTopicButton, modalCloseBtn);
+    //show the modal
+    modal.show();
+  } else {
+    return TopicList;
   }
 }
-function viewTopic(data, closeFtn = false, subjectID=false) {
-
+function viewTopic(data, closeFtn = false, subjectID = false) {
   //create new modal
   let modal = new Popup();
   //get information about the request
@@ -271,9 +275,8 @@ function viewTopic(data, closeFtn = false, subjectID=false) {
   modal.show();
 }
 function deleteTopic(id) {
-  return jsonRequest("php/homepage/topics/deleteTopic.php", { id: id },true);
+  return jsonRequest("php/homepage/topics/deleteTopic.php", { id: id }, true);
   homeScreen.show();
-  
 }
 
 function editTopic(id) {
@@ -291,9 +294,7 @@ function editTopic(id) {
   );
 }
 function getTopic(id = false) {
-
-
-  let send = jsonRequest("php/homepage/topics/getTopic.php",{id: id});
+  let send = jsonRequest("php/homepage/topics/getTopic.php", { id: id });
   //for each subject
   for (let i = 0; i < send.length; i++) {
     // if the subjectName is null
@@ -311,7 +312,7 @@ function getTopic(id = false) {
   }
 }
 
-function visit(topicID, visitID = false, onHome = true) {
+function visit(topicID, visitID = false, onHome = true, onclose = false) {
   //get information about the topic
   let topicInfo = getTopic(topicID);
 
@@ -330,47 +331,48 @@ function visit(topicID, visitID = false, onHome = true) {
 
   // if the diffrating is -1 then display it as being in the middle of the input
   if (topicInfo.diffrating == -1) {
-
     visitValues.diffrating = 127;
-  }else {
+  } else {
     visitValues.diffrating = topicInfo.diffrating;
   }
-  let inputVariable = [{
-        name: "diffrating",
-        displayName: "Difficulty",
-        type: "range",
-        other: [
-          ["min", "0"],
-          ["max", "255"],
-          ["value", visitValues.diffrating],
-        ],
-      },
-      //input to show the type of activity
-      {
-        name: "type",
-        displayName: "activity",
-        value: visitValues.type,
-        type: "text",
-        placeholder: "--",
-      },
-      //number input so that the user can input the time spent studying
-      {
-        name: "time",
-        displayName: "Time spent(hours)",
-        value: visitValues.time,
-        type: "number",
-        placeholder: "--",
-      },
-      // a note so they can talk about what they did while studying
-      {
-        name: "note",
-        displayName: "note",
-        value: visitValues.note,
-        type: "textarea",
-        placeholder: "--",
-        height: "200px",
-      },]
-      console.log(inputVariable);
+  let inputVariable = [
+    {
+      name: "diffrating",
+      displayName: "Difficulty",
+      type: "range",
+      other: [
+        ["min", "0"],
+        ["max", "255"],
+        ["value", visitValues.diffrating],
+      ],
+    },
+    //input to show the type of activity
+    {
+      name: "type",
+      displayName: "activity",
+      value: visitValues.type,
+      type: "text",
+      placeholder: "--",
+    },
+    //number input so that the user can input the time spent studying
+    {
+      name: "time",
+      displayName: "Time spent(hours)",
+      value: visitValues.time,
+      type: "number",
+      placeholder: "--",
+    },
+    // a note so they can talk about what they did while studying
+    {
+      name: "note",
+      displayName: "note",
+      value: visitValues.note,
+      type: "textarea",
+      placeholder: "--",
+      height: "200px",
+    },
+  ];
+  console.log(inputVariable);
   //create a new form
   let form = new FormPopUp(
     // the header text with the topic name in it
@@ -416,7 +418,7 @@ function visit(topicID, visitID = false, onHome = true) {
       data.time = Math.round(data.time * 60);
       data.diffrating = Math.round(data.diffrating);
 
-      let request = {}
+      let request = {};
 
       if (visitID == false) {
         request.href = "php/homepage/topics/markTopicAsVisited.php";
@@ -426,13 +428,18 @@ function visit(topicID, visitID = false, onHome = true) {
       if (valid) {
         data.topicID = topicID;
         request.data = {
-
           data: data,
           visitID: visitID,
         };
-        jsonRequest(request.href,request.data);
+        jsonRequest(request.href, request.data);
         this.hide(); // close the form
-
+        if (onclose !== false) {
+          onclose();
+        } else {
+          if (currentScreen.constructor.name === "homeScreen") {
+            viewTopic({ ID: topicID }, viewTopics); // refresh the topic view
+          }
+        }
         if (onHome) {
           homeScreen.show(); // to refresh the homepage
         }
@@ -442,10 +449,25 @@ function visit(topicID, visitID = false, onHome = true) {
   );
   //show the form
   form.show();
+  form.FormcloseButton.removeEventListener("click", form.hide);
+  form.FormcloseButton.addEventListener("click", function () {
+    //if the form is closed then go back to the homepage
+    if (onclose !== false) {
+      onclose();
+    } else {
+      if (currentScreen.constructor.name === "HomeScreen") {
+        viewTopic({ ID: topicID }, viewTopics);
+      } else {
+        form.hide();
+      }
+    }
+  });
 }
 function getVisit(id = false, ref = "ID") {
-
-  let send = jsonRequest("php/homepage/topics/getVisit.php",{id: id,ref: ref});
+  let send = jsonRequest("php/homepage/topics/getVisit.php", {
+    id: id,
+    ref: ref,
+  });
 
   //if the request was for one item then
   if (id === false) {
@@ -458,7 +480,7 @@ function getVisit(id = false, ref = "ID") {
 function deleteVisit(id) {
   return jsonRequest("php/homepage/topics/deleteVisit.php", { visitID: id });
 }
-  
+
 function timeStudying() {
   let request = new AjaxTemplate(false);
   request.href = "php/study/getTotalStudyTime.php";
@@ -478,24 +500,27 @@ function timeStudying() {
   data.forEach((x) => {
     // Create a Date object from the timestamp, preserving the exact time
     let originalDate = new Date(x.date);
-    
+
     // Get the local date components without changing the time
     let year = originalDate.getFullYear();
     let month = originalDate.getMonth();
     let day = originalDate.getDate();
-    
+
     // Create start and end of day timestamps in local time
     let startOfDay = new Date(year, month, day, 0, 0, 0);
     let endOfDay = new Date(year, month, day, 23, 59, 59, 999);
-    
+
     // Assign the start of day timestamp but keep original for comparison
     x.date = startOfDay;
     x.time = Number(x.time);
 
     if (timeByDay.length > 0) {
       // Compare using the same day check, now more accurate with timezone handling
-      if (originalDate >= startOfDay && originalDate <= endOfDay &&
-          timeByDay[timeByDay.length - 1].date.getTime() === startOfDay.getTime()) {
+      if (
+        originalDate >= startOfDay &&
+        originalDate <= endOfDay &&
+        timeByDay[timeByDay.length - 1].date.getTime() === startOfDay.getTime()
+      ) {
         timeByDay[timeByDay.length - 1].time += x.time;
       } else {
         //if not then start a new item
@@ -594,13 +619,12 @@ function studyPage() {
     Todo.show();
   });
   //todo list
-  let stuffToDo = Todo.show(false)
+  let stuffToDo = Todo.show(false);
 
   //setting the modal Titles , body and footer
   modal.title("Study Page");
-  modal.body(dateDisplay,stuffToDo);
+  modal.body(dateDisplay, stuffToDo);
   let closeBTN = modal.closeBtn();
   modal.footer(editToDo, studyNowButton, " Fun Studying! ", closeBTN);
   modal.show();
 }
-  

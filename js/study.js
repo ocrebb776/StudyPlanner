@@ -9,6 +9,7 @@ class Study extends Screen {
 
   // Method to display the study screen
   show() {
+    currentScreen = this;
     this.topics = TopicAndSubjectSection.prototype.topics();
     this.timeDisplayText = "Time Remaining Until Break: ";
     let screen = document.createElement("div");

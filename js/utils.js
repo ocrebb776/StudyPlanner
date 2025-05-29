@@ -373,13 +373,13 @@ String.prototype.convertDate = function () {
       this.body(this.form);
   
       //Cancel button
-      let close = document.createElement("button");
-      close.setAttribute("class", "btn btn-danger");
-      close.textContent = "Cancel";
+      this.FormcloseButton = document.createElement("button");
+      this.FormcloseButton.setAttribute("class", "btn btn-danger");
+      this.FormcloseButton.textContent = "Cancel";
   
       //so the objects attributes and methids can be accsed in the even listener
       this.hide = this.hide.bind(this);
-      close.addEventListener("click", this.hide); //allowing it to close
+      this.FormcloseButton.addEventListener("click", this.hide); //allowing it to close
   
       //save button/submit button
       this.saveButton = document.createElement("button");
@@ -391,7 +391,7 @@ String.prototype.convertDate = function () {
   
       this.saveButton.addEventListener("click", this.handleResponse);
   
-      this.footer(close, this.saveButton);
+      this.footer(this.FormcloseButton, this.saveButton);
       this.formData = {};
       $("#" + this.id).modal("handleUpdate");
     }

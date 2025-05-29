@@ -1,5 +1,7 @@
+let currentScreen = null;
 class HomeScreen extends Screen {
     show() {
+      currentScreen = this;
       this.element.classList.remove("container");
       this.element.currentScreen = this;
       this.element.innerHTML = "";
@@ -884,6 +886,7 @@ class HomeScreen extends Screen {
       notes: getAllNotes(),
       subjects: getSubject(),
       topics: getTopic(),
+      visits: getVisit(),
     };
   }
   
@@ -977,6 +980,7 @@ class HomeScreen extends Screen {
       this.tableNotes = document.createElement("table");
       this.tableSubjects = document.createElement("table");
       this.tableTopics = document.createElement("table");
+      this.tableVisits = document.createElement("table");
   
       let eventsLabel = document.createElement("div");
       eventsLabel.setAttribute("class", "h3 text-center");
@@ -990,6 +994,10 @@ class HomeScreen extends Screen {
       let topicsLabel = document.createElement("div");
       topicsLabel.setAttribute("class", "h3 text-center");
       topicsLabel.textContent = "Topics";
+
+      let visitsLabel = document.createElement("div");
+      visitsLabel.setAttribute("class", "h3 text-center");
+      visitsLabel.textContent = "Visits";
   
       this.updateTables();
       this.table.append(
@@ -1000,7 +1008,9 @@ class HomeScreen extends Screen {
         subjectLabel,
         this.tableSubjects,
         topicsLabel,
-        this.tableTopics
+        this.tableTopics,
+        visitsLabel,
+        this.tableVisits
       );
   
       //adding everything to the container
@@ -1080,6 +1090,17 @@ class HomeScreen extends Screen {
           viewTopic({ ID: data.ID });
         }
       );
+
+      this.tableVisits = this.createTable(
+        ['note','diffrating','topicTitle','subjectTitle','date'],
+        ['Note','Difficulty','Topic','Subject','Date'],
+        this.data.visits,
+        'visitsTable',
+        function (data) {
+          console.log(data);
+          visit (data.topicID, data.ID, false,search.show.bind(this));
+        }
+      )
   
       //when the user enters a something into the search bar
       this.searchElement.addEventListener("keyup", function () {
@@ -1111,6 +1132,13 @@ class HomeScreen extends Screen {
         });
         // filter through thhe topics table
         $("#topicsTable tr").filter(function () {
+          $(this).toggle(
+            // if the search term is found in the content of the row
+            // then dont hide it
+            $(this).text().toLowerCase().indexOf(val) > -1
+          );
+        });
+        $("#visitsTable tr").filter(function () {
           $(this).toggle(
             // if the search term is found in the content of the row
             // then dont hide it

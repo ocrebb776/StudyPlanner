@@ -14,17 +14,23 @@ if ($_POST) {
     if($output && (password_verify($_POST['password'],$output['Pass']))) {
      
         $sql = "SELECT 
-         *
-         FROM visit
+         visit.*,
+            topics.user as topicUser
+        ,topics.name as topicTitle,
+        subjects.name as subjectTitle
 
-        WHERE user='{$_POST["ID"]}' 
+
+         FROM visit INNER JOIN topics ON visit.topicID=topics.ID 
+         INNER JOIN subjects ON topics.subjectID=subjects.ID
+        WHERE visit.user='{$_POST["ID"]}' && (topics.user='{$_POST["ID"]}' || topics.user IS NULL)
+        && (subjects.user='{$_POST["ID"]}' || subjects.user IS NULL)
         ";
         //to say that no one result is needed 
         $SQLconnection->oneResult = false;
         //if a id is given
         if ($_POST["id"] != 'false') {
             //add a clause to check for that id 
-            $sql .= " && {$_POST["ref"]}='{$_POST["id"]}'";
+            $sql .= " && visit.ID='{$_POST["id"]}'";
         }
         //send the requst to the database 
         //echo $sql;
