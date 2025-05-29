@@ -20,8 +20,9 @@ if ($_POST) {
             // sql request to change the record in the database 
 
             $sql = "UPDATE subjects SET `name` = '{$_POST["data"]["name"]}' WHERE `ID`={$_POST["data"]["id"]} && user={$_POST["ID"]}";
-            echo $sql;
+            
             $SQLconnection->sql($sql, false);
+            echo $_POST["data"]["id"]; // return the id of the subject that was edited
         
     } else {
         echo 'false';

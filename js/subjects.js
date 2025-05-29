@@ -46,7 +46,16 @@ function createSubjectForm(
             data.id = id;
           }
           
-          jsonRequest(endpoint, { data: data });
+          jsonRequest(endpoint, { data: data },false, function (response){
+            if(isNaN(response) || response === false){
+              //if the response is not a number or false then there was an error
+              alert("There was an error creating the subject");
+              return;
+            }else{
+              viewSubject(response,viewSubjects)
+            }
+
+          }) 
           
           //hideMobile
           this.hide();
@@ -58,7 +67,23 @@ function createSubjectForm(
       },
       endText
     );
+   
     subjectForm.show();
+
+     if(!newSubject){
+    let cancelButton = subjectForm.Modalfooter.getElementsByClassName("btn-danger")[0]
+    if(cancelButton.textContent === "Cancel"){
+      cancelButton.remove()
+      let cancelButton2 = document.createElement("button");
+      cancelButton2.classList.add("btn", "btn-danger");
+      cancelButton2.textContent = "Cancel";
+      cancelButton2.addEventListener("click", function () {
+    viewSubject(id, viewSubjects);
+
+      });
+      subjectForm.Modalfooter.prepend(cancelButton2);
+    
+    }}
   }
   
   function getSubject(id = false) {
@@ -165,8 +190,12 @@ function createSubjectForm(
     deleteBtn.classList.add("btn", "btn-danger");
     deleteBtn.textContent = "Delete Subject";
     deleteBtn.addEventListener("click", function () {
-      if (confirm("are you sure you want to delete" + displayInfo.name)) {
+      if (confirm("are you sure you want to delete " + displayInfo.name)) {
         deleteSubject(data.ID);
+        if(closeFtn){
+          //if there is a close function then call it
+          closeFtn();
+        }
   
         //hide the popup
         modal.hide();

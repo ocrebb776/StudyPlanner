@@ -68,7 +68,7 @@ String.prototype.convertDate = function () {
   function whiteList(string, allowNewLine = false) {
     //list of allowed characters
     let allowed =
-      "qwertyuiopasdfgh\"jklzxcvbnm1234567890QW*ER'TYUIOPASDFGHJKLZXCVBNM!£$%&?(),_-+=,.<>#: /@".split(
+      "qwertyuiopasdfgh\"jklzxcvbnm1234567890QW*ER'T`YUIOPASDFGHJKLZXCVBNM!£-$%&?(),_-+=,.<>#: /@".split(
         ""
       );
     let striped = [];
@@ -528,7 +528,7 @@ String.prototype.convertDate = function () {
  * @param {Object} data - The data to send with the request
  * @returns {Promise<Object>} A promise that resolves with the JSON response or rejects with an error
  */
-function jsonRequest(url, data ={},async = false) {
+function jsonRequest(url, data ={},async = false,success = ()=>{}) {
   // Input validation
   if (!url || typeof url !== 'string') {
     throw new Error('URL must be a non-empty string');
@@ -550,6 +550,7 @@ function jsonRequest(url, data ={},async = false) {
       ID: StoredID,
       password: StoredPassword
     };
+    request.ajaxSuccess = success
     request.dataType = "json";
 
     // Send request and get response

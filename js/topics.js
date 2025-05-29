@@ -3,7 +3,7 @@ let weightings = {
   diffRating: 0.8,
   mood: 0.3,
 };
-function createTopic(
+function createTopic( 
   name = "",
   subject = "",
   startText = "New Topic",
@@ -330,17 +330,12 @@ function visit(topicID, visitID = false, onHome = true) {
 
   // if the diffrating is -1 then display it as being in the middle of the input
   if (topicInfo.diffrating == -1) {
-    topicInfo.diffrating = 127;
+
+    visitValues.diffrating = 127;
+  }else {
+    visitValues.diffrating = topicInfo.diffrating;
   }
-  //create a new form
-  let form = new FormPopUp(
-    // the header text with the topic name in it
-    visitID !== false
-      ? `Edit "${topicInfo.name}'s" Visit on ${visitValues.date}`
-      : `Mark "${topicInfo.name}" as Visited`,
-    [
-      //range input so that the user can input the difficulty of the task
-      {
+  let inputVariable = [{
         name: "diffrating",
         displayName: "Difficulty",
         type: "range",
@@ -374,8 +369,15 @@ function visit(topicID, visitID = false, onHome = true) {
         type: "textarea",
         placeholder: "--",
         height: "200px",
-      },
-    ],
+      },]
+      console.log(inputVariable);
+  //create a new form
+  let form = new FormPopUp(
+    // the header text with the topic name in it
+    visitID !== false
+      ? `Edit "${topicInfo.name}'s" Visit on ${visitValues.date}`
+      : `Mark "${topicInfo.name}" as Visited`,
+    inputVariable,
     function () {
       //reassing this.formData to a local variable data
       let data = this.formData;

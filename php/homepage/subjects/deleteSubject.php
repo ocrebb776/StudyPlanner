@@ -18,7 +18,8 @@ if ($_POST) {
         //deleting all of the notes on the subject
         $SQLconnection->sql("DELETE FROM notes  WHERE frID='{$_POST["subjectID"]}' && frTable='subjects' && user={$_POST["ID"]}", false);
         //changing all of the topics to gave a subject id of -1 so that any new subjects with the id dont get given the topics 
-        $SQLconnection->sql("UPDATE topics SET subjectID='-1' WHERE subjectID='{$_POST["subjectID"]} && user={$_POST["ID"]}'");
+        $SQLconnection->sql("UPDATE topics SET subjectID='-1' WHERE subjectID='{$_POST["subjectID"]}' && user='{$_POST["ID"]}'",false);
+        echo 'true'; // if the subject is deleted then return true
     }
 } else {
     echo 'false';
