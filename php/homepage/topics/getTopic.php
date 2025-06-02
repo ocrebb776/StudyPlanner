@@ -1,19 +1,25 @@
 <?php
 // to allow for the sql requests necessary for this 
 require "../../SQL.php";
+
+require "../../whitelist.php";
 if ($_POST) {
     //creating the connection
     $SQLconnection = new MySQLRequest();
+    $_POST = whitelist($_POST,$SQLconnection->conn);
+    
     $SQLconnection->oneResult = true;
     //checking the account credentials
-    $output = $SQLconnection->sql("SELECT * FROM users WHERE Pass='{$_POST["password"]}' && ID='{$_POST["ID"]}'");
-    if ($output) {
+    $output = $SQLconnection->sql("SELECT * FROM users WHERE ID='{$_POST["ID"]}'");
+
+    if($output && (password_verify($_POST['password'], $output['Pass'] ))) {
         //default  sql request  using a left join
         $sql = "SELECT 
          topics.*,
          subjects.name as subjectName,
          COALESCE(visit.diffrating, -1) as diffrating,
-         COALESCE(visit.date,topics.dateCreated) as date
+         COALESCE(visit.date,topics.dateCreated) as date,
+         (SELECT SUM(time)  FROM visit WHERE topicID=topics.ID) as TotalTime
         FROM topics 
         LEFT JOIN subjects
         ON topics.subjectID = subjects.ID 

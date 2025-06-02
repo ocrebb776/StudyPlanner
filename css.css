@@ -1,5 +1,10 @@
 
-
+:root{
+  --bs-modal-width:90vw;
+}
+.modal{
+  --bs-modal-width:70vw;
+}
 
 
 /* scrollbar styling from https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_custom_scrollbar

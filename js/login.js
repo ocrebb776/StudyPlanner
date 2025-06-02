@@ -239,13 +239,16 @@ function loginValidation(
     };
     //define the fucntion to be run if the PHP successfully returns a response
     request.ajaxSuccess = function (result) {
-      //if the PHP returns false
-      if (result == "---false---") {
-        console.log(result);
-        //tell the user that their username or password is incorrect
-        alert("The entered Username or password is incorrect");
+      //checking to see if the result is not a number (the user cannot log in)
+      if (isNaN(result)) {
+        if (result == "false") {
+          //tell the user that their username or password is incorrect
+          alert("The entered Username or password is incorrect");
+        }else{
+          throw new Error(result)
+        }
       } else {
-        //set the global variables as stored id and stored password to be the result and the user enterd password
+        //set the global variables as stored id and stored password to be the result and the user entered password
         StoredID = result;
         StoredPassword = password;
 
@@ -256,11 +259,11 @@ function loginValidation(
         }
         //set the homescreen to be shown
         homeScreen.swapStatus();
+        document.getElementById("nameGoesHere").innerHTML = username;
       }
     };
     //send the request
     request.send();
-    console.log(request);
   } else {
     //tell the user that either their username or password is empty
     alert("Your Username or password cannot be empty");
@@ -337,7 +340,6 @@ function ValidateCreateAccount() {
           document.getElementById("password").value = password.value;
           loginValidation();
         } else {
-          console.log(result);
         }
       };
       CreateAccount.send();

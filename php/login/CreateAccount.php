@@ -4,7 +4,9 @@ require "../SQL.php";
 require "../whitelist.php";
 if ($_POST) {
     $SQLconnection = new MySQLRequest();
-    $trimList = "qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM!£$%&_-+=,.<>#;:";
+    $_POST = whitelist($_POST,$SQLconnection->conn);
+
+    $trimList = "qwertyuiopasdfgh()jklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM!£$%&_-+=,.<>#;:";
     $username = $_POST["username"];
     $password = $_POST["password"];
     $usrtrim = whitelist($username, $trimList);
@@ -18,7 +20,7 @@ if ($_POST) {
     if ($username == $usrtrim && $password == $pastrim && !(in_array($usrtrim,$existingUsernames))) {
         $output = $SQLconnection->sql("SELECT max(ID) FROM users");
    
-        if ($output) {
+        if($output && (password_verify($_POST['password'],$output['Pass']))) {
             $max = $output[0]["max(ID)"] + 1;
         } else {
             $max = 0;

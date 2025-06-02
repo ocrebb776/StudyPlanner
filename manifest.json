@@ -1,1 +1,25 @@
-{"theme_color":"#4da3ff","background_color":"#ffffff","icons":[{"purpose":"maskable","sizes":"512x512","src":"icon512_maskable.png","type":"image/png"},{"purpose":"any","sizes":"512x512","src":"icon512_rounded.png","type":"image/png"}],"orientation":"portrait","display":"standalone","dir":"auto","lang":"en-GB","name":"Study Planner","short_name":"Study Planner","description":"a study planning app to plan how and when you study"}
+{
+    "theme_color": "#000000",
+    "background_color": "#ffffff",
+    "icons": [
+        {
+            "purpose": "maskable",
+            "sizes": "512x512",
+            "src": "icon512_maskable.png",
+            "type": "image/png"
+        },
+        {
+            "purpose": "any",
+            "sizes": "512x512",
+            "src": "icon512_rounded.png",
+            "type": "image/png"
+        }
+    ],
+    "orientation": "portrait",
+    "display": "standalone",
+    "dir": "auto",
+    "lang": "en-GB",
+    "name": "Study Planner",
+    "short_name": "Study Planner",
+    "description": "a study planning app to plan how and when you study"
+}
