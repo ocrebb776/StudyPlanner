@@ -123,7 +123,8 @@ function viewTopics(
     //if the program is not subject specific or the topic is in the subject given
     if (!subjectSpec || el.subjectID == subjectID) {
       //create an empty cardButton
-      let btn = createInfoClickBtn({ subject: el.subjectName });
+      let btn = createInfoClickBtn({ subject: el.subjectName, totaltime:el.TotalTime });
+
       //create a title element
       let title = document.createElement("div");
       //make it big
